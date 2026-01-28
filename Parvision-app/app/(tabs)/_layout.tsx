@@ -15,6 +15,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
+        tabBarStyle: { display: 'none' }, // Hide Expo tab bar - HomeScreen has its own navigation
       }}>
       <Tabs.Screen
         name="index"
