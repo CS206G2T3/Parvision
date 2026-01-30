@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Camera, Upload, TrendingUp, Users, Award, Video, Clock, Target } from 'lucide-react-native';
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('home');
   
   const recentSwings = [
@@ -26,7 +26,8 @@ export default function HomeScreen() {
   };
 
   const handleRecordSwing = () => {
-    alert('Camera screen coming soon!');
+    setActiveTab('camera');
+    navigation.navigate('Camera');
   };
 
   const handleUploadVideo = () => {
@@ -189,7 +190,10 @@ export default function HomeScreen() {
         </TouchableOpacity>
         
         <TouchableOpacity 
-          onPress={() => setActiveTab('camera')}
+          onPress={() => {
+            setActiveTab('camera');
+            navigation.navigate('Camera');
+          }}
           style={styles.navItemCenter}
         >
           <View style={styles.cameraButton}>
