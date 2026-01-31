@@ -1,9 +1,50 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Video } from 'lucide-react-native';
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [isCameraReady, setIsCameraReady] = useState(false);
+
+  const handleRecordingFinished = (video) => {
+    // Placeholder: Add your video processing logic here in the future
+    // e.g., upload to server, save to gallery, navigate to analysis screen
+    console.log('video has been saved');
+  };
+
+  const toggleRecording = async () => {
+    if (!cameraRef.current || !isCameraReady) return;
+    if (isProcessing && !isRecording) return; // Only block if processing but not recording
+
+    // Start recording
+    if (!isRecording) {
+      setIsRecording(true);
+      setIsProcessing(true);
+      try {
+        const video = await cameraRef.current.recordAsync();
+        handleRecordingFinished(video);
+      } catch (error) {
+        console.warn('Error while recording video:', error);
+      } finally {
+        setIsRecording(false);
+        setIsProcessing(false);
+      }
+      return;
+    }
+
+    // Stop recording
+    try {
+      await cameraRef.current.stopRecording();
+    } catch (error) {
+      console.warn('Error while stopping recording:', error);
+      setIsRecording(false);
+      setIsProcessing(false);
+    }
+  };
 
   // Permission object not loaded yet
   if (!permission) {
@@ -36,13 +77,30 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <CameraView
+        ref={cameraRef}
         style={StyleSheet.absoluteFillObject}
         facing="back"
+        mode="video"
+        onCameraReady={() => setIsCameraReady(true)}
       />
 
-      {/* Simple overlay UI */}
+      {/* Overlay UI with record button */}
       <View style={styles.overlay}>
-        <Text style={styles.overlayText}>Point the camera at your swing</Text>
+        <Text style={styles.overlayText}>
+          {isCameraReady ? 'Point the camera at your swing' : 'Starting camera...'}
+        </Text>
+        <TouchableOpacity
+          style={[styles.recordButton, isRecording && styles.recordButtonActive]}
+          onPress={toggleRecording}
+          disabled={!isCameraReady || (isProcessing && !isRecording)}
+        >
+          <View style={[styles.recordInner, isRecording && styles.recordInnerActive]}>
+            <Video color="#fff" size={20} />
+          </View>
+        </TouchableOpacity>
+        <Text style={styles.controlsLabel}>
+          {isRecording ? 'Recording... Tap to stop' : 'Tap to record your swing'}
+        </Text>
       </View>
     </View>
   );
@@ -98,6 +156,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 999,
+  },
+  recordButton: {
+    marginTop: 16,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 4,
+    borderColor: '#f97316',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
+  recordButtonActive: {
+    borderColor: '#ef4444',
+  },
+  recordInner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ef4444',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  recordInnerActive: {
+    borderRadius: 8,
+  },
+  controlsLabel: {
+    marginTop: 12,
+    color: '#e5e7eb',
+    fontSize: 14,
   },
 });
 
