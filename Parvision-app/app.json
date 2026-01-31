@@ -26,7 +26,6 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router",
       [
         "expo-splash-screen",
         {
@@ -44,6 +43,13 @@
         {
           "microphonePermission": "Allow ParVision to access your microphone",
           "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow ParVision to access your photos to analyze golf videos.",
+          "cameraPermission": "Allow ParVision to access your camera to record swings."
         }
       ]
     ],

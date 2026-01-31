@@ -50,27 +50,70 @@ export function usePoseDetection() {
     };
   }, []);
 
-  const detectPose = useCallback(async (imageTensor) => {
+  const detectPose = useCallback(async (imageTensor, flipHorizontal = false) => {
     if (!detectorRef.current || !isModelReady) {
+      console.warn('⚠️ detectPose called but detector not ready:', {
+        hasDetector: !!detectorRef.current,
+        isModelReady,
+      });
       return null;
     }
 
     try {
+      // Verify tensor before processing
+      if (!imageTensor) {
+        console.error('❌ detectPose: imageTensor is null or undefined');
+        return null;
+      }
+      
+      const tensorShape = imageTensor.shape;
+      if (!tensorShape || tensorShape.length < 3) {
+        console.error('❌ detectPose: Invalid tensor shape:', tensorShape);
+        return null;
+      }
+
+      const startTime = Date.now();
       const poses = await detectorRef.current.estimatePoses(imageTensor, {
         maxPoses: 1,
-        flipHorizontal: false,
+        flipHorizontal: flipHorizontal, // Flip for front-facing camera
       });
+      const detectionTime = Date.now() - startTime;
 
-      if (poses.length > 0) {
+      if (poses && poses.length > 0) {
         const normalizedKeypoints = poses[0].keypoints;
-        setKeypoints(normalizedKeypoints);
-        return normalizedKeypoints;
+        if (normalizedKeypoints && normalizedKeypoints.length > 0) {
+          // Filter keypoints by confidence
+          const validKeypoints = normalizedKeypoints.filter(kp => kp && kp.score > 0.3);
+          
+          if (validKeypoints.length > 0) {
+            setKeypoints(validKeypoints);
+            console.log(`✅ Pose detected: ${validKeypoints.length}/${normalizedKeypoints.length} keypoints (${detectionTime}ms)`);
+            return validKeypoints;
+          } else {
+            console.log(`⚠️ Pose detected but all ${normalizedKeypoints.length} keypoints below confidence threshold`);
+            setKeypoints([]);
+            return null;
+          }
+        } else {
+          console.log('⚠️ Pose detected but no keypoints in result');
+          setKeypoints([]);
+          return null;
+        }
+      } else {
+        // Only log occasionally to avoid spam
+        if (Math.random() < 0.1) { // Log ~10% of the time
+          console.log('⚠️ No poses detected');
+        }
+        setKeypoints([]);
+        return null;
       }
     } catch (error) {
-      console.warn('Error detecting pose:', error);
+      console.error('❌ Error detecting pose:', error);
+      console.error('Error details:', error.message);
+      console.error('Error stack:', error.stack);
+      setKeypoints([]);
+      return null;
     }
-
-    return null;
   }, [isModelReady]);
 
   const clearKeypoints = useCallback(() => {

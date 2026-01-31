@@ -7,6 +7,7 @@ import '@tensorflow/tfjs-react-native';
 
 import HomeScreen from './src/screens/HomeScreen';
 import CameraScreen from './src/screens/CameraScreen';
+import VideoAnalysisScreen from './src/screens/VideoAnalysisScreen';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,11 @@ export default function App() {
           name="Camera"
           component={CameraScreen}
           options={{ title: 'Record Swing' }}
+        />
+        <Stack.Screen
+          name="VideoAnalysis"
+          component={VideoAnalysisScreen}
+          options={{ title: 'Video Analysis' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

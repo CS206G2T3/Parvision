@@ -40,21 +40,41 @@ export function SkeletonOverlay({ keypoints, imageWidth, imageHeight }) {
     return null;
   }
 
-  // Calculate scaling factors
-  const scaleX = SCREEN_WIDTH / (imageWidth || SCREEN_WIDTH);
-  const scaleY = SCREEN_HEIGHT / (imageHeight || SCREEN_HEIGHT);
+  // Log keypoint info occasionally for debugging
+  if (Math.random() < 0.05) { // Log ~5% of renders
+    console.log('🎨 SkeletonOverlay rendering:', {
+      keypointCount: keypoints.length,
+      sampleKeypoints: keypoints.slice(0, 3).map(kp => ({
+        name: kp.name,
+        x: kp.x?.toFixed(3),
+        y: kp.y?.toFixed(3),
+        score: kp.score?.toFixed(3),
+      })),
+    });
+  }
+
+  // Calculate scaling factors - keypoints are normalized (0-1), so we scale to screen
+  const scaleX = SCREEN_WIDTH;
+  const scaleY = SCREEN_HEIGHT;
 
   // Transform keypoint coordinates to screen coordinates
-  const transformPoint = (kp) => {
+  // MoveNet keypoints are normalized (0-1), so we multiply by screen dimensions
+  const transformPoint = (kp, index) => {
+    if (!kp) return null;
+    
+    const x = (kp.x || 0) * scaleX;
+    const y = (kp.y || 0) * scaleY;
+    const score = kp.score || 0;
+    
     return {
-      x: kp.x * scaleX,
-      y: kp.y * scaleY,
-      score: kp.score,
+      x,
+      y,
+      score,
       name: kp.name,
     };
   };
 
-  const transformedKeypoints = keypoints.map(transformPoint);
+  const transformedKeypoints = keypoints.map((kp, index) => transformPoint(kp, index)).filter(Boolean);
 
   return (
     <Svg style={StyleSheet.absoluteFillObject} pointerEvents="none">

@@ -31,7 +31,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const handleUploadVideo = () => {
-    alert('Upload feature coming soon!');
+    navigation.navigate('VideoAnalysis');
   };
 
   return (
