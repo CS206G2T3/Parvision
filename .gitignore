@@ -2,6 +2,7 @@
 ml_venv/
 venv/
 .venv/
+venv_movenet/
 
 # Python cache
 __pycache__/
