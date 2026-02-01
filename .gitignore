@@ -4,6 +4,7 @@ venv/
 .venv/
 venv_movenet/
 venv_mediapipe/
+venv_test/
 
 # Python cache
 __pycache__/
