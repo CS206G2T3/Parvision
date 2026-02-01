@@ -3,6 +3,7 @@ ml_venv/
 venv/
 .venv/
 venv_movenet/
+venv_mediapipe/
 
 # Python cache
 __pycache__/
