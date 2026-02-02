@@ -370,7 +370,7 @@ export default function CameraScreen() {
 
       {/* Skeleton overlay - shown when keypoints are detected during recording */}
       {isRecording && isModelReady && keypoints && keypoints.length > 0 && (
-        <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+        <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
           <SkeletonOverlay
             keypoints={keypoints}
             imageWidth={frameDimensions.width || SCREEN_WIDTH}

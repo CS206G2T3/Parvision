@@ -27,7 +27,7 @@ const SKELETON_EDGES = [
 ];
 
 // Confidence threshold for displaying keypoints
-const MIN_CONFIDENCE = 0.3;
+const MIN_CONFIDENCE = 0.1; // Lowered from 0.3 to show more keypoints
 
 // Colors for the skeleton
 const KEYPOINT_COLOR = '#FF4444';
@@ -53,17 +53,56 @@ export function SkeletonOverlay({ keypoints, imageWidth, imageHeight }) {
     });
   }
 
-  // Calculate scaling factors - keypoints are normalized (0-1), so we scale to screen
+  // Calculate scaling factors
+  // Keypoints are normalized (0-1) relative to the video's natural dimensions
+  // We need to scale them to the actual rendered video size on screen
+  // Since the video uses resizeMode="contain", we need to account for the aspect ratio
+  
+  // Use screen dimensions for now - the overlay is positioned absolutely over the video
+  // The video container should match the video's rendered size
   const scaleX = SCREEN_WIDTH;
   const scaleY = SCREEN_HEIGHT;
+  
+  // If we have image dimensions, calculate aspect ratio and adjust scaling
+  let finalScaleX = scaleX;
+  let finalScaleY = scaleY;
+  
+  if (imageWidth && imageHeight) {
+    const imageAspect = imageWidth / imageHeight;
+    const screenAspect = SCREEN_WIDTH / SCREEN_HEIGHT;
+    
+    // If image is taller (portrait), scale based on width
+    // If image is wider (landscape), scale based on height
+    if (imageAspect < screenAspect) {
+      // Image is taller - scale based on width
+      finalScaleX = SCREEN_WIDTH;
+      finalScaleY = SCREEN_WIDTH / imageAspect;
+    } else {
+      // Image is wider - scale based on height
+      finalScaleX = SCREEN_HEIGHT * imageAspect;
+      finalScaleY = SCREEN_HEIGHT;
+    }
+  }
+
+  console.log('🎨 SkeletonOverlay scaling:', {
+    keypointCount: keypoints.length,
+    imageWidth,
+    imageHeight,
+    imageAspect: imageWidth && imageHeight ? (imageWidth / imageHeight).toFixed(2) : 'N/A',
+    screenAspect: (SCREEN_WIDTH / SCREEN_HEIGHT).toFixed(2),
+    scaleX: finalScaleX.toFixed(0),
+    scaleY: finalScaleY.toFixed(0),
+    screenWidth: SCREEN_WIDTH,
+    screenHeight: SCREEN_HEIGHT,
+  });
 
   // Transform keypoint coordinates to screen coordinates
-  // MoveNet keypoints are normalized (0-1), so we multiply by screen dimensions
+  // MoveNet keypoints are normalized (0-1), so we multiply by calculated dimensions
   const transformPoint = (kp, index) => {
     if (!kp) return null;
     
-    const x = (kp.x || 0) * scaleX;
-    const y = (kp.y || 0) * scaleY;
+    const x = (kp.x || 0) * finalScaleX;
+    const y = (kp.y || 0) * finalScaleY;
     const score = kp.score || 0;
     
     return {
@@ -77,7 +116,7 @@ export function SkeletonOverlay({ keypoints, imageWidth, imageHeight }) {
   const transformedKeypoints = keypoints.map((kp, index) => transformPoint(kp, index)).filter(Boolean);
 
   return (
-    <Svg style={StyleSheet.absoluteFillObject} pointerEvents="none">
+    <Svg style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none' }]}>
       {/* Draw skeleton connections (lines) first so they appear behind keypoints */}
       {SKELETON_EDGES.map(([startIdx, endIdx], index) => {
         const startKp = transformedKeypoints[startIdx];

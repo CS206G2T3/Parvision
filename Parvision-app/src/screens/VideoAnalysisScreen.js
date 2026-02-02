@@ -8,6 +8,7 @@ import {
   Dimensions,
   Alert,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { Video } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
@@ -23,6 +24,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 export default function VideoAnalysisScreen({ navigation }) {
   const [videoUri, setVideoUri] = useState(null);
+  const [videoFileName, setVideoFileName] = useState(null); // Store original filename
   const [videoStatus, setVideoStatus] = useState({});
   const [isProcessing, setIsProcessing] = useState(false);
   const [processedFrames, setProcessedFrames] = useState([]); // Store keypoints for each frame
@@ -53,21 +55,78 @@ export default function VideoAnalysisScreen({ navigation }) {
   // Pick video from library
   const pickVideo = async () => {
     try {
+      console.log('📹 Starting video picker...');
+      
+      // Request permissions first (especially for web)
+      if (Platform.OS !== 'web') {
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permission needed', 'Please grant access to your media library to upload videos.');
+          return;
+        }
+      }
+
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         allowsEditing: false,
         quality: 1,
+        videoMaxDuration: 60, // Limit to 60 seconds for faster processing
       });
 
-      if (!result.canceled && result.assets[0]) {
-        setVideoUri(result.assets[0].uri);
-        setProcessedFrames([]);
-        setCurrentFrameKeypoints([]);
-        setProcessingProgress(0);
+      console.log('📹 ImagePicker result:', result);
+
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
+        const videoUri = asset.uri;
+        const fileSize = asset.fileSize || 0;
+        
+        // Extract filename - prefer fileName property, fallback to extracting from URI
+        let fileName = asset.fileName || null;
+        if (!fileName && videoUri) {
+          // Try to extract from URI
+          const uriParts = videoUri.split('/');
+          const lastPart = uriParts[uriParts.length - 1];
+          // If it's a blob URL or doesn't have extension, use default
+          if (lastPart.includes('.') && !lastPart.startsWith('blob:')) {
+            fileName = lastPart;
+          }
+        }
+        
+        // Ensure filename has a valid extension
+        if (!fileName || !fileName.match(/\.(mp4|mov|avi|mkv|MP4|MOV)$/i)) {
+          // Default to .mov if we can't determine
+          fileName = fileName ? `${fileName}.mov` : 'video.mov';
+        }
+        
+        console.log('✅ Video selected:', videoUri);
+        console.log(`📝 Original filename: ${fileName}`);
+        console.log(`📊 Video size: ${(fileSize / (1024 * 1024)).toFixed(2)} MB`);
+        
+        // Use requestAnimationFrame to prevent blocking UI
+        requestAnimationFrame(() => {
+          setVideoUri(videoUri);
+          setVideoFileName(fileName);
+          setProcessedFrames([]);
+          setCurrentFrameKeypoints([]);
+          setProcessingProgress(0);
+        });
+      } else if (result.canceled) {
+        console.log('ℹ️ User canceled video selection');
+      } else {
+        console.warn('⚠️ No video asset found in result:', result);
+        Alert.alert('Error', 'No video was selected. Please try again.');
       }
     } catch (error) {
-      console.error('Error picking video:', error);
-      Alert.alert('Error', 'Failed to pick video. Please try again.');
+      console.error('❌ Error picking video:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name,
+      });
+      Alert.alert(
+        'Error', 
+        `Failed to pick video: ${error.message || 'Unknown error'}. ${Platform.OS === 'web' ? 'Make sure you\'re using a modern browser that supports file uploads.' : 'Please try again.'}`
+      );
     }
   };
 
@@ -136,9 +195,29 @@ export default function VideoAnalysisScreen({ navigation }) {
       // Create FormData for file upload
       const formData = new FormData();
       
-      // Get file name from URI
-      const filename = videoUri.split('/').pop() || 'video.mov';
-      const fileType = videoUri.endsWith('.mp4') ? 'video/mp4' : 'video/quicktime';
+      // Use stored filename or extract from URI
+      let filename = videoFileName || 'video.mov';
+      
+      // Ensure filename has valid extension for server validation
+      if (!filename.match(/\.(mp4|mov|avi|mkv|MP4|MOV)$/i)) {
+        // Determine extension from URI or default to .mov
+        if (videoUri.includes('.mp4') || videoUri.includes('.MP4')) {
+          filename = filename.replace(/\.[^.]*$/, '') + '.mp4';
+        } else {
+          filename = filename.replace(/\.[^.]*$/, '') + '.mov';
+        }
+      }
+      
+      // Determine MIME type from filename extension
+      const fileExtension = filename.split('.').pop()?.toLowerCase();
+      let fileType = 'video/quicktime'; // default
+      if (fileExtension === 'mp4') {
+        fileType = 'video/mp4';
+      } else if (fileExtension === 'avi') {
+        fileType = 'video/x-msvideo';
+      } else if (fileExtension === 'mkv') {
+        fileType = 'video/x-matroska';
+      }
       
       // Handle file upload differently for web vs native
       if (Platform.OS === 'web') {
@@ -146,8 +225,10 @@ export default function VideoAnalysisScreen({ navigation }) {
         try {
           const response = await fetch(videoUri);
           const blob = await response.blob();
-          formData.append('video', blob, filename);
-          console.log('📦 Web: Added blob to FormData');
+          // Create a new File object with the correct filename
+          const file = new File([blob], filename, { type: fileType });
+          formData.append('video', file);
+          console.log('📦 Web: Added blob to FormData with filename:', filename);
         } catch (error) {
           console.error('❌ Error fetching video for web upload:', error);
           // Fallback: try to use the URI directly (may not work)
@@ -161,7 +242,7 @@ export default function VideoAnalysisScreen({ navigation }) {
           type: fileType,
           name: filename,
         });
-        console.log('📦 Native: Added file object to FormData');
+        console.log('📦 Native: Added file object to FormData with filename:', filename);
       }
 
       // API endpoint - adjust this to match your server
@@ -222,9 +303,32 @@ export default function VideoAnalysisScreen({ navigation }) {
       }
 
       // Store processed frames
-      setProcessedFrames(result.frames || []);
+      const frames = result.frames || [];
+      setProcessedFrames(frames);
       setProcessingProgress(100);
       setIsProcessing(false);
+      
+      // Log keypoint info for debugging
+      if (frames.length > 0) {
+        const firstFrame = frames[0];
+        console.log('📊 First frame keypoints:', {
+          frameNumber: firstFrame.frameNumber,
+          timestamp: firstFrame.timestamp,
+          keypointCount: firstFrame.keypoints?.length || 0,
+          sampleKeypoints: firstFrame.keypoints?.slice(0, 3).map(kp => ({
+            name: kp.name,
+            x: kp.x?.toFixed(3),
+            y: kp.y?.toFixed(3),
+            score: kp.score?.toFixed(3),
+          })) || [],
+        });
+        
+        // Set initial keypoints from first frame
+        if (firstFrame.keypoints && firstFrame.keypoints.length > 0) {
+          setCurrentFrameKeypoints(firstFrame.keypoints);
+          console.log('✅ Set initial keypoints from first processed frame');
+        }
+      }
 
       // Update frame dimensions if available
       if (videoRef.current) {
@@ -328,11 +432,17 @@ export default function VideoAnalysisScreen({ navigation }) {
   // Uses processed frames from backend API
   useEffect(() => {
     if (!videoStatus.isLoaded || processedFrames.length === 0) {
+      if (processedFrames.length === 0 && videoStatus.isLoaded) {
+        console.log('⚠️ No processed frames available yet');
+      }
       return;
     }
 
     const currentTime = videoStatus.positionMillis;
-    if (currentTime === undefined) return;
+    if (currentTime === undefined) {
+      console.log('⚠️ Video position not available');
+      return;
+    }
 
     // Find the closest processed frame to current playback position
     const closestFrame = processedFrames.reduce((prev, curr) => {
@@ -341,21 +451,41 @@ export default function VideoAnalysisScreen({ navigation }) {
       return currDiff < prevDiff ? curr : prev;
     });
 
-    // Only update if we're within 200ms of the frame timestamp
-    if (Math.abs(closestFrame.timestamp - currentTime) < 200) {
-      setCurrentFrameKeypoints(closestFrame.keypoints || []);
+    const timeDiff = Math.abs(closestFrame.timestamp - currentTime);
+    
+    // Relaxed threshold: show keypoints if within 500ms (was 200ms)
+    // Also show the first frame if video hasn't started playing yet
+    if (timeDiff < 500 || (currentTime === 0 && processedFrames.length > 0)) {
+      const frameKeypoints = closestFrame.keypoints || [];
+      if (frameKeypoints.length > 0) {
+        setCurrentFrameKeypoints(frameKeypoints);
+        if (Math.random() < 0.1) { // Log occasionally
+          console.log(`✅ Showing keypoints: ${frameKeypoints.length} keypoints at ${currentTime}ms (frame at ${closestFrame.timestamp}ms, diff: ${timeDiff}ms)`);
+        }
+      } else {
+        console.log('⚠️ Closest frame has no keypoints');
+        setCurrentFrameKeypoints([]);
+      }
+    } else {
+      // Clear keypoints if too far from any frame
+      if (currentFrameKeypoints.length > 0) {
+        setCurrentFrameKeypoints([]);
+      }
     }
   }, [videoStatus.positionMillis, processedFrames, videoStatus.isLoaded]);
 
-  // Auto-process video when uploaded and loaded
+  // Auto-process video when uploaded and loaded (with delay to prevent lag)
   useEffect(() => {
     if (videoUri && videoStatus.isLoaded && !isProcessing && processedFrames.length === 0) {
-      // Automatically start processing when video is uploaded and loaded
-      console.log('📹 Video uploaded and loaded, starting automatic processing...');
-      // Small delay to ensure video is fully ready
+      // Delay processing to allow UI to render first and prevent lag
+      console.log('📹 Video uploaded and loaded, will start processing in 2 seconds...');
       const timer = setTimeout(() => {
-        processVideoFrames();
-      }, 500);
+        // Only start if still no frames processed (user might have canceled)
+        if (processedFrames.length === 0 && !isProcessing) {
+          console.log('🚀 Starting automatic video processing...');
+          processVideoFrames();
+        }
+      }, 2000); // 2 second delay to prevent UI lag
       return () => clearTimeout(timer);
     }
   }, [videoUri, videoStatus.isLoaded, isProcessing, processedFrames.length, processVideoFrames]);
@@ -395,7 +525,7 @@ export default function VideoAnalysisScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header - Fixed at top */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <X color="#fff" size={24} />
@@ -404,18 +534,30 @@ export default function VideoAnalysisScreen({ navigation }) {
         <View style={styles.placeholder} />
       </View>
 
-      {/* Video player */}
-      {videoUri ? (
+      {/* Scrollable content */}
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={true}
+        nestedScrollEnabled={true}
+      >
+        {/* Video player */}
+        {videoUri ? (
         <View style={styles.videoContainer}>
-          <Video
-            ref={videoRef}
-            source={{ uri: videoUri }}
-            style={styles.video}
-            resizeMode="contain"
+          <View style={styles.videoWrapper}>
+            <Video
+              ref={videoRef}
+              source={{ uri: videoUri }}
+              style={styles.video}
+              resizeMode="contain"
             onLoad={(status) => {
               setVideoStatus(status);
               if (status.naturalSize) {
                 setFrameDimensions({
+                  width: status.naturalSize.width,
+                  height: status.naturalSize.height,
+                });
+                console.log('📐 Video dimensions set:', {
                   width: status.naturalSize.width,
                   height: status.naturalSize.height,
                 });
@@ -424,26 +566,59 @@ export default function VideoAnalysisScreen({ navigation }) {
                 duration: status.durationMillis,
                 isLoaded: status.isLoaded,
                 naturalSize: status.naturalSize,
+                videoUri: videoUri?.substring(0, 50) + '...',
               });
               // Auto-processing will trigger via useEffect when videoStatus.isLoaded becomes true
+            }}
+            onError={(error) => {
+              console.error('❌ Video load error:', error);
             }}
             onPlaybackStatusUpdate={(status) => {
               setVideoStatus(status);
               setIsPlaying(status.isPlaying);
             }}
           />
+          </View>
 
           {/* Skeleton overlay - shows when keypoints are detected */}
           {isModelReady && (
-            <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+            <View style={[StyleSheet.absoluteFillObject, { pointerEvents: 'none', zIndex: 5 }]}>
               {/* Real keypoints from pose detection */}
-              {(currentFrameKeypoints.length > 0 || (keypoints && keypoints.length > 0)) && (
-                <SkeletonOverlay
-                  keypoints={currentFrameKeypoints.length > 0 ? currentFrameKeypoints : (keypoints || [])}
-                  imageWidth={frameDimensions.width || SCREEN_WIDTH}
-                  imageHeight={frameDimensions.height || SCREEN_HEIGHT}
-                />
-              )}
+              {/* Show keypoints if we have processed frames, even if video isn't playing */}
+              {(() => {
+                // Priority: currentFrameKeypoints > first processed frame > keypoints from hook
+                let keypointsToShow = null;
+                
+                if (currentFrameKeypoints.length > 0) {
+                  keypointsToShow = currentFrameKeypoints;
+                  console.log('✅ Using currentFrameKeypoints:', currentFrameKeypoints.length);
+                } else if (processedFrames.length > 0 && processedFrames[0].keypoints && processedFrames[0].keypoints.length > 0) {
+                  // Fallback: show first frame's keypoints if video hasn't started
+                  keypointsToShow = processedFrames[0].keypoints;
+                  console.log('✅ Using first processed frame keypoints:', processedFrames[0].keypoints.length);
+                } else if (keypoints && keypoints.length > 0) {
+                  keypointsToShow = keypoints;
+                  console.log('✅ Using hook keypoints:', keypoints.length);
+                }
+                
+                if (keypointsToShow && keypointsToShow.length > 0) {
+                  console.log('🎨 Rendering SkeletonOverlay with:', {
+                    keypointCount: keypointsToShow.length,
+                    frameDimensions,
+                    sampleKeypoint: keypointsToShow[0],
+                  });
+                  return (
+                    <SkeletonOverlay
+                      keypoints={keypointsToShow}
+                      imageWidth={frameDimensions.width || SCREEN_WIDTH}
+                      imageHeight={frameDimensions.height || SCREEN_HEIGHT}
+                    />
+                  );
+                } else {
+                  console.log('⚠️ No keypoints to show');
+                }
+                return null;
+              })()}
               
               {/* Test skeleton overlay - tap debug overlay 3 times to enable */}
               {showTestSkeleton && (
@@ -510,6 +685,12 @@ export default function VideoAnalysisScreen({ navigation }) {
                 Processed: {processedFrames.length}
               </Text>
               <Text style={styles.debugText}>
+                Current KP: {currentFrameKeypoints.length}
+              </Text>
+              <Text style={styles.debugText}>
+                Video Pos: {videoStatus.positionMillis ? `${Math.round(videoStatus.positionMillis / 1000)}s` : 'N/A'}
+              </Text>
+              <Text style={styles.debugText}>
                 Test: {showTestSkeleton ? 'ON' : 'OFF'}
               </Text>
               <Text style={[styles.debugText, { fontSize: 8, marginTop: 4, color: '#FFA500' }]}>
@@ -562,9 +743,19 @@ export default function VideoAnalysisScreen({ navigation }) {
           <Text style={styles.uploadSubtitle}>
             Select a video from your gallery to analyze your swing with AI pose detection
           </Text>
-          <TouchableOpacity style={styles.uploadButton} onPress={pickVideo}>
+          
+          <TouchableOpacity 
+            style={styles.uploadButton} 
+            onPress={pickVideo}
+          >
             <Text style={styles.uploadButtonText}>Choose Video</Text>
           </TouchableOpacity>
+          
+          {Platform.OS === 'web' && (
+            <Text style={[styles.uploadSubtitle, { marginTop: 16, fontSize: 12, color: '#9ca3af' }]}>
+              Note: On web, make sure your browser supports file uploads. If the picker doesn't open, try a different browser.
+            </Text>
+          )}
         </View>
       )}
 
@@ -584,6 +775,7 @@ export default function VideoAnalysisScreen({ navigation }) {
           )}
         </View>
       )}
+      </ScrollView>
     </View>
   );
 }
@@ -592,6 +784,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+    ...(Platform.OS === 'web' && {
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+    }),
+  },
+  scrollContainer: {
+    flex: 1,
+    ...(Platform.OS === 'web' && {
+      flex: 1,
+      overflowY: 'auto',
+      overflowX: 'visible', // Allow horizontal overflow for wide videos
+      WebkitOverflowScrolling: 'touch',
+    }),
+  },
+  scrollContent: {
+    paddingBottom: 100,
+    ...(Platform.OS === 'web' && {
+      minHeight: '100%',
+      overflow: 'visible', // Don't clip content
+    }),
   },
   header: {
     flexDirection: 'row',
@@ -617,12 +830,41 @@ const styles = StyleSheet.create({
     width: 40,
   },
   videoContainer: {
-    flex: 1,
     position: 'relative',
+    width: '100%',
+    marginBottom: 20,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    ...(Platform.OS === 'web' && {
+      display: 'block',
+      width: '100%',
+      overflow: 'visible',
+    }),
+  },
+  videoWrapper: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    ...(Platform.OS === 'web' && {
+      width: '100%',
+      overflow: 'visible',
+    }),
   },
   video: {
     width: SCREEN_WIDTH,
-    height: SCREEN_HEIGHT * 0.7,
+    height: SCREEN_HEIGHT * 0.5,
+    backgroundColor: '#000',
+    ...(Platform.OS === 'web' && {
+      width: '100%',
+      maxWidth: '100%',
+      minHeight: 400, // Ensure video has a minimum height so it's visible
+      height: 'auto',
+      objectFit: 'contain', // Ensures full video is visible, maintains aspect ratio
+      display: 'block',
+      margin: '0 auto', // Center the video
+      visibility: 'visible', // Ensure video is visible
+    }),
   },
   processingOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -637,13 +879,18 @@ const styles = StyleSheet.create({
   },
   controls: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 20,
     left: 0,
     right: 0,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 40,
+    zIndex: 100,
+    ...(Platform.OS === 'web' && {
+      zIndex: 100,
+      position: 'absolute',
+    }),
   },
   controlButton: {
     width: 50,
