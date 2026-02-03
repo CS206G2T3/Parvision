@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # Step 1: Load the CSV file
 file_path = 'data/CaddieSet.csv'
@@ -20,11 +21,16 @@ columns_to_keep = [
 # Step 3: Filter the DataFrame to keep only the selected columns
 df_filtered = df[columns_to_keep]
 
-# Step 4: Drop rows with missing values in any column
+# Step 4: Replace inf/-inf with NaN
+df_filtered.replace([np.inf, -np.inf], np.nan, inplace=True)
+
+# Step 5: Drop rows with missing values in any column
 df_cleaned = df_filtered.dropna()
 
-# Step 5: Save the cleaned data to a new CSV file
+# Step 6: Save the cleaned data to a new CSV file
 output_path = 'data/preprocessed_CaddieSet.csv'
 df_cleaned.to_csv(output_path, index=False)
 
 print(f"Preprocessed data has been saved to {output_path}")
+print("Rows before:", len(df))
+print("Rows after:", len(df_cleaned))
