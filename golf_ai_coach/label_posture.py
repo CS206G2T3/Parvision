@@ -1,13 +1,3 @@
-# Posture Rules:
-# 0-SHOULDER-ANGLE:    30-55 degrees
-# 0-STANCE-RATIO:     0.9-1.2
-# 1-HIP-ROTATION:     ≥ 25 degrees
-# 1-HIP-SHIFTED:      |value| ≤ 0.15
-# 3-HIP-SHIFTED:      ≥ 0.2
-# 3-RIGHT-LEG-ANGLE:  ≥ 150 degrees
-# 6-WEIGHT-SHIFT:     ≥ 0.6
-# 7-FINISH-ANGLE:     ≥ 160 degrees
-
 import pandas as pd
 
 df = pd.read_csv("data/preprocessed_CaddieSet.csv")
