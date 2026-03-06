@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import foursomeImg from '../assets/foursome.png'
-import patrickAvatar from '../assets/patrick.png'
 import swingImg from '../assets/swing.png'
 
 // ── data ──────────────────────────────────────────────────────────────────────
@@ -28,35 +27,6 @@ const ALL_COMMUNITIES = [
 const POSTS = [
   {
     id: 1,
-    community: 'Singapore Golfers',
-    communityColor: '#248a3d',
-    communityAbbr: 'SG',
-    user: 'Marcus Hooy',
-    usePatrick: true,
-    time: '2h ago',
-    body: 'Swing looking slightly rough this session 😅 Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
-    likes: 40,
-    comments: 7,
-    img: foursomeImg,
-    tags: ['Swing Analyzer'],
-  },
-  {
-    id: 2,
-    community: 'Scratch Club',
-    communityColor: '#409cff',
-    communityAbbr: 'SC',
-    user: 'Wiger',
-    avatarColor: '#409cff',
-    avatarLetter: 'W',
-    time: '5h ago',
-    body: 'Golden hour session at Sentosa. Different energy when the light hits like that. Ball tracing showed 247 yards — best drive this year 🔥',
-    likes: 213,
-    comments: 0,
-    img: swingImg,
-    tags: ['Ball Tracer'],
-  },
-  {
-    id: 3,
     community: 'Weekend Warriors',
     communityColor: '#a855f7',
     communityAbbr: 'WW',
@@ -67,8 +37,38 @@ const POSTS = [
     body: 'Weekend foursome was a blast! Finally shot under 90 for the first time this season 🎉 The new wedge made all the difference on the back nine.',
     likes: 12,
     comments: 3,
-    img: null,
+    img: foursomeImg,
     tags: [],
+  },
+  {
+    id: 2,
+    community: 'Singapore Golfers',
+    communityColor: '#248a3d',
+    communityAbbr: 'SG',
+    user: 'Marcus Hooy',
+    avatarColor: '#f97316',
+    avatarLetter: 'M',
+    time: '2h ago',
+    body: 'Swing looking slightly rough this session 😅 Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
+    likes: 40,
+    comments: 7,
+    img: swingImg,
+    tags: ['Swing Analyzer'],
+  },
+  {
+    id: 3,
+    community: 'Scratch Club',
+    communityColor: '#409cff',
+    communityAbbr: 'SC',
+    user: 'Marcus Hooy',
+    avatarColor: '#f97316',
+    avatarLetter: 'M',
+    time: '5h ago',
+    body: 'Golden hour session at Sentosa. Different energy when the light hits like that. Ball tracing showed 247 yards — best drive this year 🔥',
+    likes: 213,
+    comments: 0,
+    img: swingImg,
+    tags: ['Ball Tracer'],
   },
   {
     id: 4,
@@ -139,16 +139,12 @@ function PostCard({ post }) {
 
       {/* User row */}
       <div className="flex items-center px-4 pt-3 pb-2 gap-2.5">
-        {post.usePatrick ? (
-          <img src={patrickAvatar} alt="avatar" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
-        ) : (
-          <div
-            className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0"
-            style={{ backgroundColor: post.avatarColor }}
-          >
-            {post.avatarLetter}
-          </div>
-        )}
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0"
+          style={{ backgroundColor: post.avatarColor }}
+        >
+          {post.avatarLetter}
+        </div>
         <div className="flex-1 min-w-0">
           <p
             className="text-[13px] font-semibold text-[#1c1c1e] leading-[17px]"

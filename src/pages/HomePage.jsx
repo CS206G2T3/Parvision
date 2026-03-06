@@ -8,6 +8,7 @@ import clubDriverImg from '../assets/club_driver.png'
 import clubIronImg from '../assets/club_iron.png'
 import clubWedgeImg from '../assets/club_wedge.png'
 import clubPutterImg from '../assets/club_putter.png'
+import swingImg from '../assets/swing.png'
 
 // M T W T F S S — index 2 (W) is today, 0 and 1 are completed
 const WEEK_DAYS = [
@@ -40,7 +41,7 @@ const COMMUNITY_POSTS = [
     likes: 40,
     comments: 2,
     tags: ['Swing Analyzer', 'Ball Tracer'],
-    img: foursomeImg,
+    img: swingImg,
     avatarColor: '#f97316',
   },
   {
@@ -392,7 +393,10 @@ export default function HomePage() {
               </h2>
               <p className="text-[12px] text-[rgba(60,60,67,0.5)] leading-[16px]">See what others are up to</p>
             </div>
-            <button className="text-[13px] font-semibold text-[#248a3d] whitespace-nowrap">
+            <button
+              onClick={() => navigate('/community')}
+              className="text-[13px] font-semibold text-[#248a3d] whitespace-nowrap"
+            >
               See More →
             </button>
           </div>
