@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
-
-const IMG_AVATAR = 'https://www.figma.com/api/mcp/asset/77a45933-0f2d-445e-9c01-452499169297'
+import patrickAvatar from '../assets/patrick.png'
 
 function SettingsRow({ icon, label, onPress, danger }) {
   return (
@@ -60,7 +59,7 @@ export default function ProfilePage() {
         </h1>
         <div className="flex items-center gap-4">
           <img
-            src={IMG_AVATAR}
+            src={patrickAvatar}
             alt="Jared Mango"
             className="w-[60px] h-[60px] rounded-full object-cover border-2 border-white/30"
           />
