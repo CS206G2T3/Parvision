@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  background-color: #f0f0f0;
+}
+
+/* Mobile phone frame wrapper */
+.phone-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16px;
+}
+
+.phone-frame {
+  width: 393px;
+  min-height: 852px;
+  background: white;
+  overflow: hidden;
+  position: relative;
+  border-radius: 40px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 430px) {
+  .phone-wrapper {
+    padding: 0;
+    align-items: flex-start;
+  }
+  .phone-frame {
+    width: 100%;
+    min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
