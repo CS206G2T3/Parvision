@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import foursomeImg from '../assets/foursome.png'
 import swingImg from '../assets/swing.png'
+import balltraceVideo from '../assets/balltrace.mp4'
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
@@ -263,9 +264,114 @@ function CommunityRow({ c, onToggle }) {
 
 // ── main page ──────────────────────────────────────────────────────────────────
 
+function ComposeSheet({ draft, onClose, onPost }) {
+  const [caption, setCaption] = useState(draft.caption)
+  const [selectedCommunity, setSelectedCommunity] = useState(MY_COMMUNITIES[0])
+  const [posted, setPosted] = useState(false)
+
+  const handlePost = () => {
+    setPosted(true)
+    setTimeout(() => { onPost(); onClose() }, 900)
+  }
+
+  return (
+    <div className="absolute inset-0 z-40" style={{ background: 'rgba(0,0,0,0.55)' }}>
+      {/* Card */}
+      <div className="mx-4 mt-14 bg-white rounded-3xl overflow-hidden" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f0f0f0]">
+          <button onClick={onClose}
+            className="text-[15px] text-[rgba(60,60,67,0.5)]"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Cancel
+          </button>
+          <p className="text-[16px] font-bold text-[#1c1c1e]"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+            New Post
+          </p>
+          <button onClick={handlePost}
+            className={`px-4 py-1.5 rounded-full text-[14px] font-semibold transition-all ${posted ? 'bg-[#e5f8e9] text-[#248a3d]' : 'bg-[#248a3d] text-white'}`}
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            {posted ? 'Posted ✓' : 'Post'}
+          </button>
+        </div>
+
+        {/* Author row + caption */}
+        <div className="flex gap-3 px-4 pt-4 pb-3">
+          <div className="w-9 h-9 rounded-full bg-[#f97316] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
+            M
+          </div>
+          <div className="flex-1">
+            <p className="text-[13px] font-semibold text-[#1c1c1e] mb-1"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Marcus Hooy
+            </p>
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              rows={2}
+              placeholder="What's on your mind?"
+              className="w-full text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.35)] resize-none focus:outline-none leading-[20px]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            />
+          </div>
+        </div>
+
+        {/* Video thumbnail row */}
+        <div className="mx-4 mb-3 flex gap-3 items-center bg-[#f4f4f4] rounded-2xl p-2.5">
+          <div className="rounded-xl overflow-hidden bg-black flex-shrink-0" style={{ width: 48, aspectRatio: '9/16' }}>
+            <video src={balltraceVideo} className="w-full h-full object-cover" muted playsInline autoPlay loop />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-[13px] font-semibold text-[#1c1c1e] truncate"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Ball Trace Video
+            </p>
+            <p className="text-[11px] text-[rgba(60,60,67,0.45)]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Tap to preview
+            </p>
+          </div>
+          <span className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full flex-shrink-0">
+            {draft.tag}
+          </span>
+        </div>
+
+        {/* Post to */}
+        <div className="px-4 pb-4 border-t border-[#f0f0f0] pt-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.4)] mb-2"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Post to
+          </p>
+          <div className="flex gap-2 overflow-x-auto no-scrollbar">
+            {MY_COMMUNITIES.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => setSelectedCommunity(c)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold flex-shrink-0 transition-all"
+                style={{
+                  backgroundColor: selectedCommunity.id === c.id ? c.color : '#f4f4f4',
+                  color: selectedCommunity.id === c.id ? 'white' : '#1c1c1e',
+                  fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                }}>
+                {c.name.replace('\n', ' ')}
+              </button>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}
+
 export default function CommunitiesPage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
   const [tab, setTab] = useState('feed')       // 'feed' | 'communities'
+  const [showCompose, setShowCompose] = useState(!!state?.draft)
+  const [composeDraft] = useState(state?.draft || null)
   const [activeCommunity, setActiveCommunity] = useState(null)
   const [query, setQuery] = useState('')
   const [communities, setCommunities] = useState(ALL_COMMUNITIES)
@@ -527,6 +633,14 @@ export default function CommunitiesPage() {
       </div>
 
       <BottomNav />
+
+      {showCompose && composeDraft && (
+        <ComposeSheet
+          draft={composeDraft}
+          onClose={() => setShowCompose(false)}
+          onPost={() => setShowCompose(false)}
+        />
+      )}
     </div>
   )
 }

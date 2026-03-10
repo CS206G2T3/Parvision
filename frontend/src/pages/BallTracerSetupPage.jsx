@@ -1,7 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-
-const IMG_DRILL_THUMB = 'https://www.figma.com/api/mcp/asset/2151a0f3-738b-42a5-9908-a98fd32b027f'
+import ballTracerSetupImg from '../assets/balltracer-setup.png'
 
 export default function BallTracerSetupPage() {
   const navigate = useNavigate()
@@ -94,9 +93,9 @@ export default function BallTracerSetupPage() {
         <div
           ref={videoRef}
           className="relative rounded-2xl overflow-hidden w-full"
-          style={{ height: '320px', touchAction: 'none' }}
+          style={{ aspectRatio: '9/16', touchAction: 'none' }}
         >
-          <img src={IMG_DRILL_THUMB} alt="Swing video" className="w-full h-full object-cover" />
+          <img src={ballTracerSetupImg} alt="Swing video" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/10" />
 
           {/* Draggable marker */}
