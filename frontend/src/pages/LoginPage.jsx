@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const IMG_GOLF_ILLUSTRATION = 'https://www.figma.com/api/mcp/asset/64b12603-5224-4f20-abdd-913a646fd78e'
 const IMG_EMAIL_ICON = 'https://www.figma.com/api/mcp/asset/3c9764e1-5263-4c7f-ae7d-57fc6717d929'
@@ -8,24 +9,33 @@ const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-8
 const IMG_GB_FLAG = 'https://www.figma.com/api/mcp/asset/15fef1d1-f5ff-470f-934e-3a3367af82ab'
 const IMG_EXPAND_MORE = 'https://www.figma.com/api/mcp/asset/233ccfdb-a5de-4c86-a986-7df17bf0fd1c'
 
-// Demo credentials — swap these out when you wire up a real auth API
-const DEMO_PHONE = '03 339 251'
-const DEMO_PASSWORD = 'password123'
-
 export default function LoginPage() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
-    // TODO: replace with real API call
-    if (phone === DEMO_PHONE && password === DEMO_PASSWORD) {
-      setError(false)
-      navigate('/home')
-    } else {
+    setLoading(true)
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, password }),
+      })
+      if (res.ok) {
+        login(await res.json())
+        navigate('/home', { replace: true })
+      } else {
+        setError(true)
+      }
+    } catch {
       setError(true)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -137,16 +147,34 @@ export default function LoginPage() {
         {/* Login button */}
         <button
           type="submit"
-          className="w-full h-[56px] bg-[#248a3d] rounded-[16px] flex items-center justify-center mt-1 active:opacity-80 transition-opacity"
+          disabled={loading}
+          className="w-full h-[56px] bg-[#248a3d] rounded-[16px] flex items-center justify-center mt-1 active:opacity-80 transition-opacity disabled:opacity-60"
         >
           <span
             className="text-[20px] font-semibold leading-[25px] tracking-[0.38px] text-white"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
           >
-            Login
+            {loading ? 'Signing in…' : 'Login'}
           </span>
         </button>
       </form>
+
+      {/* Sign Up link */}
+      <div className="px-6 mt-4 flex justify-center">
+        <p
+          className="text-[13px] leading-[18px] tracking-[-0.078px] text-[rgba(60,60,67,0.6)]"
+          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+        >
+          Don&apos;t have an account?{' '}
+          <button
+            type="button"
+            onClick={() => navigate('/signup')}
+            className="font-semibold text-[#248a3d]"
+          >
+            Sign Up
+          </button>
+        </p>
+      </div>
 
       {/* Footer */}
       <div className="px-6 mt-auto pb-8 pt-6 flex-shrink-0">

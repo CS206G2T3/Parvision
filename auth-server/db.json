@@ -1,0 +1,32 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Demo User",
+      "phone": "03 339 251",
+      "password": "password123",
+      "createdAt": "2026-03-10T00:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "name": "Test",
+      "phone": "1234567890",
+      "password": "pass123",
+      "createdAt": "2026-03-10T14:22:01.481Z"
+    },
+    {
+      "id": 3,
+      "name": "Jared Yeo",
+      "phone": "86992693",
+      "password": "jaredyeo123",
+      "createdAt": "2026-03-10T14:26:04.913Z"
+    },
+    {
+      "id": 4,
+      "name": "Jaredyeo",
+      "phone": "86992694",
+      "password": "jaredyeo123",
+      "createdAt": "2026-03-10T14:29:33.708Z"
+    }
+  ]
+}
