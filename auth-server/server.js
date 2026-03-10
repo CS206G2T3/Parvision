@@ -41,14 +41,17 @@ server.post('/register', (req, res) => {
 })
 
 server.post('/login', (req, res) => {
-  const { phone, password } = req.body
+  const { identifier, password } = req.body
 
-  if (!phone || !password) {
+  if (!identifier || !password) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
   const db = router.db
-  const user = db.get('users').find({ phone, password }).value()
+  const users = db.get('users').value()
+  const user = users.find(u =>
+    (u.phone === identifier || u.name === identifier) && u.password === password
+  )
 
   if (!user) {
     return res.status(401).json({ error: 'Invalid credentials' })

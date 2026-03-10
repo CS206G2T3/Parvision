@@ -12,9 +12,10 @@ const IMG_EXPAND_MORE = 'https://www.figma.com/api/mcp/asset/233ccfdb-a5de-4c86-
 export default function LoginPage() {
   const navigate = useNavigate()
   const { login } = useAuth()
-  const [phone, setPhone] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleLogin = async (e) => {
@@ -24,11 +25,12 @@ export default function LoginPage() {
       const res = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, password }),
+        body: JSON.stringify({ identifier, password }),
       })
       if (res.ok) {
         login(await res.json())
-        navigate('/home', { replace: true })
+        setSuccess(true)
+        setTimeout(() => navigate('/home', { replace: true }), 1500)
       } else {
         setError(true)
       }
@@ -84,6 +86,15 @@ export default function LoginPage() {
         </p>
       </div>
 
+      {/* Success banner */}
+      {success && (
+        <div className="mx-6 mt-4 px-4 py-3 bg-[#f0fff4] border border-[#248a3d] rounded-[12px]">
+          <p className="text-[#248a3d] text-[14px] font-medium" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+            Login successful! Redirecting…
+          </p>
+        </div>
+      )}
+
       {/* Form */}
       <form onSubmit={handleLogin} className="px-6 mt-6 flex flex-col gap-4 flex-shrink-0">
 
@@ -92,9 +103,9 @@ export default function LoginPage() {
           <img src={IMG_EMAIL_ICON} alt="Email" className="w-6 h-6 flex-shrink-0 object-contain" />
           <input
             type="text"
-            value={phone}
-            onChange={(e) => { setPhone(e.target.value); setError(false) }}
-            placeholder="Name or phone number"
+            value={identifier}
+            onChange={(e) => { setIdentifier(e.target.value); setError(false) }}
+            placeholder="Username or phone number"
             className="flex-1 bg-transparent text-[16px] font-medium text-[#1c1c1e] placeholder-[rgba(60,60,67,0.6)] focus:outline-none"
             style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
           />

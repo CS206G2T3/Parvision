@@ -15,6 +15,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleSignUp = async (e) => {
@@ -43,7 +44,8 @@ export default function SignUpPage() {
       })
 
       if (res.status === 201) {
-        navigate('/login')
+        setSuccess(true)
+        setTimeout(() => navigate('/login'), 1500)
       } else if (res.status === 409) {
         setError('Phone number already registered')
       } else {
@@ -100,6 +102,15 @@ export default function SignUpPage() {
           Create your account to continue.
         </p>
       </div>
+
+      {/* Success banner */}
+      {success && (
+        <div className="mx-6 mt-4 px-4 py-3 bg-[#f0fff4] border border-[#248a3d] rounded-[12px]">
+          <p className="text-[#248a3d] text-[14px] font-medium" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+            Account created successfully! Redirecting to login…
+          </p>
+        </div>
+      )}
 
       {/* Error banner */}
       {error && (
