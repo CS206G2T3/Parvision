@@ -7,9 +7,16 @@ const IMG_DRILL_THUMB = warmup
 
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
-// Mock activity data for Feb 2025
-const ACTIVE_DAYS = new Set([3, 4, 5, 6, 7, 10, 11, 12, 13, 14, 17, 18, 19, 20, 21])
-const TODAY = 21
+const MONTH_NAMES = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+
+// Generate mock active days up to a given day in a month (roughly every other day)
+function generateActiveDays(totalDays, upToDay) {
+  const active = new Set()
+  for (let d = 1; d <= Math.min(totalDays, upToDay); d++) {
+    if (d % 2 === 1 || d % 7 === 0) active.add(d)
+  }
+  return active
+}
 
 const VIDEOS = [
   { id: 1, title: 'Dynamic Warm Up', duration: '15 min', thumb: IMG_DRILL_THUMB },
@@ -59,11 +66,30 @@ function VideoCard({ title, duration, thumb }) {
 
 export default function ActivityPage() {
   const navigate = useNavigate()
-  const [month] = useState('FEB 2025')
+  const now = new Date()
+  const [viewYear, setViewYear] = useState(now.getFullYear())
+  const [viewMonth, setViewMonth] = useState(now.getMonth()) // 0-indexed
 
-  // Build calendar grid (Feb 2025 starts on Saturday = index 5)
-  const startOffset = 5
-  const totalDays = 28
+  const isCurrentMonth = viewYear === now.getFullYear() && viewMonth === now.getMonth()
+  const today = isCurrentMonth ? now.getDate() : null
+  const totalDays = new Date(viewYear, viewMonth + 1, 0).getDate()
+  // getDay() returns 0=Sun..6=Sat; convert to Mon-first (0=Mon..6=Sun)
+  const firstDow = new Date(viewYear, viewMonth, 1).getDay()
+  const startOffset = (firstDow + 6) % 7
+  const activeDays = generateActiveDays(totalDays, today ?? totalDays)
+  const monthLabel = `${MONTH_NAMES[viewMonth]} ${viewYear}`
+
+  const goBack = () => {
+    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1) }
+    else setViewMonth(m => m - 1)
+  }
+  const goForward = () => {
+    const nextMonth = viewMonth === 11 ? 0 : viewMonth + 1
+    const nextYear = viewMonth === 11 ? viewYear + 1 : viewYear
+    if (nextYear > now.getFullYear() || (nextYear === now.getFullYear() && nextMonth > now.getMonth())) return
+    setViewMonth(nextMonth); if (viewMonth === 11) setViewYear(y => y + 1)
+  }
+
   const cells = []
   for (let i = 0; i < startOffset; i++) cells.push(null)
   for (let d = 1; d <= totalDays; d++) cells.push(d)
@@ -96,7 +122,7 @@ export default function ActivityPage() {
         <div className="mx-4 bg-white rounded-2xl p-4 shadow-sm">
           {/* Month nav */}
           <div className="flex items-center justify-between mb-3">
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#f4f4f4]">
+            <button onClick={goBack} className="w-7 h-7 flex items-center justify-center rounded-full bg-[#f4f4f4] active:opacity-60">
               <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
                 <path d="M7 1L1 7L7 13" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -105,9 +131,9 @@ export default function ActivityPage() {
               className="text-[15px] font-bold text-[#1c1c1e]"
               style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
             >
-              {month}
+              {monthLabel}
             </span>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-[#f4f4f4]">
+            <button onClick={goForward} className={`w-7 h-7 flex items-center justify-center rounded-full bg-[#f4f4f4] transition-opacity ${isCurrentMonth ? 'opacity-30 pointer-events-none' : 'active:opacity-60'}`}>
               <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
                 <path d="M1 1L7 7L1 13" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -135,8 +161,8 @@ export default function ActivityPage() {
                 <CalendarCell
                   key={di}
                   day={day}
-                  active={day && ACTIVE_DAYS.has(day)}
-                  today={day === TODAY}
+                  active={day && activeDays.has(day)}
+                  today={day === today}
                 />
               ))}
             </div>
@@ -146,7 +172,7 @@ export default function ActivityPage() {
         {/* Stats row */}
         <div className="mx-4 mt-3 flex gap-3">
           <div className="flex-1 bg-white rounded-2xl p-4 text-center">
-            <p className="text-[22px] font-bold text-[#f97316]">15</p>
+            <p className="text-[22px] font-bold text-[#f97316]">{activeDays.size}</p>
             <p className="text-[11px] text-[rgba(60,60,67,0.5)] mt-0.5 font-semibold uppercase tracking-[0.3px]">Active Days</p>
           </div>
           <div className="flex-1 bg-white rounded-2xl p-4 text-center">
