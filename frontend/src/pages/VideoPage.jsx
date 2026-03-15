@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import BottomNav from '../components/BottomNav'
 
-const IMG_DRILL_THUMB = 'https://www.figma.com/api/mcp/asset/2151a0f3-738b-42a5-9908-a98fd32b027f'
+import warmup from '../assets/warmup.jpeg'
+const IMG_DRILL_THUMB = warmup
 
 const VIDEOS = [
   { id: 1, title: 'Dynamic Warm Up', duration: '15 min', category: 'Warm Up', thumb: IMG_DRILL_THUMB },
@@ -39,6 +41,12 @@ function VideoCard({ title, duration, category, thumb }) {
 }
 
 export default function VideoPage() {
+  const [activeCategory, setActiveCategory] = useState('All')
+
+  const filtered = activeCategory === 'All'
+    ? VIDEOS
+    : VIDEOS.filter((v) => v.category === activeCategory)
+
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
 
@@ -59,11 +67,12 @@ export default function VideoPage() {
 
         {/* Category filter */}
         <div className="flex gap-2 mt-4 overflow-x-auto pb-1 -mx-5 px-5">
-          {CATEGORIES.map((cat, i) => (
+          {CATEGORIES.map((cat) => (
             <button
               key={cat}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold ${
-                i === 0
+              onClick={() => setActiveCategory(cat)}
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-[13px] font-semibold transition-colors ${
+                activeCategory === cat
                   ? 'bg-[#248a3d] text-white'
                   : 'bg-[#f4f4f4] text-[rgba(60,60,67,0.6)]'
               }`}
@@ -77,9 +86,29 @@ export default function VideoPage() {
 
       {/* Video grid */}
       <div className="flex-1 overflow-y-auto pb-[80px] px-4 mt-3">
-        <div className="flex flex-col gap-3">
-          {VIDEOS.map((v) => <VideoCard key={v.id} {...v} />)}
-        </div>
+        {filtered.length > 0 ? (
+          <div className="flex flex-col gap-3">
+            {filtered.map((v) => <VideoCard key={v.id} {...v} />)}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-16 gap-3">
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+              <span className="text-[28px]">🎬</span>
+            </div>
+            <p
+              className="text-[17px] font-semibold text-[#1c1c1e]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            >
+              No videos found
+            </p>
+            <p
+              className="text-[14px] text-[rgba(60,60,67,0.5)] text-center"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            >
+              Try a different category.
+            </p>
+          </div>
+        )}
       </div>
 
       <BottomNav />

@@ -5,7 +5,11 @@ import ballTracerSetupImg from '../assets/balltracer-setup.png'
 export default function BallTracerSetupPage() {
   const navigate = useNavigate()
   const [playing, setPlaying] = useState(false)
-  const [progress] = useState(22) // 0:02 of 0:09 = 22%
+  const [currentSec, setCurrentSec] = useState(2)
+  const TOTAL_SEC = 9
+  const progress = (currentSec / TOTAL_SEC) * 100
+  const stepBack = () => setCurrentSec((t) => Math.max(0, t - 1))
+  const stepForward = () => setCurrentSec((t) => Math.min(TOTAL_SEC, t + 1))
 
   // Marker position as % of container
   const [markerPos, setMarkerPos] = useState({ x: 50, y: 40 })
@@ -136,7 +140,7 @@ export default function BallTracerSetupPage() {
             className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 text-right flex-shrink-0"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
-            0:02
+            0:0{currentSec}
           </span>
           <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full">
             <div
@@ -156,7 +160,7 @@ export default function BallTracerSetupPage() {
 
         {/* Playback controls */}
         <div className="flex items-center justify-center gap-8 mt-4">
-          <button className="w-10 h-10 flex items-center justify-center">
+          <button onClick={stepBack} className="w-10 h-10 flex items-center justify-center active:opacity-60">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M22 22L10 14L22 6V22Z" fill="#248a3d" />
               <rect x="5" y="5" width="3.5" height="18" rx="1.5" fill="#248a3d" />
@@ -177,7 +181,7 @@ export default function BallTracerSetupPage() {
               </svg>
             )}
           </button>
-          <button className="w-10 h-10 flex items-center justify-center">
+          <button onClick={stepForward} className="w-10 h-10 flex items-center justify-center active:opacity-60">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M6 22L18 14L6 6V22Z" fill="#248a3d" />
               <rect x="19.5" y="5" width="3.5" height="18" rx="1.5" fill="#248a3d" />

@@ -113,6 +113,8 @@ function IssueRow({ type, title, detail, expanded, onToggle }) {
 /* ── Ball Tracer results ── */
 function BallTracerResults({ navigate }) {
   const [playing, setPlaying] = useState(false)
+  const [toast, setToast] = useState('')
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
   const [progress, setProgress] = useState(0)
   const [duration, setDuration] = useState(0)
   const [currentTime, setCurrentTime] = useState(0)
@@ -217,7 +219,7 @@ function BallTracerResults({ navigate }) {
           <span className="text-white text-[14px] font-semibold"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Share</span>
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80">
+        <button onClick={() => showToast('Saved to device')} className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 3V15M8 11L12 15L16 11M4 17V20H20V17" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" />
           </svg>
@@ -225,6 +227,11 @@ function BallTracerResults({ navigate }) {
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Download</span>
         </button>
       </div>
+      {toast && (
+        <div className="mx-5 mt-3 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full text-center pointer-events-none">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }
@@ -234,6 +241,15 @@ function SwingAnalyserResults({ navigate }) {
   const [expandedRight, setExpandedRight] = useState(null)
   const [expandedWrong, setExpandedWrong] = useState(null)
   const [playing, setPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(4)
+  const [toast, setToast] = useState('')
+  const DURATION = 9
+
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
+  const stepBack = () => setCurrentTime((t) => Math.max(0, t - 1))
+  const stepForward = () => setCurrentTime((t) => Math.min(DURATION, t + 1))
+  const formatTime = (s) => `0:${String(s).padStart(2, '0')}`
+  const progress = (currentTime / DURATION) * 100
 
   return (
     <div className="flex-1 overflow-y-auto pb-10">
@@ -245,16 +261,16 @@ function SwingAnalyserResults({ navigate }) {
 
       {/* Playback controls */}
       <div className="mx-5 mt-3 flex items-center gap-2">
-        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 text-right flex-shrink-0">0:04</span>
+        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 text-right flex-shrink-0">{formatTime(currentTime)}</span>
         <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full">
-          <div className="h-1 bg-[#248a3d] rounded-full relative" style={{ width: '50%' }}>
+          <div className="h-1 bg-[#248a3d] rounded-full relative" style={{ width: `${progress}%` }}>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[#248a3d] rounded-full -mr-1.5 shadow" />
           </div>
         </div>
-        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 flex-shrink-0">0:09</span>
+        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 flex-shrink-0">{formatTime(DURATION)}</span>
       </div>
       <div className="flex items-center justify-center gap-8 mt-2 mb-4">
-        <button className="w-10 h-10 flex items-center justify-center">
+        <button onClick={stepBack} className="w-10 h-10 flex items-center justify-center active:opacity-60">
           <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
             <path d="M20 20L9 13L20 6V20Z" fill="#248a3d" />
             <rect x="4" y="5" width="3" height="16" rx="1.5" fill="#248a3d" />
@@ -272,13 +288,18 @@ function SwingAnalyserResults({ navigate }) {
             </svg>
           )}
         </button>
-        <button className="w-10 h-10 flex items-center justify-center">
+        <button onClick={stepForward} className="w-10 h-10 flex items-center justify-center active:opacity-60">
           <svg width="24" height="24" viewBox="0 0 26 26" fill="none">
             <path d="M6 20L17 13L6 6V20Z" fill="#248a3d" />
             <rect x="19" y="5" width="3" height="16" rx="1.5" fill="#248a3d" />
           </svg>
         </button>
       </div>
+      {toast && (
+        <div className="mx-5 mb-2 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full text-center pointer-events-none">
+          {toast}
+        </div>
+      )}
 
       {/* Score pill */}
       <div className="mx-5 mb-5">
@@ -402,14 +423,16 @@ function SwingAnalyserResults({ navigate }) {
 
       {/* Action buttons */}
       <div className="mx-5 flex gap-3">
-        <button className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80">
+        <button
+          onClick={() => navigate('/community', { state: { draft: { type: 'swing-analyser', caption: 'Check out my swing analysis! 🏌️ #SwingAnalyzer', tag: 'Swing Analyzer' } } })}
+          className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M4 12V20H20V12M12 3V15M8 11L12 15L16 11" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span className="text-white text-[14px] font-semibold"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Share Swing</span>
         </button>
-        <button className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80">
+        <button onClick={() => showToast('Saved to device')} className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 3V15M8 11L12 15L16 11M4 17V20H20V17" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" />
           </svg>

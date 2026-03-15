@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import patrickAvatar from '../assets/patrick.png'
+import { useAuth } from '../context/AuthContext'
 
 function SettingsRow({ icon, label, onPress, danger }) {
   return (
@@ -45,6 +47,13 @@ function Divider() {
 
 export default function ProfilePage() {
   const navigate = useNavigate()
+  const { logout } = useAuth()
+  const [toast, setToast] = useState('')
+
+  const showToast = (msg) => {
+    setToast(msg)
+    setTimeout(() => setToast(''), 2500)
+  }
 
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
@@ -85,31 +94,31 @@ export default function ProfilePage() {
 
         <SectionHeader title="Account Settings" />
         <div className="bg-white rounded-2xl mx-4 overflow-hidden">
-          <SettingsRow icon="👤" label="Account Information" />
+          <SettingsRow icon="👤" label="Account Information" onPress={() => showToast('Coming soon')} />
           <Divider />
-          <SettingsRow icon="🔒" label="Password and Security" />
+          <SettingsRow icon="🔒" label="Password and Security" onPress={() => navigate('/forgot-password')} />
           <Divider />
-          <SettingsRow icon="⭐" label="Membership" />
+          <SettingsRow icon="⭐" label="Membership" onPress={() => showToast('Coming soon')} />
         </div>
 
         <SectionHeader title="Community Settings" />
         <div className="bg-white rounded-2xl mx-4 overflow-hidden">
-          <SettingsRow icon="👥" label="Friends & Social" />
+          <SettingsRow icon="👥" label="Friends & Social" onPress={() => showToast('Coming soon')} />
           <Divider />
-          <SettingsRow icon="💬" label="Direct Messages" />
+          <SettingsRow icon="💬" label="Direct Messages" onPress={() => showToast('Coming soon')} />
         </div>
 
         <SectionHeader title="Others" />
         <div className="bg-white rounded-2xl mx-4 overflow-hidden">
-          <SettingsRow icon="❓" label="FAQ" />
+          <SettingsRow icon="❓" label="FAQ" onPress={() => showToast('Coming soon')} />
           <Divider />
-          <SettingsRow icon="📞" label="Contact us" />
+          <SettingsRow icon="📞" label="Contact us" onPress={() => showToast('Coming soon')} />
           <Divider />
           <SettingsRow
             icon="🚪"
             label="Log out"
             danger
-            onPress={() => navigate('/login')}
+            onPress={() => { logout(); navigate('/login') }}
           />
         </div>
 
@@ -117,6 +126,12 @@ export default function ProfilePage() {
       </div>
 
       <BottomNav />
+
+      {toast && (
+        <div className="absolute bottom-[90px] left-1/2 -translate-x-1/2 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

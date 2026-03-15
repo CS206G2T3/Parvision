@@ -1,11 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
-const IMG_ARROW_IMPORT = 'https://www.figma.com/api/mcp/asset/3f0c5878-588a-43bc-ab57-aa62c7f94e13'
-const IMG_WAREHOUSE = 'https://www.figma.com/api/mcp/asset/f8870019-6cee-42af-bdef-6c309c498110'
-const IMG_SPORTS_GOLF = 'https://www.figma.com/api/mcp/asset/dbd6b671-258d-41d8-b337-e40371edb4a8'
-const IMG_SCANNER = 'https://www.figma.com/api/mcp/asset/cdc9525f-4e22-4fcd-bf9c-e98a524cacd4'
+import { IMG_ARROW_BACK, IMG_ARROW_IMPORT, IMG_WAREHOUSE, IMG_SPORTS_GOLF, IMG_SCANNER } from '../icons'
 
 // Mock equipment list — replace with API data
 const EQUIPMENT = [

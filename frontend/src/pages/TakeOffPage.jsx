@@ -1,10 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
-const IMG_TAKE_OFF_PLAY = 'https://www.figma.com/api/mcp/asset/da2d40a8-6cdc-4b63-a5f8-c333b6fbbe4e'
-const IMG_WAREHOUSE = 'https://www.figma.com/api/mcp/asset/f8870019-6cee-42af-bdef-6c309c498110'
-const IMG_SPORTS_GOLF = 'https://www.figma.com/api/mcp/asset/dbd6b671-258d-41d8-b337-e40371edb4a8'
+import { IMG_ARROW_BACK, IMG_TAKE_OFF_PLAY, IMG_WAREHOUSE, IMG_SPORTS_GOLF } from '../icons'
 
 // Mock equipment available to take out — replace with API data
 const EQUIPMENT = [

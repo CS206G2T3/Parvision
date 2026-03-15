@@ -18,6 +18,7 @@ import UploadResultsPage from './pages/UploadResultsPage'
 import GalleryPage from './pages/GalleryPage'
 import BallTracerSetupPage from './pages/BallTracerSetupPage'
 import CommunitiesPage from './pages/CommunitiesPage'
+import DrillDetailPage from './pages/DrillDetailPage'
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="/activity" element={<ProtectedRoute><ActivityPage /></ProtectedRoute>} />
               <Route path="/video" element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
               <Route path="/drills" element={<ProtectedRoute><DrillsPage /></ProtectedRoute>} />
+              <Route path="/drills/:id" element={<ProtectedRoute><DrillDetailPage /></ProtectedRoute>} />
               <Route path="/upload" element={<ProtectedRoute><UploadPage /></ProtectedRoute>} />
               <Route path="/upload/gallery" element={<ProtectedRoute><GalleryPage /></ProtectedRoute>} />
               <Route path="/upload/select-mode" element={<ProtectedRoute><UploadSelectModePage /></ProtectedRoute>} />

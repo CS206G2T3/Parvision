@@ -1,15 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
-const IMG_GB_FLAG = 'https://www.figma.com/api/mcp/asset/15fef1d1-f5ff-470f-934e-3a3367af82ab'
-const IMG_EXPAND_MORE = 'https://www.figma.com/api/mcp/asset/233ccfdb-a5de-4c86-a986-7df17bf0fd1c'
-const IMG_EMAIL_ICON = 'https://www.figma.com/api/mcp/asset/3c9764e1-5263-4c7f-ae7d-57fc6717d929'
+import { IMG_ARROW_BACK, IMG_GB_FLAG, IMG_EXPAND_MORE, IMG_EMAIL_ICON } from '../icons'
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate()
   const [phone, setPhone] = useState('')
   const [sent, setSent] = useState(false)
+  const [toast, setToast] = useState('')
+  const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -115,11 +114,17 @@ export default function ForgotPasswordPage() {
           style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
         >
           © 2023 F2Tech. All rights reserved{' '}
-          <button type="button" className="font-semibold text-[#248a3d]">Terms &amp; Conditions</button>
+          <button type="button" onClick={() => showToast('Coming soon')} className="font-semibold text-[#248a3d]">Terms &amp; Conditions</button>
           {' '}and{' '}
-          <button type="button" className="font-semibold text-[#248a3d]">Privacy Policy</button>
+          <button type="button" onClick={() => showToast('Coming soon')} className="font-semibold text-[#248a3d]">Privacy Policy</button>
         </p>
       </div>
+
+      {toast && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

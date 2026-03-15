@@ -25,6 +25,10 @@ export default function GalleryPage() {
 
   const toggle = (id) => setSelected((prev) => (prev === id ? null : id))
 
+  const filteredItems = query.trim() === ''
+    ? GALLERY_ITEMS
+    : GALLERY_ITEMS.filter((item) => item.type.includes(query.toLowerCase().trim()))
+
   const handleDone = () => {
     if (!selected) return
     navigate('/upload/select-mode')
@@ -88,7 +92,7 @@ export default function GalleryPage() {
       {/* Grid */}
       <div className="flex-1 overflow-y-auto pb-[72px]">
         <div className="grid grid-cols-3 gap-[2px]">
-          {GALLERY_ITEMS.map((item) => {
+          {filteredItems.map((item) => {
             const isSelected = selected === item.id
             return (
               <button

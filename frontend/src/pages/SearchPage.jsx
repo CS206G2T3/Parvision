@@ -1,14 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const IMG_HOME_ICON = 'https://www.figma.com/api/mcp/asset/5bc9bbe7-b586-48da-b84a-3ce14bf60e4b'
-const IMG_SEARCH_ICON = 'https://www.figma.com/api/mcp/asset/dcf5294f-c990-42b1-8668-cea7358acbf2'
-const IMG_SCANNER = 'https://www.figma.com/api/mcp/asset/cdc9525f-4e22-4fcd-bf9c-e98a524cacd4'
-const IMG_TAKE_OFF_PLAY = 'https://www.figma.com/api/mcp/asset/da2d40a8-6cdc-4b63-a5f8-c333b6fbbe4e'
-const IMG_WAREHOUSE = 'https://www.figma.com/api/mcp/asset/f8870019-6cee-42af-bdef-6c309c498110'
-const IMG_SPORTS_GOLF = 'https://www.figma.com/api/mcp/asset/dbd6b671-258d-41d8-b337-e40371edb4a8'
-const IMG_RUNNING_ERRORS = 'https://www.figma.com/api/mcp/asset/cd37a274-1efe-4338-a22a-ebd9dc17a86f'
-const IMG_DIRECTIONS = 'https://www.figma.com/api/mcp/asset/ab67a061-c891-4479-8b6d-4550d6f97c1e'
+import { IMG_HOME_ICON, IMG_SEARCH_ICON, IMG_SCANNER, IMG_WAREHOUSE, IMG_SPORTS_GOLF, IMG_RUNNING_ERRORS, IMG_DIRECTIONS } from '../icons'
 
 // Mock data — replace with API data
 const ALL_ITEMS = [

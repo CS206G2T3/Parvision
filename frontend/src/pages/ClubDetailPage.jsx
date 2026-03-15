@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 
-const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
+import { IMG_ARROW_BACK } from '../icons'
 
 // Mock club data — replace with API
 const CLUB_DATA = {

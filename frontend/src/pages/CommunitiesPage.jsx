@@ -371,7 +371,12 @@ export default function CommunitiesPage() {
   const { state } = useLocation()
   const [tab, setTab] = useState('feed')       // 'feed' | 'communities'
   const [showCompose, setShowCompose] = useState(!!state?.draft)
-  const [composeDraft] = useState(state?.draft || null)
+  const [composeDraft, setComposeDraft] = useState(state?.draft || null)
+
+  const openCompose = (draft = { type: 'swing-analyser', caption: '', tag: 'Swing Analyzer' }) => {
+    setComposeDraft(draft)
+    setShowCompose(true)
+  }
   const [activeCommunity, setActiveCommunity] = useState(null)
   const [query, setQuery] = useState('')
   const [communities, setCommunities] = useState(ALL_COMMUNITIES)
@@ -403,14 +408,14 @@ export default function CommunitiesPage() {
             Communities
           </h1>
           <div className="flex items-center gap-2.5">
-            <button className="w-8 h-8 flex items-center justify-center text-[#1c1c1e]">
+            <button onClick={() => setTab('communities')} className="w-8 h-8 flex items-center justify-center text-[#1c1c1e]">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                 stroke="rgba(60,60,67,0.6)" strokeWidth="2" strokeLinecap="round">
                 <circle cx="11" cy="11" r="8" />
                 <path d="M21 21l-4.35-4.35" />
               </svg>
             </button>
-            <button className="w-8 h-8 bg-[#248a3d] rounded-full flex items-center justify-center shadow-sm">
+            <button onClick={() => openCompose()} className="w-8 h-8 bg-[#248a3d] rounded-full flex items-center justify-center shadow-sm">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
                 stroke="white" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="12" y1="5" x2="12" y2="19" />
@@ -634,7 +639,7 @@ export default function CommunitiesPage() {
 
       <BottomNav />
 
-      {showCompose && composeDraft && (
+      {showCompose && composeDraft !== undefined && (
         <ComposeSheet
           draft={composeDraft}
           onClose={() => setShowCompose(false)}

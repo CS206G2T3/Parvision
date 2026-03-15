@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 
@@ -48,7 +49,11 @@ function Divider() {
 
 export default function CollectionPage() {
   const navigate = useNavigate()
+  const [query, setQuery] = useState('')
   const totalClubs = CLUB_CATEGORIES.reduce((sum, c) => sum + c.count, 0)
+  const filtered = CLUB_CATEGORIES.filter((c) =>
+    c.label.toLowerCase().includes(query.toLowerCase())
+  )
 
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
@@ -81,12 +86,17 @@ export default function CollectionPage() {
             <circle cx="7" cy="7" r="5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
             <path d="M11 11L14 14" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
-          <span
-            className="text-[14px] text-[rgba(60,60,67,0.4)]"
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search"
+            className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-          >
-            Search
-          </span>
+          />
+          {query.length > 0 && (
+            <button onClick={() => setQuery('')} className="text-[rgba(60,60,67,0.5)] text-[18px] leading-none">×</button>
+          )}
         </div>
       </div>
 
@@ -99,17 +109,29 @@ export default function CollectionPage() {
           Clubs bag ({totalClubs} clubs)
         </p>
 
-        <div className="bg-white rounded-2xl overflow-hidden">
-          {CLUB_CATEGORIES.map((cat, i) => (
-            <div key={cat.id}>
-              <CategoryRow
-                {...cat}
-                onPress={() => navigate(`/collection/${cat.id}`)}
-              />
-              {i < CLUB_CATEGORIES.length - 1 && <Divider />}
-            </div>
-          ))}
-        </div>
+        {filtered.length > 0 ? (
+          <div className="bg-white rounded-2xl overflow-hidden">
+            {filtered.map((cat, i) => (
+              <div key={cat.id}>
+                <CategoryRow
+                  {...cat}
+                  onPress={() => navigate(`/collection/${cat.id}`)}
+                />
+                {i < filtered.length - 1 && <Divider />}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center pt-16 gap-3">
+            <span className="text-[32px]">🔍</span>
+            <p
+              className="text-[15px] font-semibold text-[#1c1c1e]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            >
+              No clubs found
+            </p>
+          </div>
+        )}
       </div>
 
       <BottomNav />

@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
-const IMG_DRILL_THUMB = 'https://www.figma.com/api/mcp/asset/2151a0f3-738b-42a5-9908-a98fd32b027f'
+import warmup from '../assets/warmup.jpeg'
+import { IMG_ARROW_BACK } from '../icons'
+const IMG_DRILL_THUMB = warmup
 
 const CATEGORIES = ['All', 'Warm Up', 'Driving', 'Irons', 'Putting', 'Short Game', 'Fitness']
 
@@ -25,10 +26,10 @@ const LEVEL_COLORS = {
   Advanced: { bg: 'bg-[#ffebe5]', text: 'text-[#ff3b30]' },
 }
 
-function DrillCard({ title, duration, category, level, thumb }) {
+function DrillCard({ id, title, duration, category, level, thumb, onClick }) {
   const levelColor = LEVEL_COLORS[level] || LEVEL_COLORS.Beginner
   return (
-    <div className="relative rounded-2xl overflow-hidden h-[160px] w-full">
+    <div onClick={onClick} className="relative rounded-2xl overflow-hidden h-[160px] w-full cursor-pointer active:opacity-90 transition-opacity">
       <img src={thumb} alt={title} className="w-full h-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
 
@@ -138,7 +139,7 @@ export default function DrillsPage() {
         {filtered.length > 0 ? (
           <div className="flex flex-col gap-3">
             {filtered.map((drill) => (
-              <DrillCard key={drill.id} {...drill} />
+              <DrillCard key={drill.id} {...drill} onClick={() => navigate(`/drills/${drill.id}`)} />
             ))}
           </div>
         ) : (
