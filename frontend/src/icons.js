@@ -1,4 +1,11 @@
 // Shared icon constants — replaces Figma API asset URLs
+import callPng from './assets/call.png'
+import face5Png from './assets/face_5.png'
+import frame14913Png from './assets/Frame 14913.png'
+
+export const IMG_CALL_ICON = callPng
+export const IMG_FACE_ICON = face5Png
+export const IMG_LANGUAGE_SELECTOR = frame14913Png
 
 // Back arrow (left chevron)
 export const IMG_ARROW_BACK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='18' viewBox='0 0 10 18' fill='none'%3E%3Cpath d='M9 1L1 9L9 17' stroke='%231c1c1e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"
