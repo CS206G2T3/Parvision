@@ -2,8 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-import { IMG_EMAIL_ICON, IMG_LOCK_ICON, IMG_ARROW_BACK, IMG_GB_FLAG, IMG_EXPAND_MORE } from '../icons'
 const IMG_GOLF_ILLUSTRATION = 'https://www.figma.com/api/mcp/asset/64b12603-5224-4f20-abdd-913a646fd78e'
+const IMG_EMAIL_ICON = 'https://www.figma.com/api/mcp/asset/3c9764e1-5263-4c7f-ae7d-57fc6717d929'
+const IMG_LOCK_ICON = 'https://www.figma.com/api/mcp/asset/79a192b0-d0e4-4932-9ac4-0d325b84a446'
+const IMG_ARROW_BACK = 'https://www.figma.com/api/mcp/asset/286037a0-e4af-450d-85e2-d8e666de88b1'
+const IMG_GB_FLAG = 'https://www.figma.com/api/mcp/asset/15fef1d1-f5ff-470f-934e-3a3367af82ab'
+const IMG_EXPAND_MORE = 'https://www.figma.com/api/mcp/asset/233ccfdb-a5de-4c86-a986-7df17bf0fd1c'
 
 export default function LoginPage() {
   const navigate = useNavigate()
