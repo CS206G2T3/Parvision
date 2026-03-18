@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
-import golfIllustration from '../assets/foursome.png'
 import { IMG_EMAIL_ICON, IMG_LOCK_ICON, IMG_ARROW_BACK, IMG_GB_FLAG, IMG_EXPAND_MORE } from '../icons'
-const IMG_GOLF_ILLUSTRATION = golfIllustration
+const IMG_GOLF_ILLUSTRATION = 'https://www.figma.com/api/mcp/asset/64b12603-5224-4f20-abdd-913a646fd78e'
 
 export default function LoginPage() {
   const navigate = useNavigate()
