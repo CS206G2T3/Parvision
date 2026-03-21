@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 
 import warmup from '../assets/warmup.jpeg'
-const IMG_DRILL_THUMB = warmup
+import drillPutting from '../assets/drill_putting.png'
+import drillFullSwing from '../assets/drill_full_swing.png'
 
 const DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
 
@@ -19,9 +20,9 @@ function generateActiveDays(totalDays, upToDay) {
 }
 
 const VIDEOS = [
-  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', thumb: IMG_DRILL_THUMB },
-  { id: 2, title: 'Putting Fundamentals', duration: '22 min', thumb: IMG_DRILL_THUMB },
-  { id: 3, title: 'Iron Swing Technique', duration: '18 min', thumb: IMG_DRILL_THUMB },
+  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', thumb: warmup },
+  { id: 2, title: 'Putting Fundamentals', duration: '22 min', thumb: drillPutting },
+  { id: 3, title: 'Iron Swing Technique', duration: '18 min', thumb: drillFullSwing },
 ]
 
 function CalendarCell({ day, active, today }) {
