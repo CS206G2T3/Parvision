@@ -2,22 +2,27 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import warmup from '../assets/warmup.jpeg'
+import drillWarmUpGroup from '../assets/drill_warm_up_group.png'
+import drillTechniqueReview from '../assets/drill_technique_review.png'
+import drillFullSwing from '../assets/drill_full_swing.png'
+import drillShortGame from '../assets/drill_short_game.png'
+import drillDriving from '../assets/drill_driving.png'
+import drillPutting from '../assets/drill_putting.png'
+import drillBunker from '../assets/drill_bunker.png'
 import { IMG_ARROW_BACK } from '../icons'
-const IMG_DRILL_THUMB = warmup
 
 const CATEGORIES = ['All', 'Warm Up', 'Driving', 'Irons', 'Putting', 'Short Game', 'Fitness']
 
 const DRILLS = [
-  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', category: 'Warm Up', level: 'Beginner', thumb: IMG_DRILL_THUMB },
-  { id: 2, title: 'Driver Power Drill', duration: '20 min', category: 'Driving', level: 'Intermediate', thumb: IMG_DRILL_THUMB },
-  { id: 3, title: 'Iron Swing Technique', duration: '18 min', category: 'Irons', level: 'Intermediate', thumb: IMG_DRILL_THUMB },
-  { id: 4, title: 'Putting Fundamentals', duration: '22 min', category: 'Putting', level: 'Beginner', thumb: IMG_DRILL_THUMB },
-  { id: 5, title: 'Chipping Around The Green', duration: '12 min', category: 'Short Game', level: 'Beginner', thumb: IMG_DRILL_THUMB },
-  { id: 6, title: 'Bunker Shot Basics', duration: '14 min', category: 'Short Game', level: 'Intermediate', thumb: IMG_DRILL_THUMB },
-  { id: 7, title: 'Long Iron Control', duration: '25 min', category: 'Irons', level: 'Advanced', thumb: IMG_DRILL_THUMB },
-  { id: 8, title: 'Distance Putting', duration: '17 min', category: 'Putting', level: 'Intermediate', thumb: IMG_DRILL_THUMB },
-  { id: 9, title: 'Core Strength For Golf', duration: '30 min', category: 'Fitness', level: 'Beginner', thumb: IMG_DRILL_THUMB },
-  { id: 10, title: 'Full Swing Sequence', duration: '28 min', category: 'Driving', level: 'Advanced', thumb: IMG_DRILL_THUMB },
+  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', category: 'Warm Up', level: 'Beginner', thumb: warmup },
+  { id: 2, title: 'Driver Power Drill', duration: '20 min', category: 'Driving', level: 'Intermediate', thumb: drillDriving },
+  { id: 3, title: 'Iron Swing Technique', duration: '18 min', category: 'Irons', level: 'Intermediate', thumb: drillFullSwing },
+  { id: 4, title: 'Putting Fundamentals', duration: '22 min', category: 'Putting', level: 'Beginner', thumb: drillPutting },
+  { id: 5, title: 'Chipping Around The Green', duration: '12 min', category: 'Short Game', level: 'Beginner', thumb: drillShortGame },
+  { id: 6, title: 'Bunker Shot Basics', duration: '14 min', category: 'Short Game', level: 'Intermediate', thumb: drillBunker },
+  { id: 7, title: 'Long Iron Control', duration: '25 min', category: 'Irons', level: 'Advanced', thumb: drillFullSwing },
+  { id: 8, title: 'Core Strength For Golf', duration: '30 min', category: 'Fitness', level: 'Beginner', thumb: drillWarmUpGroup },
+  { id: 9, title: 'Full Swing Sequence', duration: '28 min', category: 'Driving', level: 'Advanced', thumb: drillTechniqueReview },
 ]
 
 const LEVEL_COLORS = {

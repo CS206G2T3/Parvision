@@ -1,20 +1,25 @@
 import { useNavigate, useParams } from 'react-router-dom'
 
 import warmup from '../assets/warmup.jpeg'
+import drillWarmUpGroup from '../assets/drill_warm_up_group.png'
+import drillTechniqueReview from '../assets/drill_technique_review.png'
+import drillFullSwing from '../assets/drill_full_swing.png'
+import drillShortGame from '../assets/drill_short_game.png'
+import drillDriving from '../assets/drill_driving.png'
+import drillPutting from '../assets/drill_putting.png'
+import drillBunker from '../assets/drill_bunker.png'
 import { IMG_ARROW_BACK } from '../icons'
-const IMG_DRILL_THUMB = warmup
 
 const DRILLS = [
-  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', category: 'Warm Up', level: 'Beginner', thumb: IMG_DRILL_THUMB, description: 'A full-body warm-up routine designed to prepare your muscles and joints for a round of golf. Includes dynamic stretches, rotational movements, and light cardio.' },
-  { id: 2, title: 'Driver Power Drill', duration: '20 min', category: 'Driving', level: 'Intermediate', thumb: IMG_DRILL_THUMB, description: 'Maximise your driving distance with this power-focused drill. Focus on hip rotation, lag, and release through the impact zone.' },
-  { id: 3, title: 'Iron Swing Technique', duration: '18 min', category: 'Irons', level: 'Intermediate', thumb: IMG_DRILL_THUMB, description: 'Build a consistent iron swing with drills targeting ball-first contact, proper divot pattern, and controlled trajectory.' },
-  { id: 4, title: 'Putting Fundamentals', duration: '22 min', category: 'Putting', level: 'Beginner', thumb: IMG_DRILL_THUMB, description: 'Master the basics of putting: alignment, grip pressure, stroke tempo, and reading simple breaks on the green.' },
-  { id: 5, title: 'Chipping Around The Green', duration: '12 min', category: 'Short Game', level: 'Beginner', thumb: IMG_DRILL_THUMB, description: 'Learn to chip with confidence using a consistent setup, controlled swing, and proper club selection for various lies.' },
-  { id: 6, title: 'Bunker Shot Basics', duration: '14 min', category: 'Short Game', level: 'Intermediate', thumb: IMG_DRILL_THUMB, description: 'Take the fear out of bunkers by mastering the splash shot — open face, steep swing, and accelerating through the sand.' },
-  { id: 7, title: 'Long Iron Control', duration: '25 min', category: 'Irons', level: 'Advanced', thumb: IMG_DRILL_THUMB, description: 'Advanced techniques for controlling trajectory and distance with long irons, including punch shots and controlled fades.' },
-  { id: 8, title: 'Distance Putting', duration: '17 min', category: 'Putting', level: 'Intermediate', thumb: IMG_DRILL_THUMB, description: 'Eliminate three-putts by developing better distance control from 20–50 feet using rhythm-based stroke drills.' },
-  { id: 9, title: 'Core Strength For Golf', duration: '30 min', category: 'Fitness', level: 'Beginner', thumb: IMG_DRILL_THUMB, description: 'A golf-specific core workout that builds rotational power and stability to improve your swing speed and injury resilience.' },
-  { id: 10, title: 'Full Swing Sequence', duration: '28 min', category: 'Driving', level: 'Advanced', thumb: IMG_DRILL_THUMB, description: 'A comprehensive breakdown of the full swing from takeaway to follow-through, with drills for each phase of the motion.' },
+  { id: 1, title: 'Dynamic Warm Up', duration: '15 min', category: 'Warm Up', level: 'Beginner', thumb: warmup, description: 'A full-body warm-up routine designed to prepare your muscles and joints for a round of golf. Includes dynamic stretches, rotational movements, and light cardio.' },
+  { id: 2, title: 'Driver Power Drill', duration: '20 min', category: 'Driving', level: 'Intermediate', thumb: drillDriving, description: 'Maximise your driving distance with this power-focused drill. Focus on hip rotation, lag, and release through the impact zone.' },
+  { id: 3, title: 'Iron Swing Technique', duration: '18 min', category: 'Irons', level: 'Intermediate', thumb: drillFullSwing, description: 'Build a consistent iron swing with drills targeting ball-first contact, proper divot pattern, and controlled trajectory.' },
+  { id: 4, title: 'Putting Fundamentals', duration: '22 min', category: 'Putting', level: 'Beginner', thumb: drillPutting, description: 'Master the basics of putting: alignment, grip pressure, stroke tempo, and reading simple breaks on the green.' },
+  { id: 5, title: 'Chipping Around The Green', duration: '12 min', category: 'Short Game', level: 'Beginner', thumb: drillShortGame, description: 'Learn to chip with confidence using a consistent setup, controlled swing, and proper club selection for various lies.' },
+  { id: 6, title: 'Bunker Shot Basics', duration: '14 min', category: 'Short Game', level: 'Intermediate', thumb: drillBunker, description: 'Take the fear out of bunkers by mastering the splash shot — open face, steep swing, and accelerating through the sand.' },
+  { id: 7, title: 'Long Iron Control', duration: '25 min', category: 'Irons', level: 'Advanced', thumb: drillFullSwing, description: 'Advanced techniques for controlling trajectory and distance with long irons, including punch shots and controlled fades.' },
+  { id: 8, title: 'Core Strength For Golf', duration: '30 min', category: 'Fitness', level: 'Beginner', thumb: drillWarmUpGroup, description: 'A golf-specific core workout that builds rotational power and stability to improve your swing speed and injury resilience.' },
+  { id: 9, title: 'Full Swing Sequence', duration: '28 min', category: 'Driving', level: 'Advanced', thumb: drillTechniqueReview, description: 'A comprehensive breakdown of the full swing from takeaway to follow-through, with drills for each phase of the motion.' },
 ]
 
 const LEVEL_COLORS = {
