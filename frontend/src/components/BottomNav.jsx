@@ -84,7 +84,7 @@ export default function BottomNav() {
   const { pathname } = useLocation()
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#f0f0f0] pb-safe z-50">
+    <div className="bottom-nav-bar bg-white border-t border-[#f0f0f0] pb-safe z-50">
       <div className="flex items-center justify-around h-[60px] px-2">
         {NAV_ITEMS.map(({ path, Icon }) => {
           const active = pathname === path || pathname.startsWith(path + '/')
