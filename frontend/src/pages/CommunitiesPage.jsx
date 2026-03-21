@@ -226,8 +226,8 @@ function CommentSheet({ post, comments, onClose, onAddComment }) {
 
         {/* Input row */}
         <div className="flex-shrink-0 border-t border-[#f0f0f0] px-4 py-3 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#f97316] flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0">
-            M
+          <div className="w-8 h-8 rounded-full bg-[#409cff] flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0">
+            J
           </div>
           <div className="flex-1 flex items-center bg-[#f4f4f4] rounded-full px-4 h-[36px]">
             <input
@@ -471,13 +471,13 @@ function ComposeSheet({ draft, onClose, onPost }) {
 
         {/* Author row + caption */}
         <div className="flex gap-3 px-4 pt-4 pb-3">
-          <div className="w-9 h-9 rounded-full bg-[#f97316] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
-            M
+          <div className="w-9 h-9 rounded-full bg-[#409cff] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
+            J
           </div>
           <div className="flex-1">
             <p className="text-[13px] font-semibold text-[#1c1c1e] mb-1"
               style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
-              Marcus Hooy
+              Jared Mango
             </p>
             <textarea
               value={caption}
@@ -558,9 +558,9 @@ export default function CommunitiesPage() {
       community: community.name.replace('\n', ' '),
       communityColor: community.color,
       communityAbbr: community.abbr,
-      user: 'Marcus Hooy',
-      avatarColor: '#f97316',
-      avatarLetter: 'M',
+      user: 'Jared Mango',
+      avatarColor: '#409cff',
+      avatarLetter: 'J',
       time: 'just now',
       body: caption.trim(),
       likes: 0,
@@ -593,9 +593,9 @@ export default function CommunitiesPage() {
           ...(prev[postId] || []),
           {
             id: Date.now(),
-            user: 'Marcus Hooy',
-            avatarColor: '#f97316',
-            avatarLetter: 'M',
+            user: 'Jared Mango',
+            avatarColor: '#409cff',
+            avatarLetter: 'J',
             time: 'just now',
             text,
           },
