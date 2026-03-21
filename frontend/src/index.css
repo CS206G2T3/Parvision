@@ -44,3 +44,21 @@ html, body, #root {
     box-shadow: none;
   }
 }
+
+/* Bottom nav: fixed on mobile (stays visible while scrolling in WebView),
+   constrained to phone frame width on desktop */
+.bottom-nav-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+@media (min-width: 431px) {
+  .bottom-nav-bar {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 393px;
+  }
+}
