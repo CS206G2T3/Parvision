@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
+import swingImg from '../assets/swing.png'
+import foursomeImg from '../assets/foursome.png'
 
 const PREVIOUS_UPLOADS = [
-  { id: 1, title: 'Friday Night Iron Swing', date: 'Feb 14, 2025', duration: '0:14' },
-  { id: 2, title: 'Chill Range Zero', date: 'Feb 10, 2025', duration: '0:09' },
+  { id: 1, title: 'Friday Night Iron Swing', date: 'Feb 14, 2025', duration: '0:14', thumb: swingImg },
+  { id: 2, title: 'Chill Range Zero', date: 'Feb 10, 2025', duration: '0:09', thumb: foursomeImg },
 ]
 
 export default function UploadPage() {
@@ -109,15 +111,19 @@ export default function UploadPage() {
             {PREVIOUS_UPLOADS.map((upload) => (
               <button
                 key={upload.id}
-                onClick={() => navigate('/upload/select-mode')}
+                onClick={() => navigate('/upload/select-mode', { state: { thumb: upload.thumb } })}
                 className="flex items-center gap-3 bg-[#f4f4f4] rounded-2xl p-3 w-full text-left active:opacity-80 transition-opacity"
               >
-                {/* Thumbnail placeholder */}
-                <div className="w-[72px] h-[54px] bg-[#c7c7cc] rounded-xl flex-shrink-0 flex items-center justify-center overflow-hidden">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="9" fill="rgba(255,255,255,0.3)" />
-                    <path d="M10 8L16 12L10 16V8Z" fill="white" />
-                  </svg>
+                {/* Thumbnail */}
+                <div className="w-[72px] h-[54px] rounded-xl flex-shrink-0 overflow-hidden relative">
+                  <img src={upload.thumb} alt={upload.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-black/40 flex items-center justify-center">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <path d="M10 8L16 12L10 16V8Z" fill="white" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p

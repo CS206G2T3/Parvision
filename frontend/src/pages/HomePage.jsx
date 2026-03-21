@@ -144,10 +144,11 @@ function StreakCalendar({ onClose }) {
 
   return (
     <div className="absolute inset-0 z-50 flex items-center justify-center"
-      style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0,0,0,0.35)' }}>
+      style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0,0,0,0.35)' }}
+      onClick={onClose}>
 
       {/* Card */}
-      <div className="bg-white rounded-3xl mx-6 w-full shadow-2xl overflow-hidden">
+      <div className="bg-white rounded-3xl mx-6 w-full shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
 
         {/* Month nav */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">

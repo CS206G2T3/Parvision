@@ -31,7 +31,8 @@ export default function GalleryPage() {
 
   const handleDone = () => {
     if (!selected) return
-    navigate('/upload/select-mode')
+    const item = GALLERY_ITEMS.find((i) => i.id === selected)
+    navigate('/upload/select-mode', { state: { thumb: item?.thumb || null } })
   }
 
   return (

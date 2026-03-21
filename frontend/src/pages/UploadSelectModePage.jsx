@@ -1,10 +1,13 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import warmup from '../assets/warmup.jpeg'
-const IMG_DRILL_THUMB = warmup
+import modeBallTracer from '../assets/mode_ball_tracer.png'
+import modeSwingAnalyser from '../assets/mode_swing_analyser.png'
 
 export default function UploadSelectModePage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const IMG_DRILL_THUMB = state?.thumb || warmup
 
   return (
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
@@ -64,7 +67,7 @@ export default function UploadSelectModePage() {
           className="flex-1 flex flex-col items-center gap-3 active:opacity-80 transition-opacity"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#f0f0f0] shadow-md">
-            <img src={IMG_DRILL_THUMB} alt="Ball Tracer" className="w-full h-full object-cover" />
+            <img src={modeBallTracer} alt="Ball Tracer" className="w-full h-full object-cover" />
           </div>
           <div className="text-center">
             <p
@@ -88,7 +91,7 @@ export default function UploadSelectModePage() {
           className="flex-1 flex flex-col items-center gap-3 active:opacity-80 transition-opacity"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#f0f0f0] shadow-md">
-            <img src={IMG_DRILL_THUMB} alt="Swing Analyzer" className="w-full h-full object-cover" />
+            <img src={modeSwingAnalyser} alt="Swing Analyzer" className="w-full h-full object-cover" />
           </div>
           <div className="text-center">
             <p
