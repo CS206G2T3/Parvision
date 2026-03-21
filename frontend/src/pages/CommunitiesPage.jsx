@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import foursomeImg from '../assets/foursome.png'
@@ -88,7 +88,150 @@ const POSTS = [
   },
 ]
 
+const INITIAL_COMMENTS = {
+  1: [
+    { id: 1, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '45m ago', text: 'Under 90 is massive! What wedge did you switch to?' },
+    { id: 2, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '30m ago', text: 'Love the energy! Same thing happened to me when I got fitted 🙌' },
+    { id: 3, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '10m ago', text: 'Let\'s play a round this weekend!' },
+  ],
+  2: [
+    { id: 1, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '1h ago', text: 'C-posture is usually a setup issue — try widening your stance slightly.' },
+    { id: 2, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '55m ago', text: 'Swing Analyzer caught my C-posture too. Night and day after fixing it!' },
+    { id: 3, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '40m ago', text: 'What feedback did the AI give you on the takeaway?' },
+    { id: 4, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: '25m ago', text: 'Keep at it Marcus! Looked solid to me tbh 💪' },
+    { id: 5, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '15m ago', text: 'Tag me when you post the improved one!' },
+    { id: 6, user: 'Par Pete', avatarColor: '#84cc16', avatarLetter: 'P', time: '5m ago', text: 'I had the same issue — hip rotation drills fixed it in 2 weeks.' },
+    { id: 7, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2m ago', text: 'Great progress, looking forward to the next post!' },
+  ],
+  3: [],
+  4: [
+    { id: 1, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '22h ago', text: 'I need to try this before my next round!' },
+    { id: 2, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '20h ago', text: 'Same here, my hip mobility is terrible in the first 3 holes.' },
+    { id: 3, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '18h ago', text: 'Which exercises helped the most for you?' },
+    { id: 4, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '16h ago', text: 'The hip circles are the key move. 2 mins each side.' },
+    { id: 5, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '12h ago', text: 'Highly recommend adding the shoulder rotation too.' },
+    { id: 6, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: '8h ago', text: 'Does this work if you only have 10 mins before teeing off?' },
+    { id: 7, user: 'Par Pete', avatarColor: '#84cc16', avatarLetter: 'P', time: '4h ago', text: 'Yes! Even 5 mins of this makes a difference. Do it on the range.' },
+    { id: 8, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2h ago', text: 'Saved this post. Doing it tomorrow morning!' },
+    { id: 9, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '1h ago', text: 'Thanks Phil, trying the hip circles now 🙏' },
+    { id: 10, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '30m ago', text: 'Update: hole 1 felt completely different. Believer now 🔥' },
+    { id: 11, user: 'Non-Significant Other', avatarColor: '#a3c4a8', avatarLetter: 'N', time: '15m ago', text: 'Adding this to my pre-round ritual from now on!' },
+    { id: 12, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '5m ago', text: 'Love to see it. Keep it up everyone!' },
+    { id: 13, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '1m ago', text: 'Great thread 🙌 See you all on the fairway.' },
+    { id: 14, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: 'just now', text: 'This community is the best 💚' },
+  ],
+}
+
 // ── sub-components ─────────────────────────────────────────────────────────────
+
+function CommentSheet({ post, comments, onClose, onAddComment }) {
+  const [text, setText] = useState('')
+  const inputRef = useRef(null)
+
+  const submit = () => {
+    const trimmed = text.trim()
+    if (!trimmed) return
+    onAddComment(post.id, trimmed)
+    setText('')
+  }
+
+  return (
+    <div className="phone-overlay flex flex-col justify-end" style={{ background: 'rgba(0,0,0,0.45)' }} onClick={onClose}>
+      <div
+        className="bg-white rounded-t-3xl flex flex-col"
+        style={{ maxHeight: '75%', boxShadow: '0 -4px 30px rgba(0,0,0,0.15)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Handle + header */}
+        <div className="flex-shrink-0 pt-3 pb-2 border-b border-[#f0f0f0]">
+          <div className="w-10 h-1 bg-[#e5e5ea] rounded-full mx-auto mb-3" />
+          <div className="flex items-center justify-between px-5 pb-1">
+            <p className="text-[17px] font-bold text-[#1c1c1e]"
+              style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+              Comments
+            </p>
+            <span className="text-[13px] text-[rgba(60,60,67,0.45)]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              {comments.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Comment list */}
+        <div className="flex-1 overflow-y-auto px-5 py-3">
+          {comments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="w-12 h-12 rounded-full bg-[#f4f4f4] flex items-center justify-center mb-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(60,60,67,0.35)" strokeWidth="2" strokeLinecap="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                </svg>
+              </div>
+              <p className="text-[14px] text-[rgba(60,60,67,0.5)]"
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                No comments yet. Be the first!
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {comments.map((c) => (
+                <div key={c.id} className="flex gap-3">
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 mt-0.5"
+                    style={{ backgroundColor: c.avatarColor }}
+                  >
+                    {c.avatarLetter}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-[13px] font-semibold text-[#1c1c1e]"
+                        style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                        {c.user}
+                      </span>
+                      <span className="text-[11px] text-[rgba(60,60,67,0.4)]">{c.time}</span>
+                    </div>
+                    <p className="text-[14px] text-[#1c1c1e] leading-[20px] mt-0.5"
+                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                      {c.text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Input row */}
+        <div className="flex-shrink-0 border-t border-[#f0f0f0] px-4 py-3 flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-[#f97316] flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0">
+            M
+          </div>
+          <div className="flex-1 flex items-center bg-[#f4f4f4] rounded-full px-4 h-[36px]">
+            <input
+              ref={inputRef}
+              type="text"
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && submit()}
+              placeholder="Add a comment…"
+              className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            />
+          </div>
+          <button
+            onClick={submit}
+            disabled={!text.trim()}
+            className="w-8 h-8 rounded-full bg-[#248a3d] flex items-center justify-center disabled:opacity-30 transition-opacity"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function CommunityBubble({ name, abbr, color, active, onPress }) {
   return (
@@ -109,7 +252,7 @@ function CommunityBubble({ name, abbr, color, active, onPress }) {
   )
 }
 
-function PostCard({ post }) {
+function PostCard({ post, commentCount, onCommentPress }) {
   const [liked, setLiked] = useState(false)
 
   return (
@@ -206,7 +349,7 @@ function PostCard({ post }) {
             {liked ? post.likes + 1 : post.likes}
           </span>
         </button>
-        <button className="flex items-center gap-1.5">
+        <button onClick={onCommentPress} className="flex items-center gap-1.5">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="rgba(60,60,67,0.45)" strokeWidth="2" strokeLinecap="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
@@ -215,7 +358,7 @@ function PostCard({ post }) {
             className="text-[13px] font-medium text-[rgba(60,60,67,0.5)]"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
-            {post.comments}
+            {commentCount}
           </span>
         </button>
         <button className="flex items-center gap-1.5 ml-auto">
@@ -275,7 +418,7 @@ function ComposeSheet({ draft, onClose, onPost }) {
   }
 
   return (
-    <div className="absolute inset-0 z-40" style={{ background: 'rgba(0,0,0,0.55)' }}>
+    <div className="phone-overlay" style={{ background: 'rgba(0,0,0,0.55)', zIndex: 40 }}>
       {/* Card */}
       <div className="mx-4 mt-14 bg-white rounded-3xl overflow-hidden" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
 
@@ -380,6 +523,36 @@ export default function CommunitiesPage() {
   const [activeCommunity, setActiveCommunity] = useState(null)
   const [query, setQuery] = useState('')
   const [communities, setCommunities] = useState(ALL_COMMUNITIES)
+  const [activeCommentPostId, setActiveCommentPostId] = useState(null)
+  const [allComments, setAllComments] = useState(() => {
+    try {
+      const saved = localStorage.getItem('parvision_comments')
+      return saved ? JSON.parse(saved) : INITIAL_COMMENTS
+    } catch {
+      return INITIAL_COMMENTS
+    }
+  })
+
+  const addComment = (postId, text) => {
+    setAllComments((prev) => {
+      const updated = {
+        ...prev,
+        [postId]: [
+          ...(prev[postId] || []),
+          {
+            id: Date.now(),
+            user: 'Marcus Hooy',
+            avatarColor: '#f97316',
+            avatarLetter: 'M',
+            time: 'just now',
+            text,
+          },
+        ],
+      }
+      localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      return updated
+    })
+  }
 
   const toggleJoin = (id) => {
     setCommunities((prev) =>
@@ -512,7 +685,12 @@ export default function CommunitiesPage() {
             <div className="pt-2">
               {filteredPosts.length > 0 ? (
                 filteredPosts.map((post) => (
-                  <PostCard key={post.id} post={post} />
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    commentCount={(allComments[post.id] || []).length}
+                    onCommentPress={() => setActiveCommentPostId(post.id)}
+                  />
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 px-8 text-center">
@@ -644,6 +822,15 @@ export default function CommunitiesPage() {
           draft={composeDraft}
           onClose={() => setShowCompose(false)}
           onPost={() => setShowCompose(false)}
+        />
+      )}
+
+      {activeCommentPostId !== null && (
+        <CommentSheet
+          post={POSTS.find((p) => p.id === activeCommentPostId)}
+          comments={allComments[activeCommentPostId] || []}
+          onClose={() => setActiveCommentPostId(null)}
+          onAddComment={addComment}
         />
       )}
     </div>
