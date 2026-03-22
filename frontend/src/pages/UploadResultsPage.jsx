@@ -1,45 +1,41 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import balltraceImg from '../assets/balltrace.png'
 import balltraceVideo from '../assets/balltrace.mp4'
-import bodyanalyseImg from '../assets/bodyanalyse.png'
+const bodyanalyseVideo = '/Bodyanalysed1.mp4'
 import swingImg from '../assets/swing.png'
 import warmupImg from '../assets/warmup.jpeg'
 
 /* ── Swing Analyser data ── */
-const WHATS_RIGHT = [
-  { id: 1, title: 'Good Club Path', detail: 'Club travels on a consistent inside-out path through impact, promoting a draw ball flight.' },
-  { id: 2, title: 'Stable Lower Body', detail: 'Hips stay relatively quiet on the backswing, storing rotational energy effectively.' },
-  { id: 3, title: 'Head Position', detail: 'Head remains behind the ball at impact — great for solid contact.' },
-]
-
-const WHATS_WRONG = [
-  {
-    id: 1, type: 'error',
-    title: 'C-Posture (Rounded Back)',
-    detail: 'Upper back and shoulders are caved, causing a C-posture. This restricts rotation during the backswing, leading to inconsistent strikes. Aim for a straighter back at address.',
+const SWING_DATA = {
+  v1: {
+    right: [
+      { id: 1, title: 'Good Club Path', detail: 'Club travels on a consistent inside-out path through impact, promoting a draw ball flight.' },
+      { id: 2, title: 'Stable Lower Body', detail: 'Hips stay relatively quiet on the backswing, storing rotational energy effectively.' },
+      { id: 3, title: 'Head Position', detail: 'Head remains behind the ball at impact — great for solid contact.' },
+    ],
+    wrong: [
+      { id: 1, type: 'error', title: 'C-Posture (Rounded Back)', detail: 'Upper back and shoulders are caved, causing a C-posture. This restricts rotation during the backswing, leading to inconsistent strikes. Aim for a straighter back at address.' },
+      { id: 2, type: 'error', title: 'Disconnected Arms', detail: 'Lead arm is disconnecting from your body at the top of the backswing. Keep the arms connected for more consistent ball striking.' },
+      { id: 3, type: 'error', title: 'Excessive Knee Flex', detail: 'Knees bent at ~30° — too much. This makes weight transfer difficult. Aim for a smaller knee flex of around 15–20°.' },
+      { id: 4, type: 'warning', title: 'Straight Left Arm', detail: 'Lead arm slightly bent at the top of backswing. Keep it straight for more consistent ball striking.' },
+    ],
+    drill: { title: 'Dynamic Warm Up', duration: '15 Minutes', points: ['Prevents Injury', 'Improves Flexibility', 'Activates Rotation'] },
   },
-  {
-    id: 2, type: 'error',
-    title: 'Disconnected Arms',
-    detail: 'Lead arm is disconnecting from your body at the top of the backswing. Keep the arms connected for more consistent ball striking.',
+  v2: {
+    right: [
+      { id: 1, title: 'Good Tempo', detail: 'Backswing-to-downswing ratio is close to the ideal 3:1, producing smooth, repeatable timing.' },
+      { id: 2, title: 'Proper Weight Shift', detail: 'Weight transfers well onto the lead foot through impact, generating power effectively.' },
+      { id: 3, title: 'Square Clubface at Address', detail: 'Clubface is well-aligned to the target line at setup, reducing the risk of offline shots.' },
+    ],
+    wrong: [
+      { id: 1, type: 'error', title: 'Early Extension', detail: 'Hips are thrusting toward the ball during the downswing. This forces the arms to reroute and causes inconsistent strikes — focus on maintaining your spine angle through impact.' },
+      { id: 2, type: 'error', title: 'Over-the-Top Swing Path', detail: 'Club is coming over the plane on the downswing, promoting a pull or slice. Work on dropping the club into the slot from the inside.' },
+      { id: 3, type: 'warning', title: 'Cupped Lead Wrist', detail: 'Lead wrist is slightly cupped at the top of the backswing, opening the clubface. Aim for a flatter or bowed wrist for more control.' },
+      { id: 4, type: 'warning', title: 'Narrow Stance', detail: 'Stance width is slightly narrower than ideal for a full swing, reducing base stability. Widen your feet to roughly shoulder-width for better balance.' },
+    ],
+    drill: { title: 'Hip Rotation Drill', duration: '10 Minutes', points: ['Fixes Early Extension', 'Trains Proper Sequencing', 'Builds Core Stability'] },
   },
-  {
-    id: 3, type: 'error',
-    title: 'Excessive Knee Flex',
-    detail: 'Knees bent at ~30° — too much. This makes weight transfer difficult. Aim for a smaller knee flex of around 15–20°.',
-  },
-  {
-    id: 4, type: 'warning',
-    title: 'Straight Left Arm',
-    detail: 'Lead arm slightly bent at the top of backswing. Keep it straight for more consistent ball striking.',
-  },
-]
-
-const SUGGESTED_DRILL = {
-  title: 'Dynamic Warm Up',
-  duration: '15 Minutes',
-  points: ['Prevents Injury', 'Improves Flexibility', 'Activates Rotation'],
 }
 
 /* ── Sub-components ── */
@@ -237,37 +233,80 @@ function BallTracerResults({ navigate }) {
 }
 
 /* ── Swing Analyser results ── */
-function SwingAnalyserResults({ navigate }) {
+function SwingAnalyserResults({ navigate, videoSrc }) {
+  const data = videoSrc?.includes('Bodyanalysed2') ? SWING_DATA.v2 : SWING_DATA.v1
+  const WHATS_RIGHT = data.right
+  const WHATS_WRONG = data.wrong
+  const SUGGESTED_DRILL = data.drill
   const [expandedRight, setExpandedRight] = useState(null)
   const [expandedWrong, setExpandedWrong] = useState(null)
   const [playing, setPlaying] = useState(false)
-  const [currentTime, setCurrentTime] = useState(4)
+  const [progress, setProgress] = useState(0)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
   const [toast, setToast] = useState('')
-  const DURATION = 9
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    const v = videoRef.current
+    if (v) { v.play().then(() => setPlaying(true)).catch(() => {}) }
+  }, [])
 
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
-  const stepBack = () => setCurrentTime((t) => Math.max(0, t - 1))
-  const stepForward = () => setCurrentTime((t) => Math.min(DURATION, t + 1))
-  const formatTime = (s) => `0:${String(s).padStart(2, '0')}`
-  const progress = (currentTime / DURATION) * 100
+  const formatTime = (s) => `0:${String(Math.floor(s)).padStart(2, '0')}`
+
+  const togglePlay = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (playing) { v.pause() } else { v.play() }
+    setPlaying(!playing)
+  }
+
+  const stepBack = () => { if (videoRef.current) videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 1) }
+  const stepForward = () => { if (videoRef.current) videoRef.current.currentTime = Math.min(videoRef.current.duration || 0, videoRef.current.currentTime + 1) }
+
+  const handleTimeUpdate = () => {
+    const v = videoRef.current
+    if (!v) return
+    setCurrentTime(v.currentTime)
+    setProgress(v.duration ? (v.currentTime / v.duration) * 100 : 0)
+  }
+
+  const handleSeek = (e) => {
+    const v = videoRef.current
+    if (!v || !v.duration) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const ratio = (e.clientX - rect.left) / rect.width
+    v.currentTime = ratio * v.duration
+  }
 
   return (
     <div className="flex-1 overflow-y-auto pb-10">
 
-      {/* Body analysis image */}
-      <div className="relative mx-5 mt-4 rounded-2xl overflow-hidden h-[280px] bg-[#1c1c1e]">
-        <img src={bodyanalyseImg} alt="Body Analysis" className="w-full h-full object-contain" />
+      {/* Body analysis video */}
+      <div className="relative mx-5 mt-4 rounded-2xl overflow-hidden bg-[#1c1c1e]" style={{ aspectRatio: '9/16' }}>
+        <video
+          ref={videoRef}
+          src={videoSrc}
+          className="w-full h-full object-contain"
+          autoPlay
+          muted
+          playsInline
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
+          onEnded={() => setPlaying(false)}
+        />
       </div>
 
       {/* Playback controls */}
       <div className="mx-5 mt-3 flex items-center gap-2">
         <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 text-right flex-shrink-0">{formatTime(currentTime)}</span>
-        <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full">
-          <div className="h-1 bg-[#248a3d] rounded-full relative" style={{ width: `${progress}%` }}>
+        <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full cursor-pointer" onClick={handleSeek}>
+          <div className="h-1 bg-[#248a3d] rounded-full relative pointer-events-none" style={{ width: `${progress}%` }}>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[#248a3d] rounded-full -mr-1.5 shadow" />
           </div>
         </div>
-        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 flex-shrink-0">{formatTime(DURATION)}</span>
+        <span className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 flex-shrink-0">{formatTime(duration)}</span>
       </div>
       <div className="flex items-center justify-center gap-8 mt-2 mb-4">
         <button onClick={stepBack} className="w-10 h-10 flex items-center justify-center active:opacity-60">
@@ -276,7 +315,7 @@ function SwingAnalyserResults({ navigate }) {
             <rect x="4" y="5" width="3" height="16" rx="1.5" fill="#248a3d" />
           </svg>
         </button>
-        <button onClick={() => setPlaying(!playing)}
+        <button onClick={togglePlay}
           className="w-[48px] h-[48px] bg-[#248a3d] rounded-full flex items-center justify-center shadow-md active:opacity-80">
           {playing ? (
             <svg width="16" height="16" viewBox="0 0 18 18" fill="white">
@@ -450,6 +489,7 @@ export default function UploadResultsPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const isBallTracer = state?.mode === 'ball-tracer'
+  const selectedVideo = state?.video || '/Bodyanalysed1.mp4'
 
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
@@ -476,7 +516,7 @@ export default function UploadResultsPage() {
 
       {isBallTracer
         ? <BallTracerResults navigate={navigate} />
-        : <SwingAnalyserResults navigate={navigate} />
+        : <SwingAnalyserResults navigate={navigate} videoSrc={selectedVideo} />
       }
 
     </div>

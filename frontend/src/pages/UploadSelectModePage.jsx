@@ -8,6 +8,7 @@ export default function UploadSelectModePage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const IMG_DRILL_THUMB = state?.thumb || warmup
+  const selectedVideo = state?.video || null
 
   return (
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
@@ -87,7 +88,7 @@ export default function UploadSelectModePage() {
 
         {/* Swing Analyzer */}
         <button
-          onClick={() => navigate('/upload/processing', { state: { mode: 'swing-analyser' } })}
+          onClick={() => navigate('/upload/processing', { state: { mode: 'swing-analyser', video: selectedVideo } })}
           className="flex-1 flex flex-col items-center gap-3 active:opacity-80 transition-opacity"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#f0f0f0] shadow-md">

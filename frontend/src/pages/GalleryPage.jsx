@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import swingImg from '../assets/swing.png'
+import bodyanalysedThumb from '../assets/Bodyanalysed1_thumbnail.png'
+import bodyanalysed2Thumb from '../assets/Bodyanalysed2_thumbnail.png'
 
 // Mock gallery items — videos and images mixed like a real photo library
 const GALLERY_ITEMS = [
   { id: 1, type: 'image', bg: 'linear-gradient(135deg, #a855f7, #ec4899, #f97316)' },
   { id: 2, type: 'image', bg: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)' },
   { id: 3, type: 'image', bg: 'linear-gradient(135deg, #10b981, #059669, #1d4ed8)' },
-  { id: 4, type: 'video', duration: '0:14', thumb: swingImg },
+  { id: 4, type: 'video', duration: '0:14', thumb: bodyanalysedThumb, video: '/Bodyanalysed1.mp4' },
   { id: 5, type: 'video', duration: '0:09', thumb: swingImg },
+  { id: 13, type: 'video', duration: '0:14', thumb: bodyanalysed2Thumb, video: '/Bodyanalysed2.mp4' },
   { id: 6, type: 'image', bg: 'linear-gradient(135deg, #84cc16, #22c55e)' },
   { id: 7, type: 'image', bg: 'linear-gradient(135deg, #ec4899, #f43f5e)' },
   { id: 8, type: 'image', bg: 'linear-gradient(135deg, #f97316, #ef4444, #7c3aed)' },
@@ -32,7 +35,7 @@ export default function GalleryPage() {
   const handleDone = () => {
     if (!selected) return
     const item = GALLERY_ITEMS.find((i) => i.id === selected)
-    navigate('/upload/select-mode', { state: { thumb: item?.thumb || null } })
+    navigate('/upload/select-mode', { state: { thumb: item?.thumb || null, video: item?.video || null } })
   }
 
   return (
