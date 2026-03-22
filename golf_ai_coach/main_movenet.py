@@ -4,7 +4,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 
 # Load MoveNet model (Lightning)
-model = hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
+model = hub.load("https://tfhub.dev/google/movenet/singlepose/thunder/4")
 movenet = model.signatures["serving_default"]
 
 # Keypoint connections (MoveNet skeleton)
@@ -62,7 +62,7 @@ while True:
 
     # Resize and pad to MoveNet input
     input_img = tf.image.resize_with_pad(
-        tf.expand_dims(img, axis=0), 192, 192
+        tf.expand_dims(img, axis=0), 256, 256
     )
     input_img = tf.cast(input_img, dtype=tf.int32)
 
