@@ -184,11 +184,16 @@ function StreakCalendar({ onClose }) {
   )
 }
 
-function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatarColor }) {
+function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video, avatarColor }) {
   return (
     <div className="flex-shrink-0 w-[160px] bg-white rounded-2xl overflow-hidden shadow-sm border border-[#f0f0f0]">
-      {/* Image */}
-      {img && (
+      {/* Media */}
+      {video && (
+        <div className="h-[100px] overflow-hidden">
+          <video src={video} className="w-full h-full object-cover" muted playsInline autoPlay loop />
+        </div>
+      )}
+      {img && !video && (
         <div className="h-[100px] overflow-hidden">
           <img src={img} alt={user} className="w-full h-full object-cover" />
         </div>
