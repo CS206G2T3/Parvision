@@ -1,9 +1,8 @@
 import { useState, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
-import foursomeImg from '../assets/foursome.png'
-import swingImg from '../assets/swing.png'
 import balltraceVideo from '../assets/balltrace.mp4'
+import { loadPosts, savePosts } from '../data/communityPosts'
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
@@ -25,68 +24,6 @@ const ALL_COMMUNITIES = [
   { id: 8, name: 'Senior Swingers',    members: '704',  color: '#84cc16', abbr: 'SS',  joined: false },
 ]
 
-const POSTS = [
-  {
-    id: 1,
-    community: 'Weekend Warriors',
-    communityColor: '#a855f7',
-    communityAbbr: 'WW',
-    user: 'Non-Significant Other',
-    avatarColor: '#a3c4a8',
-    avatarLetter: 'N',
-    time: '1h ago',
-    body: 'Weekend foursome was a blast! Finally shot under 90 for the first time this season 🎉 The new wedge made all the difference on the back nine.',
-    likes: 12,
-    comments: 3,
-    img: foursomeImg,
-    tags: [],
-  },
-  {
-    id: 2,
-    community: 'Singapore Golfers',
-    communityColor: '#248a3d',
-    communityAbbr: 'SG',
-    user: 'Marcus Hooy',
-    avatarColor: '#f97316',
-    avatarLetter: 'M',
-    time: '2h ago',
-    body: 'Swing looking slightly rough this session 😅 Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
-    likes: 40,
-    comments: 7,
-    img: swingImg,
-    tags: ['Swing Analyzer'],
-  },
-  {
-    id: 3,
-    community: 'Scratch Club',
-    communityColor: '#409cff',
-    communityAbbr: 'SC',
-    user: 'Marcus Hooy',
-    avatarColor: '#f97316',
-    avatarLetter: 'M',
-    time: '5h ago',
-    body: 'Golden hour session at Sentosa. Different energy when the light hits like that. Ball tracing showed 247 yards — best drive this year 🔥',
-    likes: 213,
-    comments: 0,
-    img: swingImg,
-    tags: ['Ball Tracer'],
-  },
-  {
-    id: 4,
-    community: 'Beginners Corner',
-    communityColor: '#f97316',
-    communityAbbr: 'BC',
-    user: 'Fairway Phil',
-    avatarColor: '#a855f7',
-    avatarLetter: 'F',
-    time: '1d ago',
-    body: 'Did the Dynamic Warmup routine before the game today — huge difference in my hip mobility by hole 5. Highly recommend it to everyone just starting out!',
-    likes: 88,
-    comments: 14,
-    img: null,
-    tags: ['Warmup'],
-  },
-]
 
 const INITIAL_COMMENTS = {
   1: [
@@ -544,7 +481,7 @@ export default function CommunitiesPage() {
   const [tab, setTab] = useState('feed')       // 'feed' | 'communities'
   const [showCompose, setShowCompose] = useState(!!state?.draft)
   const [composeDraft, setComposeDraft] = useState(state?.draft || null)
-  const [posts, setPosts] = useState(POSTS)
+  const [posts, setPosts] = useState(() => loadPosts())
 
   const openCompose = (draft = { type: 'swing-analyser', caption: '', tag: 'Swing Analyzer' }) => {
     setComposeDraft(draft)
@@ -569,7 +506,11 @@ export default function CommunitiesPage() {
       video: balltraceVideo,
       tags: tag ? [tag] : [],
     }
-    setPosts((prev) => [newPost, ...prev])
+    setPosts((prev) => {
+      const updated = [newPost, ...prev]
+      savePosts(updated)
+      return updated
+    })
   }
 
   const [activeCommunity, setActiveCommunity] = useState(null)
@@ -879,7 +820,7 @@ export default function CommunitiesPage() {
 
       {activeCommentPostId !== null && (
         <CommentSheet
-          post={POSTS.find((p) => p.id === activeCommentPostId)}
+          post={posts.find((p) => p.id === activeCommentPostId)}
           comments={allComments[activeCommentPostId] || []}
           onClose={() => setActiveCommentPostId(null)}
           onAddComment={addComment}

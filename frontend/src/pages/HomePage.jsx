@@ -2,13 +2,12 @@ import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import BottomNav from '../components/BottomNav'
 import patrickAvatar from '../assets/patrick.png'
-import foursomeImg from '../assets/foursome.png'
 import warmupImg from '../assets/warmup.jpeg'
 import clubDriverImg from '../assets/club_driver.png'
 import clubIronImg from '../assets/club_iron.png'
 import clubWedgeImg from '../assets/club_wedge.png'
 import clubPutterImg from '../assets/club_putter.png'
-import swingImg from '../assets/swing.png'
+import { loadPosts } from '../data/communityPosts'
 
 // M T W T F S S — index 2 (W) is today, 0 and 1 are completed
 const WEEK_DAYS = [
@@ -21,41 +20,6 @@ const WEEK_DAYS = [
   { label: 'S', state: 'empty' },
 ]
 
-const COMMUNITY_POSTS = [
-  {
-    id: 1,
-    user: 'Non-Significant...',
-    time: '1h ago',
-    excerpt: 'Weekend foursome was a blast! Finally sp...',
-    likes: 12,
-    comments: 0,
-    tags: [],
-    img: foursomeImg,
-    avatarColor: '#a3c4a8',
-  },
-  {
-    id: 2,
-    user: 'Marcus Hooy',
-    time: '2h ago',
-    excerpt: 'Swing looking slightly rough this session. H...',
-    likes: 40,
-    comments: 2,
-    tags: ['Swing Analyzer', 'Ball Tracer'],
-    img: swingImg,
-    avatarColor: '#f97316',
-  },
-  {
-    id: 3,
-    user: 'Wiger',
-    time: '8h ago',
-    excerpt: 'Golden hour session, different...',
-    likes: 213,
-    comments: 0,
-    tags: [],
-    img: foursomeImg,
-    avatarColor: '#409cff',
-  },
-]
 
 // Club SVG shapes matching the Figma style
 const CLUBS = [
@@ -224,9 +188,11 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatar
   return (
     <div className="flex-shrink-0 w-[160px] bg-white rounded-2xl overflow-hidden shadow-sm border border-[#f0f0f0]">
       {/* Image */}
-      <div className="h-[100px] overflow-hidden">
-        <img src={img} alt={user} className="w-full h-full object-cover" />
-      </div>
+      {img && (
+        <div className="h-[100px] overflow-hidden">
+          <img src={img} alt={user} className="w-full h-full object-cover" />
+        </div>
+      )}
       {/* Content */}
       <div className="p-2.5">
         {/* User row */}
@@ -282,6 +248,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatar
 export default function HomePage() {
   const navigate = useNavigate()
   const [showStreak, setShowStreak] = useState(false)
+  const [communityPosts] = useState(() => loadPosts())
 
   return (
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
@@ -402,8 +369,8 @@ export default function HomePage() {
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1 -mx-0 px-5 scrollbar-hide">
-            {COMMUNITY_POSTS.map((post) => (
-              <CommunityCard key={post.id} {...post} />
+            {communityPosts.slice(0, 5).map((post) => (
+              <CommunityCard key={post.id} {...post} excerpt={post.body} />
             ))}
           </div>
         </section>
