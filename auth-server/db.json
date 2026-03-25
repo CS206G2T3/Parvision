@@ -41,6 +41,13 @@
       "phone": "87188107",
       "password": "iamthebest",
       "createdAt": "2026-03-10T14:47:49.711Z"
+    },
+    {
+      "id": 7,
+      "name": "demo",
+      "phone": "admin",
+      "password": "password123",
+      "createdAt": "2026-03-10T14:47:50.711Z"
     }
   ]
 }
