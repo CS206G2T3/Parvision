@@ -1,9 +1,8 @@
 import { useState, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
-import foursomeImg from '../assets/foursome.png'
-import swingImg from '../assets/swing.png'
 import balltraceVideo from '../assets/balltrace.mp4'
+import { loadPosts, savePosts } from '../data/communityPosts'
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
@@ -25,68 +24,6 @@ const ALL_COMMUNITIES = [
   { id: 8, name: 'Senior Swingers',    members: '704',  color: '#84cc16', abbr: 'SS',  joined: false },
 ]
 
-const POSTS = [
-  {
-    id: 1,
-    community: 'Weekend Warriors',
-    communityColor: '#a855f7',
-    communityAbbr: 'WW',
-    user: 'Non-Significant Other',
-    avatarColor: '#a3c4a8',
-    avatarLetter: 'N',
-    time: '1h ago',
-    body: 'Weekend foursome was a blast! Finally shot under 90 for the first time this season 🎉 The new wedge made all the difference on the back nine.',
-    likes: 12,
-    comments: 3,
-    img: foursomeImg,
-    tags: [],
-  },
-  {
-    id: 2,
-    community: 'Singapore Golfers',
-    communityColor: '#248a3d',
-    communityAbbr: 'SG',
-    user: 'Marcus Hooy',
-    avatarColor: '#f97316',
-    avatarLetter: 'M',
-    time: '2h ago',
-    body: 'Swing looking slightly rough this session 😅 Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
-    likes: 40,
-    comments: 7,
-    img: swingImg,
-    tags: ['Swing Analyzer'],
-  },
-  {
-    id: 3,
-    community: 'Scratch Club',
-    communityColor: '#409cff',
-    communityAbbr: 'SC',
-    user: 'Marcus Hooy',
-    avatarColor: '#f97316',
-    avatarLetter: 'M',
-    time: '5h ago',
-    body: 'Golden hour session at Sentosa. Different energy when the light hits like that. Ball tracing showed 247 yards — best drive this year 🔥',
-    likes: 213,
-    comments: 0,
-    img: swingImg,
-    tags: ['Ball Tracer'],
-  },
-  {
-    id: 4,
-    community: 'Beginners Corner',
-    communityColor: '#f97316',
-    communityAbbr: 'BC',
-    user: 'Fairway Phil',
-    avatarColor: '#a855f7',
-    avatarLetter: 'F',
-    time: '1d ago',
-    body: 'Did the Dynamic Warmup routine before the game today — huge difference in my hip mobility by hole 5. Highly recommend it to everyone just starting out!',
-    likes: 88,
-    comments: 14,
-    img: null,
-    tags: ['Warmup'],
-  },
-]
 
 const INITIAL_COMMENTS = {
   1: [
@@ -146,11 +83,89 @@ const INITIAL_COMMENTS = {
   ],
 }
 
+const AVAILABLE_TAGS = [
+  'Ball Tracer',
+  'Swing Analyzer',
+  'Warmup',
+  'Course Review',
+  'Tips & Tricks',
+  'Gear Talk',
+]
+
 // ── sub-components ─────────────────────────────────────────────────────────────
 
-function CommentSheet({ post, comments, onClose, onAddComment }) {
+function ActionSheet({ options, onClose, style }) {
+  return (
+    <div className="phone-overlay flex flex-col justify-end" style={{ background: 'rgba(0,0,0,0.45)', zIndex: 50, ...style }} onClick={onClose}>
+      <div className="mx-3 mb-3 flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white rounded-2xl overflow-hidden">
+          <div className="w-10 h-1 bg-[#e5e5ea] rounded-full mx-auto mt-2.5 mb-1" />
+          {options.map((opt, i) => (
+            <div key={i}>
+              {i > 0 && <div className="h-px bg-[#f0f0f0]" />}
+              <button
+                onClick={() => { opt.onTap(); onClose() }}
+                className={`w-full py-3.5 text-[17px] font-normal text-center ${opt.destructive ? 'text-[#ff3b30]' : 'text-[#007aff]'}`}
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+              >
+                {opt.label}
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={onClose}
+          className="bg-white rounded-2xl py-3.5 text-[17px] font-semibold text-[#007aff] text-center"
+          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function ConfirmDialog({ title, message, confirmLabel, onConfirm, onCancel, destructive }) {
+  return (
+    <div className="phone-overlay flex items-center justify-center" style={{ background: 'rgba(0,0,0,0.45)', zIndex: 50 }} onClick={onCancel}>
+      <div className="bg-white rounded-2xl mx-10 overflow-hidden" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)', minWidth: 270 }} onClick={(e) => e.stopPropagation()}>
+        <div className="pt-5 pb-4 px-5 text-center">
+          <p className="text-[17px] font-bold text-[#1c1c1e] mb-1"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+            {title}
+          </p>
+          <p className="text-[14px] text-[rgba(60,60,67,0.6)] leading-[19px]"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            {message}
+          </p>
+        </div>
+        <div className="border-t border-[#f0f0f0] flex">
+          <button
+            onClick={onCancel}
+            className="flex-1 py-3 text-[17px] text-[#007aff] font-normal text-center border-r border-[#f0f0f0]"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className={`flex-1 py-3 text-[17px] font-semibold text-center ${destructive ? 'text-[#ff3b30]' : 'text-[#007aff]'}`}
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, onDeleteComment }) {
   const [text, setText] = useState('')
   const inputRef = useRef(null)
+  const [commentActionId, setCommentActionId] = useState(null)
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editText, setEditText] = useState('')
 
   const submit = () => {
     const trimmed = text.trim()
@@ -198,7 +213,10 @@ function CommentSheet({ post, comments, onClose, onAddComment }) {
           ) : (
             <div className="flex flex-col gap-4">
               {comments.map((c) => (
-                <div key={c.id} className="flex gap-3">
+                <div
+                  key={c.id}
+                  className="flex gap-3"
+                >
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 mt-0.5"
                     style={{ backgroundColor: c.avatarColor }}
@@ -206,23 +224,96 @@ function CommentSheet({ post, comments, onClose, onAddComment }) {
                     {c.avatarLetter}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-center gap-2">
                       <span className="text-[13px] font-semibold text-[#1c1c1e]"
                         style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                         {c.user}
                       </span>
                       <span className="text-[11px] text-[rgba(60,60,67,0.4)]">{c.time}</span>
+                      <div className="flex-1" />
+                      {editingCommentId !== c.id && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (c.user === 'Jared Mango') setCommentActionId(c.id)
+                          }}
+                          className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${c.user === 'Jared Mango' ? 'active:bg-[#f0f0f0]' : 'opacity-30'}`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="rgba(60,60,67,0.45)">
+                            <circle cx="3" cy="8" r="1.5" />
+                            <circle cx="8" cy="8" r="1.5" />
+                            <circle cx="13" cy="8" r="1.5" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
-                    <p className="text-[14px] text-[#1c1c1e] leading-[20px] mt-0.5"
-                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
-                      {c.text}
-                    </p>
+                    {editingCommentId === c.id ? (
+                      <div className="mt-1 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="text"
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && editText.trim()) {
+                              onEditComment(post.id, c.id, editText.trim())
+                              setEditingCommentId(null)
+                            }
+                          }}
+                          autoFocus
+                          className="w-full text-[14px] text-[#1c1c1e] bg-[#f4f4f4] rounded-lg px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#248a3d]"
+                          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setEditingCommentId(null)}
+                            className="text-[12px] text-[rgba(60,60,67,0.5)] font-medium"
+                            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (editText.trim()) {
+                                onEditComment(post.id, c.id, editText.trim())
+                                setEditingCommentId(null)
+                              }
+                            }}
+                            className="text-[12px] text-[#248a3d] font-semibold"
+                            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                          >
+                            Save
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-[14px] text-[#1c1c1e] leading-[20px] mt-0.5"
+                        style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                        {c.text}
+                      </p>
+                    )}
                   </div>
                 </div>
               ))}
             </div>
           )}
         </div>
+
+        {/* Comment ActionSheet */}
+        {commentActionId && (
+          <ActionSheet
+            style={{ zIndex: 60 }}
+            options={[
+              { label: 'Edit', onTap: () => {
+                const c = comments.find((x) => x.id === commentActionId)
+                if (c) { setEditingCommentId(c.id); setEditText(c.text) }
+              }},
+              { label: 'Delete', destructive: true, onTap: () => {
+                onDeleteComment(post.id, commentActionId)
+              }},
+            ]}
+            onClose={() => setCommentActionId(null)}
+          />
+        )}
 
         {/* Input row */}
         <div className="flex-shrink-0 border-t border-[#f0f0f0] px-4 py-3 flex items-center gap-3">
@@ -276,8 +367,17 @@ function CommunityBubble({ name, abbr, color, active, onPress }) {
   )
 }
 
-function PostCard({ post, commentCount, onCommentPress }) {
+function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress }) {
   const [liked, setLiked] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const videoRef = useRef(null)
+
+  const togglePlay = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (playing) { v.pause() } else { v.play() }
+    setPlaying(!playing)
+  }
 
   return (
     <div className="bg-white rounded-2xl mx-4 mb-3 overflow-hidden shadow-sm" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
@@ -295,7 +395,7 @@ function PostCard({ post, commentCount, onCommentPress }) {
         >
           {post.community}
         </span>
-        <button className="text-[rgba(60,60,67,0.35)]">
+        <button className="text-[rgba(60,60,67,0.35)]" onClick={() => isOwn && onMenuPress && onMenuPress()}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
           </svg>
@@ -332,10 +432,19 @@ function PostCard({ post, commentCount, onCommentPress }) {
         {post.body}
       </p>
 
-      {/* Image */}
+      {/* Video / Image */}
       {post.video && (
-        <div className="mx-4 mb-3 rounded-xl overflow-hidden">
-          <video src={post.video} className="w-full" style={{ display: 'block' }} muted playsInline autoPlay loop />
+        <div className="mx-4 mb-3 rounded-xl overflow-hidden relative cursor-pointer" onClick={togglePlay}>
+          <video ref={videoRef} src={`${post.video}#t=0.001`}  className="w-full" style={{ display: 'block' }} muted playsInline loop />
+          {!playing && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#1c1c1e">
+                  <polygon points="6,3 21,12 6,21" />
+                </svg>
+              </div>
+            </div>
+          )}
         </div>
       )}
       {post.img && !post.video && (
@@ -440,10 +549,17 @@ function ComposeSheet({ draft, onClose, onPost }) {
   const [caption, setCaption] = useState(draft.caption)
   const [selectedCommunity, setSelectedCommunity] = useState(MY_COMMUNITIES[0])
   const [posted, setPosted] = useState(false)
+  const [selectedTags, setSelectedTags] = useState(draft.tag ? [draft.tag] : [])
+
+  const toggleTag = (tag) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? [] : [tag]
+    )
+  }
 
   const handlePost = () => {
     setPosted(true)
-    setTimeout(() => { onPost({ caption, community: selectedCommunity, tag: draft.tag }); onClose() }, 900)
+    setTimeout(() => { onPost({ caption, community: selectedCommunity, tags: selectedTags }); onClose() }, 900)
   }
 
   return (
@@ -505,9 +621,38 @@ function ComposeSheet({ draft, onClose, onPost }) {
               Tap to preview
             </p>
           </div>
-          <span className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full flex-shrink-0">
-            {draft.tag}
-          </span>
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 flex-shrink-0">
+              {selectedTags.map((t) => (
+                <span key={t} className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full">
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="px-4 pb-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.4)] mb-2"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Tags
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {AVAILABLE_TAGS.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all"
+                style={{
+                  backgroundColor: selectedTags.includes(tag) ? '#248a3d' : '#f4f4f4',
+                  color: selectedTags.includes(tag) ? 'white' : '#1c1c1e',
+                  fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                }}>
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Post to */}
@@ -538,20 +683,72 @@ function ComposeSheet({ draft, onClose, onPost }) {
   )
 }
 
+function EditPostSheet({ post, onClose, onSave }) {
+  const [caption, setCaption] = useState(post.body)
+
+  return (
+    <div className="phone-overlay" style={{ background: 'rgba(0,0,0,0.55)', zIndex: 40 }}>
+      <div className="mx-4 mt-14 bg-white rounded-3xl overflow-hidden" style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f0f0f0]">
+          <button onClick={onClose}
+            className="text-[15px] text-[rgba(60,60,67,0.5)]"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Cancel
+          </button>
+          <p className="text-[16px] font-bold text-[#1c1c1e]"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+            Edit Post
+          </p>
+          <button
+            onClick={() => { if (caption.trim()) { onSave(post.id, caption.trim()); onClose() } }}
+            disabled={!caption.trim()}
+            className="px-4 py-1.5 rounded-full text-[14px] font-semibold bg-[#248a3d] text-white disabled:opacity-40 transition-all"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Save
+          </button>
+        </div>
+
+        {/* Author row + caption */}
+        <div className="flex gap-3 px-4 pt-4 pb-4">
+          <div className="w-9 h-9 rounded-full bg-[#409cff] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">
+            J
+          </div>
+          <div className="flex-1">
+            <p className="text-[13px] font-semibold text-[#1c1c1e] mb-1"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Jared Mango
+            </p>
+            <textarea
+              value={caption}
+              onChange={(e) => setCaption(e.target.value)}
+              rows={3}
+              autoFocus
+              placeholder="What's on your mind?"
+              className="w-full text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.35)] resize-none focus:outline-none leading-[20px]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function CommunitiesPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const [tab, setTab] = useState('feed')       // 'feed' | 'communities'
   const [showCompose, setShowCompose] = useState(!!state?.draft)
   const [composeDraft, setComposeDraft] = useState(state?.draft || null)
-  const [posts, setPosts] = useState(POSTS)
+  const [posts, setPosts] = useState(() => loadPosts())
 
   const openCompose = (draft = { type: 'swing-analyser', caption: '', tag: 'Swing Analyzer' }) => {
     setComposeDraft(draft)
     setShowCompose(true)
   }
 
-  const addPost = ({ caption, community, tag }) => {
+  const addPost = ({ caption, community, tags }) => {
     if (!caption.trim()) return
     const newPost = {
       id: Date.now(),
@@ -567,9 +764,13 @@ export default function CommunitiesPage() {
       comments: 0,
       img: null,
       video: balltraceVideo,
-      tags: tag ? [tag] : [],
+      tags: tags || [],
     }
-    setPosts((prev) => [newPost, ...prev])
+    setPosts((prev) => {
+      const updated = [newPost, ...prev]
+      savePosts(updated)
+      return updated
+    })
   }
 
   const [activeCommunity, setActiveCommunity] = useState(null)
@@ -584,6 +785,10 @@ export default function CommunitiesPage() {
       return INITIAL_COMMENTS
     }
   })
+
+  const [actionSheetPostId, setActionSheetPostId] = useState(null)
+  const [editingPost, setEditingPost] = useState(null)
+  const [deleteConfirmPostId, setDeleteConfirmPostId] = useState(null)
 
   const addComment = (postId, text) => {
     setAllComments((prev) => {
@@ -600,6 +805,52 @@ export default function CommunitiesPage() {
             text,
           },
         ],
+      }
+      localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      return updated
+    })
+  }
+
+  const editPost = (postId, newBody) => {
+    setPosts((prev) => {
+      const updated = prev.map((p) => p.id === postId ? { ...p, body: newBody } : p)
+      savePosts(updated)
+      return updated
+    })
+  }
+
+  const deletePost = (postId) => {
+    setPosts((prev) => {
+      const updated = prev.filter((p) => p.id !== postId)
+      savePosts(updated)
+      return updated
+    })
+    setAllComments((prev) => {
+      const updated = { ...prev }
+      delete updated[postId]
+      localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      return updated
+    })
+  }
+
+  const editComment = (postId, commentId, newText) => {
+    setAllComments((prev) => {
+      const updated = {
+        ...prev,
+        [postId]: (prev[postId] || []).map((c) =>
+          c.id === commentId ? { ...c, text: newText } : c
+        ),
+      }
+      localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      return updated
+    })
+  }
+
+  const deleteComment = (postId, commentId) => {
+    setAllComments((prev) => {
+      const updated = {
+        ...prev,
+        [postId]: (prev[postId] || []).filter((c) => c.id !== commentId),
       }
       localStorage.setItem('parvision_comments', JSON.stringify(updated))
       return updated
@@ -742,6 +993,8 @@ export default function CommunitiesPage() {
                     post={post}
                     commentCount={(allComments[post.id] || []).length}
                     onCommentPress={() => setActiveCommentPostId(post.id)}
+                    isOwn={post.user === 'Jared Mango'}
+                    onMenuPress={() => setActionSheetPostId(post.id)}
                   />
                 ))
               ) : (
@@ -879,10 +1132,46 @@ export default function CommunitiesPage() {
 
       {activeCommentPostId !== null && (
         <CommentSheet
-          post={POSTS.find((p) => p.id === activeCommentPostId)}
+          post={posts.find((p) => p.id === activeCommentPostId)}
           comments={allComments[activeCommentPostId] || []}
           onClose={() => setActiveCommentPostId(null)}
           onAddComment={addComment}
+          onEditComment={editComment}
+          onDeleteComment={deleteComment}
+        />
+      )}
+
+      {actionSheetPostId && (
+        <ActionSheet
+          options={[
+            { label: 'Edit Post', onTap: () => {
+              const p = posts.find((x) => x.id === actionSheetPostId)
+              if (p) setEditingPost(p)
+            }},
+            { label: 'Delete Post', destructive: true, onTap: () => {
+              setDeleteConfirmPostId(actionSheetPostId)
+            }},
+          ]}
+          onClose={() => setActionSheetPostId(null)}
+        />
+      )}
+
+      {editingPost && (
+        <EditPostSheet
+          post={editingPost}
+          onClose={() => setEditingPost(null)}
+          onSave={(postId, newBody) => { editPost(postId, newBody); setEditingPost(null) }}
+        />
+      )}
+
+      {deleteConfirmPostId && (
+        <ConfirmDialog
+          title="Delete Post?"
+          message="This can't be undone."
+          confirmLabel="Delete"
+          destructive
+          onConfirm={() => { deletePost(deleteConfirmPostId); setDeleteConfirmPostId(null) }}
+          onCancel={() => setDeleteConfirmPostId(null)}
         />
       )}
     </div>

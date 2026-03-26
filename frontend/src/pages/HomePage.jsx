@@ -1,14 +1,13 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import BottomNav from '../components/BottomNav'
 import patrickAvatar from '../assets/patrick.png'
-import foursomeImg from '../assets/foursome.png'
 import warmupImg from '../assets/warmup.jpeg'
 import clubDriverImg from '../assets/club_driver.png'
 import clubIronImg from '../assets/club_iron.png'
 import clubWedgeImg from '../assets/club_wedge.png'
 import clubPutterImg from '../assets/club_putter.png'
-import swingImg from '../assets/swing.png'
+import { loadPosts } from '../data/communityPosts'
 
 // M T W T F S S — index 2 (W) is today, 0 and 1 are completed
 const WEEK_DAYS = [
@@ -21,41 +20,6 @@ const WEEK_DAYS = [
   { label: 'S', state: 'empty' },
 ]
 
-const COMMUNITY_POSTS = [
-  {
-    id: 1,
-    user: 'Non-Significant...',
-    time: '1h ago',
-    excerpt: 'Weekend foursome was a blast! Finally sp...',
-    likes: 12,
-    comments: 0,
-    tags: [],
-    img: foursomeImg,
-    avatarColor: '#a3c4a8',
-  },
-  {
-    id: 2,
-    user: 'Marcus Hooy',
-    time: '2h ago',
-    excerpt: 'Swing looking slightly rough this session. H...',
-    likes: 40,
-    comments: 2,
-    tags: ['Swing Analyzer', 'Ball Tracer'],
-    img: swingImg,
-    avatarColor: '#f97316',
-  },
-  {
-    id: 3,
-    user: 'Wiger',
-    time: '8h ago',
-    excerpt: 'Golden hour session, different...',
-    likes: 213,
-    comments: 0,
-    tags: [],
-    img: foursomeImg,
-    avatarColor: '#409cff',
-  },
-]
 
 // Club SVG shapes matching the Figma style
 const CLUBS = [
@@ -220,13 +184,61 @@ function StreakCalendar({ onClose }) {
   )
 }
 
-function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatarColor }) {
+function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video, avatarColor }) {
+  const videoRef = useRef(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  const togglePlay = (e) => {
+    e.stopPropagation()
+    const vid = videoRef.current
+    if (!vid) return
+    if (vid.paused) {
+      vid.play()
+      setIsPlaying(true)
+    } else {
+      vid.pause()
+      setIsPlaying(false)
+    }
+  }
+
   return (
     <div className="flex-shrink-0 w-[160px] bg-white rounded-2xl overflow-hidden shadow-sm border border-[#f0f0f0]">
-      {/* Image */}
-      <div className="h-[100px] overflow-hidden">
-        <img src={img} alt={user} className="w-full h-full object-cover" />
-      </div>
+      {/* Media */}
+      {video && (
+        <div className="h-[100px] overflow-hidden relative">
+          <video
+            ref={videoRef}
+            src={`${video}#t=0.001`}
+            className="w-full h-full object-cover"
+            muted
+            playsInline
+            loop
+            preload="auto"
+            poster={img || undefined}
+          />
+          {/* Play / Pause button */}
+          <button
+            onClick={togglePlay}
+            className="absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center"
+          >
+            {isPlaying ? (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="white">
+                <rect x="1" y="1" width="3" height="8" rx="0.5" />
+                <rect x="6" y="1" width="3" height="8" rx="0.5" />
+              </svg>
+            ) : (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="white">
+                <path d="M2.5 1L8.5 5L2.5 9V1Z" />
+              </svg>
+            )}
+          </button>
+        </div>
+      )}
+      {img && !video && (
+        <div className="h-[100px] overflow-hidden">
+          <img src={img} alt={user} className="w-full h-full object-cover" />
+        </div>
+      )}
       {/* Content */}
       <div className="p-2.5">
         {/* User row */}
@@ -270,9 +282,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatar
         {/* Likes / comments */}
         <div className="flex gap-3">
           <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">♡ {likes}</span>
-          {comments > 0 && (
-            <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">💬 {comments}</span>
-          )}
+          <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">💬 {comments}</span>
         </div>
       </div>
     </div>
@@ -282,6 +292,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, avatar
 export default function HomePage() {
   const navigate = useNavigate()
   const [showStreak, setShowStreak] = useState(false)
+  const [communityPosts] = useState(() => loadPosts())
 
   return (
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
@@ -402,8 +413,8 @@ export default function HomePage() {
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1 -mx-0 px-5 scrollbar-hide">
-            {COMMUNITY_POSTS.map((post) => (
-              <CommunityCard key={post.id} {...post} />
+            {communityPosts.slice(0, 5).map((post) => (
+              <CommunityCard key={post.id} {...post} excerpt={post.body} />
             ))}
           </div>
         </section>

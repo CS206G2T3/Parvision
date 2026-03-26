@@ -1,0 +1,81 @@
+import foursomeImg from '../assets/foursome.png'
+import swingImg from '../assets/swing.png'
+import balltraceVideo from '../assets/balltrace.mp4'
+
+const STORAGE_KEY = 'parvision_posts'
+
+export const SEED_POSTS = [
+  {
+    id: 1,
+    community: 'Weekend Warriors',
+    communityColor: '#a855f7',
+    communityAbbr: 'WW',
+    user: 'Non-Significant Other',
+    avatarColor: '#a3c4a8',
+    avatarLetter: 'N',
+    time: '1h ago',
+    body: 'Weekend foursome was a blast! Finally shot under 90 for the first time this season \u{1F389} The new wedge made all the difference on the back nine.',
+    likes: 12,
+    comments: 3,
+    img: foursomeImg,
+    tags: [],
+  },
+  {
+    id: 2,
+    community: 'Singapore Golfers',
+    communityColor: '#248a3d',
+    communityAbbr: 'SG',
+    user: 'Marcus Hooy',
+    avatarColor: '#f97316',
+    avatarLetter: 'M',
+    time: '2h ago',
+    body: 'Swing looking slightly rough this session \u{1F605} Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
+    likes: 40,
+    comments: 7,
+    img: swingImg,
+    tags: ['Swing Analyzer'],
+  },
+  {
+    id: 3,
+    community: 'Scratch Club',
+    communityColor: '#409cff',
+    communityAbbr: 'SC',
+    user: 'Marcus Hooy',
+    avatarColor: '#f97316',
+    avatarLetter: 'M',
+    time: '5h ago',
+    body: 'Golden hour session at Sentosa. Different energy when the light hits like that. Ball tracing showed 247 yards \u2014 best drive this year \u{1F525}',
+    likes: 213,
+    comments: 0,
+    img: swingImg,
+    tags: ['Ball Tracer'],
+  },
+  {
+    id: 4,
+    community: 'Beginners Corner',
+    communityColor: '#f97316',
+    communityAbbr: 'BC',
+    user: 'Fairway Phil',
+    avatarColor: '#a855f7',
+    avatarLetter: 'F',
+    time: '1d ago',
+    body: 'Did the Dynamic Warmup routine before the game today \u2014 huge difference in my hip mobility by hole 5. Highly recommend it to everyone just starting out!',
+    likes: 88,
+    comments: 14,
+    img: null,
+    tags: ['Warmup'],
+  },
+]
+
+export function loadPosts() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    return saved ? JSON.parse(saved) : SEED_POSTS
+  } catch {
+    return SEED_POSTS
+  }
+}
+
+export function savePosts(posts) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(posts))
+}

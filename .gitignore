@@ -16,7 +16,7 @@ __pycache__/
 .idea/
 
 # Frontend
-/frontend/node_modules/
+node_modules/
 /frontend/package-lock.json
 
 # Claude 
