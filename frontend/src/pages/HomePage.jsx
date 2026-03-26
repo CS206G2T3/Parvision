@@ -282,9 +282,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
         {/* Likes / comments */}
         <div className="flex gap-3">
           <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">♡ {likes}</span>
-          {comments > 0 && (
-            <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">💬 {comments}</span>
-          )}
+          <span className="text-[10px] text-[rgba(60,60,67,0.5)] flex items-center gap-0.5">💬 {comments}</span>
         </div>
       </div>
     </div>
