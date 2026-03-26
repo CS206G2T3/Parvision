@@ -413,7 +413,7 @@ function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress }) {
       {/* Video / Image */}
       {post.video && (
         <div className="mx-4 mb-3 rounded-xl overflow-hidden relative cursor-pointer" onClick={togglePlay}>
-          <video ref={videoRef} src={post.video} className="w-full" style={{ display: 'block' }} muted playsInline loop />
+          <video ref={videoRef} src={`${post.video}#t=0.001`}  className="w-full" style={{ display: 'block' }} muted playsInline loop />
           {!playing && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center shadow-lg">

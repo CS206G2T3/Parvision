@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import BottomNav from '../components/BottomNav'
 import patrickAvatar from '../assets/patrick.png'
 import warmupImg from '../assets/warmup.jpeg'
@@ -185,12 +185,53 @@ function StreakCalendar({ onClose }) {
 }
 
 function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video, avatarColor }) {
+  const videoRef = useRef(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+
+  const togglePlay = (e) => {
+    e.stopPropagation()
+    const vid = videoRef.current
+    if (!vid) return
+    if (vid.paused) {
+      vid.play()
+      setIsPlaying(true)
+    } else {
+      vid.pause()
+      setIsPlaying(false)
+    }
+  }
+
   return (
     <div className="flex-shrink-0 w-[160px] bg-white rounded-2xl overflow-hidden shadow-sm border border-[#f0f0f0]">
       {/* Media */}
       {video && (
-        <div className="h-[100px] overflow-hidden">
-          <video src={video} className="w-full h-full object-cover" muted playsInline autoPlay loop />
+        <div className="h-[100px] overflow-hidden relative">
+          <video
+            ref={videoRef}
+            src={`${video}#t=0.001`}
+            className="w-full h-full object-cover"
+            muted
+            playsInline
+            loop
+            preload="auto"
+            poster={img || undefined}
+          />
+          {/* Play / Pause button */}
+          <button
+            onClick={togglePlay}
+            className="absolute bottom-1.5 right-1.5 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center"
+          >
+            {isPlaying ? (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="white">
+                <rect x="1" y="1" width="3" height="8" rx="0.5" />
+                <rect x="6" y="1" width="3" height="8" rx="0.5" />
+              </svg>
+            ) : (
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="white">
+                <path d="M2.5 1L8.5 5L2.5 9V1Z" />
+              </svg>
+            )}
+          </button>
         </div>
       )}
       {img && !video && (
