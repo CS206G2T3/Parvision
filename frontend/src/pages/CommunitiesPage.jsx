@@ -83,6 +83,15 @@ const INITIAL_COMMENTS = {
   ],
 }
 
+const AVAILABLE_TAGS = [
+  'Ball Tracer',
+  'Swing Analyzer',
+  'Warmup',
+  'Course Review',
+  'Tips & Tricks',
+  'Gear Talk',
+]
+
 // ── sub-components ─────────────────────────────────────────────────────────────
 
 function ActionSheet({ options, onClose, style }) {
@@ -206,10 +215,7 @@ function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, on
               {comments.map((c) => (
                 <div
                   key={c.id}
-                  className={`flex gap-3 ${c.user === 'Jared Mango' ? 'cursor-pointer rounded-xl -mx-1 px-1 active:bg-[#f4f4f4] transition-colors' : ''}`}
-                  onClick={() => {
-                    if (c.user === 'Jared Mango' && editingCommentId !== c.id) setCommentActionId(c.id)
-                  }}
+                  className="flex gap-3"
                 >
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 mt-0.5"
@@ -218,12 +224,28 @@ function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, on
                     {c.avatarLetter}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-baseline gap-2">
+                    <div className="flex items-center gap-2">
                       <span className="text-[13px] font-semibold text-[#1c1c1e]"
                         style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                         {c.user}
                       </span>
                       <span className="text-[11px] text-[rgba(60,60,67,0.4)]">{c.time}</span>
+                      <div className="flex-1" />
+                      {editingCommentId !== c.id && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (c.user === 'Jared Mango') setCommentActionId(c.id)
+                          }}
+                          className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${c.user === 'Jared Mango' ? 'active:bg-[#f0f0f0]' : 'opacity-30'}`}
+                        >
+                          <svg width="14" height="14" viewBox="0 0 16 16" fill="rgba(60,60,67,0.45)">
+                            <circle cx="3" cy="8" r="1.5" />
+                            <circle cx="8" cy="8" r="1.5" />
+                            <circle cx="13" cy="8" r="1.5" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                     {editingCommentId === c.id ? (
                       <div className="mt-1 flex flex-col gap-1.5" onClick={(e) => e.stopPropagation()}>
@@ -527,10 +549,17 @@ function ComposeSheet({ draft, onClose, onPost }) {
   const [caption, setCaption] = useState(draft.caption)
   const [selectedCommunity, setSelectedCommunity] = useState(MY_COMMUNITIES[0])
   const [posted, setPosted] = useState(false)
+  const [selectedTags, setSelectedTags] = useState(draft.tag ? [draft.tag] : [])
+
+  const toggleTag = (tag) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? [] : [tag]
+    )
+  }
 
   const handlePost = () => {
     setPosted(true)
-    setTimeout(() => { onPost({ caption, community: selectedCommunity, tag: draft.tag }); onClose() }, 900)
+    setTimeout(() => { onPost({ caption, community: selectedCommunity, tags: selectedTags }); onClose() }, 900)
   }
 
   return (
@@ -592,9 +621,38 @@ function ComposeSheet({ draft, onClose, onPost }) {
               Tap to preview
             </p>
           </div>
-          <span className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full flex-shrink-0">
-            {draft.tag}
-          </span>
+          {selectedTags.length > 0 && (
+            <div className="flex flex-wrap gap-1 flex-shrink-0">
+              {selectedTags.map((t) => (
+                <span key={t} className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full">
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Tags */}
+        <div className="px-4 pb-3">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.4)] mb-2"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Tags
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {AVAILABLE_TAGS.map((tag) => (
+              <button
+                key={tag}
+                onClick={() => toggleTag(tag)}
+                className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all"
+                style={{
+                  backgroundColor: selectedTags.includes(tag) ? '#248a3d' : '#f4f4f4',
+                  color: selectedTags.includes(tag) ? 'white' : '#1c1c1e',
+                  fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                }}>
+                {tag}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Post to */}
@@ -690,7 +748,7 @@ export default function CommunitiesPage() {
     setShowCompose(true)
   }
 
-  const addPost = ({ caption, community, tag }) => {
+  const addPost = ({ caption, community, tags }) => {
     if (!caption.trim()) return
     const newPost = {
       id: Date.now(),
@@ -706,7 +764,7 @@ export default function CommunitiesPage() {
       comments: 0,
       img: null,
       video: balltraceVideo,
-      tags: tag ? [tag] : [],
+      tags: tags || [],
     }
     setPosts((prev) => {
       const updated = [newPost, ...prev]
