@@ -100,7 +100,9 @@ export default function LoginPage() {
       <form onSubmit={handleLogin} className="px-6 mt-6 flex flex-col gap-4 flex-shrink-0">
 
         {/* Phone / Email input */}
-        <div className="relative flex items-center bg-[#f4f4f4] rounded-[32px] h-[54px] px-4 gap-3">
+        <div className={`relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 ${
+          error ? 'bg-white border-2 border-[#ff3b30]' : 'bg-[#f4f4f4]'
+        }`}>
           <img src={IMG_EMAIL_ICON} alt="Email" className="w-6 h-6 flex-shrink-0 object-contain" />
           <input
             type="text"
@@ -114,14 +116,12 @@ export default function LoginPage() {
 
         {/* Password input — red border on error */}
         <div className={`relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 ${
-          error
-            ? 'bg-white border-2 border-[#ff3b30]'
-            : 'bg-[#f4f4f4]'
+          error ? 'bg-white border-2 border-[#ff3b30]' : 'bg-[#f4f4f4]'
         }`}>
           <img
             src={IMG_LOCK_ICON}
             alt="Password"
-            className={`w-6 h-6 flex-shrink-0 object-contain ${error ? 'tint-red' : ''}`}
+            className="w-6 h-6 flex-shrink-0 object-contain"
             style={error ? { filter: 'invert(27%) sepia(99%) saturate(3000%) hue-rotate(347deg) brightness(90%)' } : {}}
           />
           <input
@@ -134,18 +134,27 @@ export default function LoginPage() {
             }`}
             style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
           />
-          {error && (
-            <span
-              className="text-[#ff3b30] text-[14px] font-medium whitespace-nowrap flex-shrink-0"
-              style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
-            >
-              Wrong password
-            </span>
-          )}
         </div>
 
+        {/* Error message — shown as a clean banner BELOW the fields */}
+        {error && (
+          <div className="flex items-center gap-2.5 bg-[#fff0f0] border border-[#ff3b30] rounded-[14px] px-4 py-3">
+            <div className="w-5 h-5 rounded-full bg-[#ff3b30] flex items-center justify-center flex-shrink-0">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M2.5 2.5L7.5 7.5M7.5 2.5L2.5 7.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            </div>
+            <p
+              className="text-[#ff3b30] text-[14px] font-medium"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+            >
+              Incorrect username or password. Please try again.
+            </p>
+          </div>
+        )}
+
         {/* Forgot password */}
-        <div className="flex justify-end">
+        <div className="flex justify-end -mt-1">
           <button
             type="button"
             onClick={() => navigate('/forgot-password')}
