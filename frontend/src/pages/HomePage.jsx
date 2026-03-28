@@ -247,7 +247,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
             className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold"
             style={{ backgroundColor: avatarColor }}
           >
-            {user[0]}
+            {user?.[0]}
           </div>
           <div className="min-w-0">
             <p
