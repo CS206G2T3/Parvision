@@ -178,8 +178,10 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
       )}
       <div className="p-2.5">
         <div className="flex items-center gap-1.5 mb-1.5">
-          <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold"
-            style={{ backgroundColor: avatarColor }}>
+          <div
+            className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold"
+            style={{ backgroundColor: avatarColor }}
+          >
             {user[0]}
           </div>
           <div className="min-w-0">
@@ -188,6 +190,7 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
             <p className="text-[10px] text-[rgba(60,60,67,0.4)] leading-[13px]">{time}</p>
           </div>
         </div>
+        {/* Tags */}
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-1.5">
             {tags.map(tag => (
