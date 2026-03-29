@@ -178,10 +178,8 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
       )}
       <div className="p-2.5">
         <div className="flex items-center gap-1.5 mb-1.5">
-          <div
-            className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold"
-            style={{ backgroundColor: avatarColor }}
-          >
+          <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-white text-[9px] font-bold"
+            style={{ backgroundColor: avatarColor }}>
             {user[0]}
           </div>
           <div className="min-w-0">
@@ -190,7 +188,6 @@ function CommunityCard({ user, time, excerpt, likes, comments, tags, img, video,
             <p className="text-[10px] text-[rgba(60,60,67,0.4)] leading-[13px]">{time}</p>
           </div>
         </div>
-        {/* Tags */}
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-1.5">
             {tags.map(tag => (
@@ -219,19 +216,19 @@ export default function HomePage() {
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
 
       {/* ── Header ── */}
-      <div className="px-5 pt-14 pb-0 flex items-start justify-between flex-shrink-0">
+      <div className="px-5 pt-4 pb-0 flex items-start justify-between flex-shrink-0">
         <div className="flex-1">
           {/* Greeting */}
-          <p className="text-[16px] font-semibold text-[#1c1c1e] leading-[20px]"
-            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+          <p className="text-[24px] font-bold text-[#1c1c1e] leading-[28px]"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Hello, Jared
           </p>
 
           {/* Membership tier badge */}
-          <div className="mt-1.5">
+          <div className="mt-1">
             <div className="inline-flex items-center gap-1.5 bg-[#248a3d] px-3 py-1 rounded-full">
-              <span className="text-[12px]">⛳</span>
-              <span className="text-white text-[12px] font-bold"
+              <span className="text-[13px]">⛳</span>
+              <span className="text-white text-[13px] font-medium"
                 style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                 Parvision Pro
               </span>
@@ -239,12 +236,10 @@ export default function HomePage() {
           </div>
 
           {/* Badges collected */}
-          <div className="mt-1.5">
-            <button
-              className="inline-flex items-center gap-1.5 bg-[#fef3c7] px-3 py-1 rounded-full"
-            >
-              <span className="text-[12px]">🏅</span>
-              <span className="text-[#d97706] text-[12px] font-bold"
+          <div className="mt-1">
+            <button className="inline-flex items-center gap-1.5 bg-[#fef3c7] px-3 py-1 rounded-full">
+              <span className="text-[13px]">🏅</span>
+              <span className="text-[#d97706] text-[13px] font-medium"
                 style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                 13 Badges Collected
               </span>
@@ -252,10 +247,10 @@ export default function HomePage() {
           </div>
 
           {/* Main heading */}
-          <h1 className="text-[22px] font-bold leading-[28px] text-[#1c1c1e] mt-2"
+          <h1 className="text-[24px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Ready to Perfect your{' '}
-            <span className="text-[#248a3d]">Game?</span>
+            <span className="text-[#248a3d]">Game</span>?
           </h1>
         </div>
 
@@ -267,7 +262,7 @@ export default function HomePage() {
       </div>
 
       {/* ── Full-width Streak Calendar card ── */}
-      <div className="px-5 mt-4 flex-shrink-0">
+      <div className="px-5 mt-2 flex-shrink-0">
         <button
           onClick={() => setShowStreak(true)}
           className="w-full bg-white border border-[#f0f0f0] rounded-2xl px-4 py-3 shadow-sm active:opacity-80 transition-opacity"
@@ -302,20 +297,20 @@ export default function HomePage() {
       </div>
 
       {/* ── Scrollable content ── */}
-      <div className="flex-1 overflow-y-auto pb-[72px] mt-5">
+      <div className="flex-1 overflow-y-auto pb-[72px] mt-3">
 
         {/* Suggested Drills */}
         <section className="px-5">
           <div className="flex items-end justify-between mb-1.5">
             <div>
-              <h2 className="text-[17px] font-bold text-[#1c1c1e] leading-[22px]"
+              <h2 className="text-[20px] font-bold text-[#1c1c1e] leading-[26px]"
                 style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
                 Suggested Drills
               </h2>
-              <p className="text-[12px] text-[rgba(60,60,67,0.5)] leading-[16px]">Based on your recent swings</p>
+              <p className="text-[14px] text-[rgba(60,60,67,0.5)] leading-[18px]">Based on your recent swings</p>
             </div>
             <button onClick={() => navigate('/drills')}
-              className="text-[13px] font-semibold text-[#248a3d] whitespace-nowrap"
+              className="text-[15px] font-semibold text-[#248a3d] whitespace-nowrap"
               style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
               View All →
             </button>
@@ -325,11 +320,11 @@ export default function HomePage() {
             <img src={warmupImg} alt="Dynamic Warm Up" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4">
-              <p className="text-white text-[18px] font-bold leading-[22px] uppercase tracking-[0.5px]"
+              <p className="text-white text-[20px] font-bold leading-[24px] uppercase tracking-[0.5px]"
                 style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
                 Dynamic Warm Up
               </p>
-              <p className="text-white/80 text-[12px] mt-0.5 mb-2">15 Minutes</p>
+              <p className="text-white/80 text-[14px] mt-0.5 mb-2">15 Minutes</p>
               <div className="flex flex-col gap-1">
                 {['Prevents Injury', 'Improves Flexibility'].map(point => (
                   <div key={point} className="flex items-center gap-1.5">
@@ -338,7 +333,7 @@ export default function HomePage() {
                         <path d="M1 3.5L3 5.5L7 1.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className="text-white text-[12px] font-medium">{point}</span>
+                    <span className="text-white text-[14px] font-medium">{point}</span>
                   </div>
                 ))}
               </div>
@@ -350,14 +345,14 @@ export default function HomePage() {
         <section className="mt-6">
           <div className="px-5 flex items-end justify-between mb-2">
             <div>
-              <h2 className="text-[17px] font-bold text-[#1c1c1e] leading-[22px]"
+              <h2 className="text-[20px] font-bold text-[#1c1c1e] leading-[26px]"
                 style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
                 Community
               </h2>
-              <p className="text-[12px] text-[rgba(60,60,67,0.5)] leading-[16px]">See what others are up to</p>
+              <p className="text-[14px] text-[rgba(60,60,67,0.5)] leading-[18px]">See what others are up to</p>
             </div>
             <button onClick={() => navigate('/community')}
-              className="text-[13px] font-semibold text-[#248a3d] whitespace-nowrap">
+              className="text-[15px] font-semibold text-[#248a3d] whitespace-nowrap">
               See More →
             </button>
           </div>
@@ -373,14 +368,14 @@ export default function HomePage() {
           <div className="bg-[#f9f9f9] rounded-3xl px-4 pt-4 pb-5 border border-[#f0f0f0]">
             <div className="flex items-end justify-between mb-4">
               <div>
-                <h2 className="text-[17px] font-bold text-[#1c1c1e] leading-[22px]"
+                <h2 className="text-[20px] font-bold text-[#1c1c1e] leading-[26px]"
                   style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
                   My Clubs
                 </h2>
-                <p className="text-[12px] text-[rgba(60,60,67,0.5)] leading-[16px]">Track your Gear</p>
+                <p className="text-[14px] text-[rgba(60,60,67,0.5)] leading-[18px]">Track your Gear</p>
               </div>
               <button onClick={() => navigate('/collection')}
-                className="text-[13px] font-semibold text-[#248a3d] whitespace-nowrap">
+                className="text-[15px] font-semibold text-[#248a3d] whitespace-nowrap">
                 View Collection →
               </button>
             </div>
@@ -391,7 +386,7 @@ export default function HomePage() {
                   <div className="h-[70px] flex items-end justify-center">
                     <img src={club.img} alt={club.label} className="h-full w-auto object-contain" />
                   </div>
-                  <span className="text-[12px] font-semibold text-[#38383a]"
+                  <span className="text-[14px] font-semibold text-[#38383a]"
                     style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                     {club.label}
                   </span>
