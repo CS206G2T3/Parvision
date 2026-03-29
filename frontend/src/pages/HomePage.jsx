@@ -8,6 +8,8 @@ import clubIronImg from '../assets/club_iron.png'
 import clubWedgeImg from '../assets/club_wedge.png'
 import clubPutterImg from '../assets/club_putter.png'
 import { loadPosts } from '../data/communityPosts'
+import proIcon from '../assets/pro_icon.png'
+import badgeIcon from '../assets/badge_icon.png'
 
 // M T W T F S S — index 2 (W) is today, 0 and 1 are completed
 const WEEK_DAYS = [
@@ -216,10 +218,10 @@ export default function HomePage() {
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
 
       {/* ── Header ── */}
-      <div className="px-5 pt-4 pb-0 flex items-start justify-between flex-shrink-0">
+      <div className="px-5 pt-8 pb-0 relative flex-shrink-0">
         <div className="flex-1">
           {/* Greeting */}
-          <p className="text-[24px] font-bold text-[#1c1c1e] leading-[28px]"
+          <p className="text-[25px] font-bold text-[#1c1c1e] leading-[28px]"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Hello, Jared
           </p>
@@ -227,8 +229,8 @@ export default function HomePage() {
           {/* Membership tier badge */}
           <div className="mt-1">
             <div className="inline-flex items-center gap-1.5 bg-[#248a3d] px-3 py-1 rounded-full">
-              <span className="text-[13px]">⛳</span>
-              <span className="text-white text-[13px] font-medium"
+              <img src={proIcon} alt="pro" className="w-5 h-5 object-contain" />
+              <span className="text-white text-[13px] font-light"
                 style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                 Parvision Pro
               </span>
@@ -238,8 +240,8 @@ export default function HomePage() {
           {/* Badges collected */}
           <div className="mt-1">
             <button className="inline-flex items-center gap-1.5 bg-[#fef3c7] px-3 py-1 rounded-full">
-              <span className="text-[13px]">🏅</span>
-              <span className="text-[#d97706] text-[13px] font-medium"
+              <img src={badgeIcon} alt="badge" className="w-5 h-5 object-contain" />
+              <span className="text-[#d97706] text-[13px] font-light"
                 style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
                 13 Badges Collected
               </span>
@@ -247,7 +249,7 @@ export default function HomePage() {
           </div>
 
           {/* Main heading */}
-          <h1 className="text-[24px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
+          <h1 className="text-[25px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Ready to Perfect your{' '}
             <span className="text-[#248a3d]">Game</span>?
@@ -255,9 +257,9 @@ export default function HomePage() {
         </div>
 
         {/* Profile avatar */}
-        <button onClick={() => navigate('/profile')} className="flex-shrink-0 ml-3 mt-1">
+        <button onClick={() => navigate('/profile')} className="absolute top-10 right-8">
           <img src={patrickAvatar} alt="Profile"
-            className="w-11 h-11 rounded-full object-cover border-2 border-[#e5f8e9]" />
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#e5f8e9]" />
         </button>
       </div>
 
