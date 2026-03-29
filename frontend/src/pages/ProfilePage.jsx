@@ -103,7 +103,7 @@ export default function ProfilePage() {
 
         <SectionHeader title="Community Settings" />
         <div className="bg-white rounded-2xl mx-4 overflow-hidden">
-          <SettingsRow icon="👥" label="Friends & Social" onPress={() => showToast('Coming soon')} />
+          <SettingsRow icon="👥" label="Friends & Social" onPress={() => navigate('/community', { state: { tab: 'friends' } })} />
           <Divider />
           <SettingsRow icon="💬" label="Direct Messages" onPress={() => showToast('Coming soon')} />
         </div>

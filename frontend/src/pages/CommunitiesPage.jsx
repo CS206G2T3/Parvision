@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
 import balltraceVideo from '../assets/balltrace.mp4'
 import { loadPosts, savePosts } from '../data/communityPosts'
+import { useAuth } from '../context/AuthContext'
 
 // ── data ──────────────────────────────────────────────────────────────────────
 
@@ -738,7 +739,8 @@ function EditPostSheet({ post, onClose, onSave }) {
 export default function CommunitiesPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
-  const [tab, setTab] = useState('feed')       // 'feed' | 'communities'
+  const { user } = useAuth()
+  const [tab, setTab] = useState(state?.tab || 'feed')       // 'feed' | 'communities' | 'friends'
   const [showCompose, setShowCompose] = useState(!!state?.draft)
   const [composeDraft, setComposeDraft] = useState(state?.draft || null)
   const [posts, setPosts] = useState(() => loadPosts())
@@ -789,6 +791,102 @@ export default function CommunitiesPage() {
   const [actionSheetPostId, setActionSheetPostId] = useState(null)
   const [editingPost, setEditingPost] = useState(null)
   const [deleteConfirmPostId, setDeleteConfirmPostId] = useState(null)
+
+  // ── Friends state ──
+  const [friends, setFriends] = useState([])
+  const [friendRequests, setFriendRequests] = useState([])
+  const [outgoingRequests, setOutgoingRequests] = useState([])
+  const [friendsSubTab, setFriendsSubTab] = useState('list') // 'list' | 'requests' | 'add'
+  const [friendSearch, setFriendSearch] = useState('')
+  const [friendSearchResults, setFriendSearchResults] = useState([])
+  const [friendActionSheet, setFriendActionSheet] = useState(null)
+  const [removeFriendConfirm, setRemoveFriendConfirm] = useState(null)
+
+  const fetchFriendsData = useCallback(() => {
+    if (!user?.id) return
+    fetch(`/api/friends?userId=${user.id}`).then(r => r.json()).then(setFriends).catch(() => {})
+    fetch(`/api/friendRequests?toUserId=${user.id}&status=pending`).then(r => r.json()).then(setFriendRequests).catch(() => {})
+    fetch(`/api/friendRequests?fromUserId=${user.id}&status=pending`).then(r => r.json()).then(setOutgoingRequests).catch(() => {})
+  }, [user?.id])
+
+  useEffect(() => {
+    if (tab !== 'friends') return
+    fetchFriendsData()
+  }, [tab, fetchFriendsData])
+
+  const searchFriendsDebounceRef = useRef(null)
+  useEffect(() => {
+    if (friendsSubTab !== 'add' || !friendSearch.trim()) {
+      setFriendSearchResults([])
+      return
+    }
+    clearTimeout(searchFriendsDebounceRef.current)
+    searchFriendsDebounceRef.current = setTimeout(() => {
+      fetch(`/api/users/search?q=${encodeURIComponent(friendSearch.trim())}`)
+        .then(r => r.json())
+        .then(setFriendSearchResults)
+        .catch(() => {})
+    }, 300)
+  }, [friendSearch, friendsSubTab])
+
+  const sendFriendRequest = async (toUser) => {
+    if (!user?.id) return
+    const requests = await fetch('/api/friendRequests').then(r => r.json())
+    const nextId = requests.length > 0 ? Math.max(...requests.map(r => r.id)) + 1 : 1
+    await fetch('/api/friendRequests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: nextId,
+        fromUserId: user.id,
+        toUserId: toUser.id,
+        fromUserName: user.name,
+        toUserName: toUser.name,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+      }),
+    })
+    fetchFriendsData()
+  }
+
+  const acceptRequest = async (requestId) => {
+    await fetch('/api/friends/accept', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestId }),
+    })
+    fetchFriendsData()
+  }
+
+  const rejectRequest = async (requestId) => {
+    await fetch('/api/friends/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ requestId }),
+    })
+    fetchFriendsData()
+  }
+
+  const cancelRequest = async (requestId) => {
+    await fetch(`/api/friendRequests/${requestId}`, { method: 'DELETE' })
+    fetchFriendsData()
+  }
+
+  const removeFriend = async (friendId) => {
+    await fetch('/api/friends/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user.id, friendId }),
+    })
+    fetchFriendsData()
+  }
+
+  const getFriendStatus = (targetUserId) => {
+    if (friends.some(f => f.friendId === targetUserId)) return 'friends'
+    if (outgoingRequests.some(r => r.toUserId === targetUserId)) return 'pending-out'
+    if (friendRequests.some(r => r.fromUserId === targetUserId)) return 'pending-in'
+    return 'none'
+  }
 
   const addComment = (postId, text) => {
     setAllComments((prev) => {
@@ -906,6 +1004,7 @@ export default function CommunitiesPage() {
           {[
             { key: 'feed',        label: 'Feed'        },
             { key: 'communities', label: 'Communities' },
+            { key: 'friends',     label: 'Friends'     },
           ].map(({ key, label }) => (
             <button
               key={key}
@@ -1118,6 +1217,252 @@ export default function CommunitiesPage() {
             </div>
           </div>
         )}
+
+        {/* ══ FRIENDS TAB ══ */}
+        {tab === 'friends' && (
+          <div>
+            {/* Sub-tab pills */}
+            <div className="bg-white px-5 py-3 border-b border-[#f0f0f0] flex gap-2">
+              {[
+                { key: 'list', label: 'My Friends' },
+                { key: 'requests', label: 'Requests', badge: friendRequests.length },
+                { key: 'add', label: 'Add Friends' },
+              ].map(({ key, label, badge }) => (
+                <button
+                  key={key}
+                  onClick={() => setFriendsSubTab(key)}
+                  className={`px-3.5 py-1.5 rounded-full text-[13px] font-semibold transition-all relative ${
+                    friendsSubTab === key
+                      ? 'bg-[#248a3d] text-white'
+                      : 'bg-[#f4f4f4] text-[rgba(60,60,67,0.6)]'
+                  }`}
+                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                >
+                  {label}
+                  {badge > 0 && (
+                    <span className="absolute -top-1 -right-1 w-[18px] h-[18px] bg-[#ff3b30] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {badge}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* ── My Friends sub-tab ── */}
+            {friendsSubTab === 'list' && (
+              <div className="px-4 pt-4">
+                {friends.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-14 h-14 bg-[#f4f4f4] rounded-full flex items-center justify-center mb-3">
+                      <span className="text-[24px]">👥</span>
+                    </div>
+                    <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No friends yet</p>
+                    <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Search and add friends to get started</p>
+                  </div>
+                ) : (
+                  <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                    {friends.map((f, i) => (
+                      <div key={f.id}>
+                        <div className="flex items-center px-4 py-3.5 gap-3">
+                          <div
+                            className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                            style={{ backgroundColor: '#' + ((f.friendId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                          >
+                            {f.friendName?.charAt(0)?.toUpperCase() || '?'}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{f.friendName}</p>
+                          </div>
+                          <button
+                            onClick={() => setFriendActionSheet(f)}
+                            className="w-8 h-8 flex items-center justify-center"
+                          >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(60,60,67,0.4)">
+                              <circle cx="12" cy="5" r="2" />
+                              <circle cx="12" cy="12" r="2" />
+                              <circle cx="12" cy="19" r="2" />
+                            </svg>
+                          </button>
+                        </div>
+                        {i < friends.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Requests sub-tab ── */}
+            {friendsSubTab === 'requests' && (
+              <div className="px-4 pt-4">
+                {/* Incoming */}
+                {friendRequests.length > 0 && (
+                  <>
+                    <p className="text-[13px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.45)] mb-2 px-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Incoming</p>
+                    <div className="bg-white rounded-2xl overflow-hidden mb-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                      {friendRequests.map((r, i) => (
+                        <div key={r.id}>
+                          <div className="flex items-center px-4 py-3.5 gap-3">
+                            <div
+                              className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                              style={{ backgroundColor: '#' + ((r.fromUserId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                            >
+                              {r.fromUserName?.charAt(0)?.toUpperCase() || '?'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{r.fromUserName}</p>
+                            </div>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <button
+                                onClick={() => acceptRequest(r.id)}
+                                className="px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#248a3d] text-white"
+                                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                              >
+                                Accept
+                              </button>
+                              <button
+                                onClick={() => rejectRequest(r.id)}
+                                className="px-3 py-1.5 rounded-full text-[12px] font-semibold border border-[#ff3b30] text-[#ff3b30]"
+                                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                              >
+                                Reject
+                              </button>
+                            </div>
+                          </div>
+                          {i < friendRequests.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {/* Outgoing */}
+                {outgoingRequests.length > 0 && (
+                  <>
+                    <p className="text-[13px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.45)] mb-2 px-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Sent</p>
+                    <div className="bg-white rounded-2xl overflow-hidden mb-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                      {outgoingRequests.map((r, i) => (
+                        <div key={r.id}>
+                          <div className="flex items-center px-4 py-3.5 gap-3">
+                            <div
+                              className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                              style={{ backgroundColor: '#' + ((r.toUserId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                            >
+                              {r.toUserName?.charAt(0)?.toUpperCase() || '?'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{r.toUserName}</p>
+                            </div>
+                            <button
+                              onClick={() => cancelRequest(r.id)}
+                              className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[rgba(60,60,67,0.5)] bg-[#f4f4f4]"
+                              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                          {i < outgoingRequests.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+
+                {friendRequests.length === 0 && outgoingRequests.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <div className="w-14 h-14 bg-[#f4f4f4] rounded-full flex items-center justify-center mb-3">
+                      <span className="text-[24px]">📬</span>
+                    </div>
+                    <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No pending requests</p>
+                    <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Friend requests will appear here</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Add Friends sub-tab ── */}
+            {friendsSubTab === 'add' && (
+              <div>
+                {/* Search bar */}
+                <div className="bg-white px-5 py-3 border-b border-[#f0f0f0]">
+                  <div className="flex items-center bg-[#f4f4f4] rounded-[12px] h-[36px] px-3 gap-2">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="6" cy="6" r="4.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
+                      <path d="M10 10L12.5 12.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={friendSearch}
+                      onChange={(e) => setFriendSearch(e.target.value)}
+                      placeholder="Search by name"
+                      className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
+                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                    />
+                    {friendSearch ? (
+                      <button onClick={() => setFriendSearch('')} className="text-[rgba(60,60,67,0.4)]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <circle cx="12" cy="12" r="10" opacity="0.3" />
+                          <path d="M15 9l-6 6M9 9l6 6" stroke="rgba(60,60,67,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
+                        </svg>
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+
+                {/* Results */}
+                {friendSearchResults.length > 0 && (
+                  <div className="px-4 pt-4">
+                    <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                      {friendSearchResults.filter(u => u.id !== user?.id).map((u, i, arr) => {
+                        const status = getFriendStatus(u.id)
+                        return (
+                          <div key={u.id}>
+                            <div className="flex items-center px-4 py-3.5 gap-3">
+                              <div
+                                className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                                style={{ backgroundColor: '#' + ((u.id * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                              >
+                                {u.name?.charAt(0)?.toUpperCase() || '?'}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{u.name}</p>
+                              </div>
+                              {status === 'none' && (
+                                <button
+                                  onClick={() => sendFriendRequest(u)}
+                                  className="px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#248a3d] text-white"
+                                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                                >
+                                  Add Friend
+                                </button>
+                              )}
+                              {status === 'pending-out' && (
+                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[rgba(60,60,67,0.5)] bg-[#f4f4f4]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Pending</span>
+                              )}
+                              {status === 'pending-in' && (
+                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#f97316] bg-[#fff7ed]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Respond</span>
+                              )}
+                              {status === 'friends' && (
+                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#248a3d] bg-[#e5f8e9]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Friends</span>
+                              )}
+                            </div>
+                            {i < arr.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {friendSearch.trim() && friendSearchResults.filter(u => u.id !== user?.id).length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-16 text-center">
+                    <p className="text-[15px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No users found</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <BottomNav />
@@ -1172,6 +1517,26 @@ export default function CommunitiesPage() {
           destructive
           onConfirm={() => { deletePost(deleteConfirmPostId); setDeleteConfirmPostId(null) }}
           onCancel={() => setDeleteConfirmPostId(null)}
+        />
+      )}
+
+      {friendActionSheet && (
+        <ActionSheet
+          options={[
+            { label: 'Remove Friend', destructive: true, onTap: () => setRemoveFriendConfirm(friendActionSheet) },
+          ]}
+          onClose={() => setFriendActionSheet(null)}
+        />
+      )}
+
+      {removeFriendConfirm && (
+        <ConfirmDialog
+          title="Remove Friend?"
+          message={`Remove ${removeFriendConfirm.friendName} from your friends list?`}
+          confirmLabel="Remove"
+          destructive
+          onConfirm={() => { removeFriend(removeFriendConfirm.friendId); setRemoveFriendConfirm(null) }}
+          onCancel={() => setRemoveFriendConfirm(null)}
         />
       )}
     </div>

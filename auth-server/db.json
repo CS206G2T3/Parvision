@@ -1,4 +1,86 @@
 {
+  "friendRequests": [
+    {
+      "id": 1,
+      "fromUserId": 6,
+      "toUserId": 7,
+      "fromUserName": "Rachel Tan",
+      "toUserName": "Marcus Lee",
+      "status": "pending",
+      "createdAt": "2026-03-28T08:30:00.000Z"
+    },
+    {
+      "id": 2,
+      "fromUserId": 2,
+      "toUserId": 7,
+      "fromUserName": "Daniel Ng",
+      "toUserName": "Marcus Lee",
+      "status": "pending",
+      "createdAt": "2026-03-28T14:15:00.000Z"
+    },
+    {
+      "id": 3,
+      "fromUserId": 7,
+      "toUserId": 8,
+      "fromUserName": "Marcus Lee",
+      "toUserName": "Priya Sharma",
+      "status": "pending",
+      "createdAt": "2026-03-27T11:00:00.000Z"
+    },
+    {
+      "id": 4,
+      "fromUserId": 7,
+      "toUserId": 9,
+      "fromUserName": "Marcus Lee",
+      "toUserName": "Alex Chen",
+      "status": "pending",
+      "createdAt": "2026-03-27T15:00:00.000Z"
+    }
+  ],
+  "friends": [
+    {
+      "id": 1,
+      "userId": 7,
+      "friendId": 3,
+      "friendName": "Jared Yeo",
+      "createdAt": "2026-03-15T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
+      "createdAt": "2026-03-15T09:00:00.000Z"
+    },
+    {
+      "id": 3,
+      "userId": 7,
+      "friendId": 4,
+      "friendName": "Kevin Lim",
+      "createdAt": "2026-03-18T12:30:00.000Z"
+    },
+    {
+      "id": 4,
+      "userId": 4,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
+      "createdAt": "2026-03-18T12:30:00.000Z"
+    },
+    {
+      "id": 5,
+      "userId": 7,
+      "friendId": 5,
+      "friendName": "Sarah Wong",
+      "createdAt": "2026-03-20T16:45:00.000Z"
+    },
+    {
+      "id": 6,
+      "userId": 5,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
+      "createdAt": "2026-03-20T16:45:00.000Z"
+    }
+  ],
   "users": [
     {
       "id": 1,
@@ -9,7 +91,7 @@
     },
     {
       "id": 2,
-      "name": "Test",
+      "name": "Daniel Ng",
       "phone": "1234567890",
       "password": "pass123",
       "createdAt": "2026-03-10T14:22:01.481Z"
@@ -23,31 +105,52 @@
     },
     {
       "id": 4,
-      "name": "Jaredyeo",
+      "name": "Kevin Lim",
       "phone": "86992694",
       "password": "jaredyeo123",
       "createdAt": "2026-03-10T14:29:33.708Z"
     },
     {
       "id": 5,
-      "name": "Jaredyeo",
+      "name": "Sarah Wong",
       "phone": "96948660",
       "password": "jaredyeo123",
       "createdAt": "2026-03-10T14:46:24.978Z"
     },
     {
       "id": 6,
-      "name": "jenyeo",
+      "name": "Rachel Tan",
       "phone": "87188107",
       "password": "iamthebest",
       "createdAt": "2026-03-10T14:47:49.711Z"
     },
     {
       "id": 7,
-      "name": "demo",
+      "name": "Marcus Lee",
       "phone": "admin",
       "password": "password123",
       "createdAt": "2026-03-10T14:47:50.711Z"
+    },
+    {
+      "id": 8,
+      "name": "Priya Sharma",
+      "phone": "91234567",
+      "password": "password123",
+      "createdAt": "2026-03-11T10:00:00.000Z"
+    },
+    {
+      "id": 9,
+      "name": "Alex Chen",
+      "phone": "98765432",
+      "password": "password123",
+      "createdAt": "2026-03-11T10:30:00.000Z"
+    },
+    {
+      "id": 10,
+      "name": "Michelle Goh",
+      "phone": "81112233",
+      "password": "password123",
+      "createdAt": "2026-03-12T08:00:00.000Z"
     }
   ]
 }
