@@ -25,6 +25,7 @@ import ProfilePage         from './pages/ProfilePage'
 import FAQPage             from './pages/FAQPage'
 import AccountInformationPage from './pages/AccountInformationPage'
 import ContactUsPage       from './pages/ContactUsPage'
+import MembershipPage      from './pages/MembershipPage'
 import CheckInPage         from './pages/CheckInPage'
 import TakeOffPage         from './pages/TakeOffPage'
 import SearchPage          from './pages/SearchPage'
@@ -61,6 +62,7 @@ function AppRoutes() {
       <Route path="/profile/faq"     element={<ProtectedRoute><FAQPage /></ProtectedRoute>} />
       <Route path="/profile/account" element={<ProtectedRoute><AccountInformationPage /></ProtectedRoute>} />
       <Route path="/profile/contact" element={<ProtectedRoute><ContactUsPage /></ProtectedRoute>} />
+      <Route path="/profile/membership" element={<ProtectedRoute><MembershipPage /></ProtectedRoute>} />
       <Route path="/check-in"   element={<ProtectedRoute><CheckInPage /></ProtectedRoute>} />
       <Route path="/take-off"   element={<ProtectedRoute><TakeOffPage /></ProtectedRoute>} />
       <Route path="/search"     element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
@@ -78,8 +80,12 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        {!splashDone && <SplashScreen onFinish={handleSplashFinish} duration={2200} />}
-        <AppRoutes />
+        <div className="phone-wrapper">
+          <div className="phone-frame">
+            {!splashDone && <SplashScreen onFinish={handleSplashFinish} duration={2200} />}
+            <AppRoutes />
+          </div>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   )

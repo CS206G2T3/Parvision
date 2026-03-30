@@ -109,7 +109,7 @@ export default function ProfilePage() {
           <Divider />
           <SettingsRow icon="🔒" label="Password and Security" onPress={() => navigate('/forgot-password')} />
           <Divider />
-          <SettingsRow icon="⭐" label="Membership" onPress={() => showToast('Coming soon')} />
+          <SettingsRow icon="⭐" label="Membership" onPress={() => navigate('/profile/membership')} />
 
           <SectionHeader title="Community Settings" />
           <SettingsRow icon="👥" label="Friends & Social" onPress={() => navigate('/community', { state: { tab: 'friends' } })} />
