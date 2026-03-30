@@ -218,10 +218,10 @@ export default function HomePage() {
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
 
       {/* ── Header ── */}
-      <div className="px-5 pt-8 pb-0 relative flex-shrink-0">
+      <div className="px-5 pt-4 pb-0 relative flex-shrink-0">
         <div className="flex-1">
           {/* Greeting */}
-          <p className="text-[25px] font-bold text-[#1c1c1e] leading-[28px]"
+          <p className="text-[26px] font-bold text-[#1c1c1e] leading-[28px]"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Hello, Jared
           </p>
@@ -249,7 +249,7 @@ export default function HomePage() {
           </div>
 
           {/* Main heading */}
-          <h1 className="text-[25px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
+          <h1 className="text-[26px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Ready to Perfect your{' '}
             <span className="text-[#248a3d]">Game</span>?

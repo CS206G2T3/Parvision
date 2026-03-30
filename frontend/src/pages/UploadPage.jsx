@@ -39,27 +39,27 @@ export default function UploadPage() {
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
 
       {/* ── Header ── */}
-      <div className="bg-[#248a3d] pt-12 pb-4 px-5 flex-shrink-0 relative overflow-hidden flex items-center gap-4">
-        {/* Golf course icon */}
-        <div className="flex-shrink-0">
-          <img src={golfIcon} alt="golf" className="w-[90px] h-[90px] object-contain" />
+      <div className="bg-[#248a3d] pt-6 flex-shrink-0 relative overflow-visible flex items-end px-5 pb-0 h-[115px]">
+        {/* Golf course icon — bleeds out of bottom */}
+        <div className="flex-shrink-0 absolute left-4 bottom-[-18px]">
+          <img src={golfIcon} alt="golf" className="w-[120px] h-[120px] object-contain" />
         </div>
-        {/* Text */}
-        <div>
+        {/* Text pushed to right */}
+        <div className="ml-[180px] pb-6">
           <h1
             className="text-[30px] font-black text-white uppercase tracking-[2px] leading-[34px]"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
           >
             UPLOAD
           </h1>
-          <p className="text-white/80 text-[13px] font-medium mt-0.5 tracking-wide">Optimise Every Swing</p>
+          <p className="text-white text-[13px] font-medium tracking-wide">Optimise Every Swing</p>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto pb-[80px]">
 
         {/* Instructions + drop zone card */}
-        <div className="mx-4 mt-4 bg-white rounded-2xl border border-[#f0f0f0] px-4 pt-4 pb-5"
+        <div className="mx-4 mt-8 bg-white rounded-2xl border border-[#f0f0f0] px-4 pt-4 pb-5"
           style={{ boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}>
           <p
             className="text-[17px] font-bold text-[#1c1c1e] leading-[22px] mb-3"
