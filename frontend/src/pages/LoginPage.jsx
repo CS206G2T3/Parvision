@@ -70,7 +70,7 @@ export default function LoginPage() {
         </div>
 
       {/* Login title */}
-      <div className={`px-6 flex-shrink-0 ${error ? 'mt-0' : 'mt-6'}`}>
+      <div className={`px-6 flex-shrink-0 ${error ? 'mt-4' : 'mt-[-30px]'}`}>
         <h1
           className="text-[34px] font-bold leading-[41px] tracking-[0.374px] text-[#1c1c1e]"
           style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
