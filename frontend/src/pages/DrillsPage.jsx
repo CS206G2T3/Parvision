@@ -26,9 +26,9 @@ const DRILLS = [
 ]
 
 const LEVEL_COLORS = {
-  Beginner: { bg: 'bg-[#e5f8e9]', text: 'text-[#248a3d]' },
-  Intermediate: { bg: 'bg-[#f8e0be]', text: 'text-[#c47a1e]' },
-  Advanced: { bg: 'bg-[#ffebe5]', text: 'text-[#ff3b30]' },
+  Beginner:     { bg: 'bg-white', text: 'text-[#248a3d]' },
+  Intermediate: { bg: 'bg-white', text: 'text-[#c47a1e]' },
+  Advanced:     { bg: 'bg-white', text: 'text-[#ff3b30]' },
 }
 
 function DrillCard({ id, title, duration, category, level, thumb, onClick }) {
@@ -80,26 +80,21 @@ export default function DrillsPage() {
 
       {/* Header */}
       <div className="bg-white pt-14 pb-4 px-5 flex-shrink-0">
-        <button
-          onClick={() => navigate('/home')}
-          className="flex items-center gap-2 mb-4"
-          aria-label="Go back"
-        >
-          <img src={IMG_ARROW_BACK} alt="Back" className="w-5 h-5 object-contain" />
-        </button>
-
-        <h1
-          className="text-[22px] font-bold text-[#1c1c1e] leading-[28px]"
-          style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
-        >
-          Suggested Drills
-        </h1>
-        <p
-          className="text-[13px] text-[rgba(60,60,67,0.5)] mt-0.5"
-          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-        >
-          {DRILLS.length} drills to perfect your game
-        </p>
+        <div className="relative flex items-center justify-center mb-3">
+          <button
+            onClick={() => navigate('/home')}
+            className="absolute left-0 flex items-center justify-center"
+            aria-label="Go back"
+          >
+            <img src={IMG_ARROW_BACK} alt="Back" className="w-5 h-5 object-contain" />
+          </button>
+          <h1
+            className="text-[18px] font-bold text-[#1c1c1e]"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
+          >
+            Suggested Drills
+          </h1>
+        </div>
 
         {/* Search bar */}
         <div className="flex items-center bg-[#f4f4f4] rounded-[14px] h-[40px] px-3 gap-2 mt-4">

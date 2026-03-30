@@ -30,7 +30,7 @@ const CLUBS = [
 ]
 
 // Days that have a streak fire — Feb 2025
-const STREAK_DAYS = new Set([14, 15, 16, 17, 18, 19, 20, 21])
+const STREAK_DAYS = new Set([14, 15, 16, 17, 18, 19])
 const MONTH_NAMES = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 const DAY_LABELS  = ['MON','TUE','WED','THU','FRI','SAT','SUN']
 
@@ -78,7 +78,7 @@ function StreakCalendar({ onClose }) {
 
   return (
     <div
-      className="absolute inset-0 z-50 flex items-center justify-center"
+      className="absolute inset-0 z-50 flex items-start justify-center pt-36"
       style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0,0,0,0.35)' }}
       onClick={onClose}
     >
@@ -218,10 +218,10 @@ export default function HomePage() {
     <div className="relative w-full bg-white flex flex-col min-h-[852px]">
 
       {/* ── Header ── */}
-      <div className="px-5 pt-4 pb-0 relative flex-shrink-0">
+      <div className="px-5 pt-8 pb-0 relative flex-shrink-0">
         <div className="flex-1">
           {/* Greeting */}
-          <p className="text-[26px] font-bold text-[#1c1c1e] leading-[28px]"
+          <p className="text-[23px] font-bold text-[#1c1c1e] leading-[28px]"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Hello, Jared
           </p>
@@ -249,7 +249,7 @@ export default function HomePage() {
           </div>
 
           {/* Main heading */}
-          <h1 className="text-[26px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
+          <h1 className="text-[23px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
             Ready to Perfect your{' '}
             <span className="text-[#248a3d]">Game</span>?
@@ -257,9 +257,9 @@ export default function HomePage() {
         </div>
 
         {/* Profile avatar */}
-        <button onClick={() => navigate('/profile')} className="absolute top-10 right-8">
+        <button onClick={() => navigate('/profile')} className="absolute top-10 right-12">
           <img src={patrickAvatar} alt="Profile"
-            className="w-14 h-14 rounded-full object-cover border-2 border-[#e5f8e9]" />
+            className="w-16 h-16 rounded-full object-cover border-2 border-[#e5f8e9]" />
         </button>
       </div>
 
@@ -274,10 +274,19 @@ export default function HomePage() {
           <div className="flex mb-2">
             {WEEK_DAYS.map((d, i) => (
               <div key={i} className="flex-1 text-center">
-                <span className="text-[11px] font-semibold text-[rgba(60,60,67,0.5)]"
-                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
-                  {d.label}
-                </span>
+                {d.state === 'today' ? (
+                  <div className="w-7 h-7 rounded-full bg-[#248a3d] flex items-center justify-center mx-auto">
+                    <span className="text-[13px] font-semibold text-white"
+                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                      {d.label}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-[13px] font-semibold text-[rgba(60,60,67,0.5)]"
+                    style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                    {d.label}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -318,7 +327,7 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="relative rounded-2xl overflow-hidden h-[210px] w-full">
+          <div className="relative rounded-2xl overflow-hidden h-[210px] w-full cursor-pointer" onClick={() => navigate('/drills/1')}>
             <img src={warmupImg} alt="Dynamic Warm Up" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-4">
