@@ -60,19 +60,17 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Golf illustration — hidden when error state is shown */}
-      {!error && (
-        <div className="flex-shrink-0 px-6 mt--5">
+      {/* Golf illustration — always shown */}
+      <div className="flex-shrink-0 px-6 mt--5">
           <img
             src={IMG_GOLF_ILLUSTRATION}
             alt="Golf illustration"
             className="w-full max-w-[360px] h-[360px] object-contain mx-auto"
           />
         </div>
-      )}
 
       {/* Login title */}
-      <div className={`px-6 flex-shrink-0 ${error ? 'mt-10' : 'mt-6'}`}>
+      <div className={`px-6 flex-shrink-0 ${error ? 'mt-0' : 'mt-6'}`}>
         <h1
           className="text-[34px] font-bold leading-[41px] tracking-[0.374px] text-[#1c1c1e]"
           style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
@@ -80,7 +78,7 @@ export default function LoginPage() {
           Login
         </h1>
         <p
-          className="mt-1 text-[15px] font-medium leading-[20px] tracking-[-0.5px] text-[#38383a]"
+          className="mt-1 text-[15px] font- leading-[20px] tracking-[-0.5px] text-[#38383a]"
           style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
         >
           Please Sign in to continue.
@@ -91,7 +89,21 @@ export default function LoginPage() {
       {success && (
         <div className="mx-6 mt-4 px-4 py-3 bg-[#f0fff4] border border-[#248a3d] rounded-[12px]">
           <p className="text-[#248a3d] text-[14px] font-medium" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-            Login successful! Redirecting…
+            Login successful!
+          </p>
+        </div>
+      )}
+
+      {/* Error banner — same position as success */}
+      {error && (
+        <div className="mx-6 mt-4 flex items-center gap-2.5 bg-[#fff0f0] border border-[#ff3b30] rounded-[14px] px-4 py-3">
+          <div className="w-5 h-5 rounded-full bg-[#ff3b30] flex items-center justify-center flex-shrink-0">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2.5 2.5L7.5 7.5M7.5 2.5L2.5 7.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          </div>
+          <p className="text-[#ff3b30] text-[14px] font-medium" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Incorrect username or password. Please try again.
           </p>
         </div>
       )}
@@ -100,9 +112,7 @@ export default function LoginPage() {
       <form onSubmit={handleLogin} className="px-6 mt-6 flex flex-col gap-4 flex-shrink-0">
 
         {/* Phone / Email input */}
-        <div className={`relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 ${
-          error ? 'bg-white border-2 border-[#ff3b30]' : 'bg-[#f4f4f4]'
-        }`}>
+        <div className="relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 bg-[#f4f4f4]">
           <img src={IMG_EMAIL_ICON} alt="Email" className="w-6 h-6 flex-shrink-0 object-contain" />
           <input
             type="text"
@@ -115,9 +125,7 @@ export default function LoginPage() {
         </div>
 
         {/* Password input — red border on error */}
-        <div className={`relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 ${
-          error ? 'bg-white border-2 border-[#ff3b30]' : 'bg-[#f4f4f4]'
-        }`}>
+        <div className="relative flex items-center rounded-[32px] h-[54px] px-4 gap-3 bg-[#f4f4f4]">
           <img
             src={IMG_LOCK_ICON}
             alt="Password"
@@ -136,23 +144,6 @@ export default function LoginPage() {
           />
         </div>
 
-        {/* Error message — shown as a clean banner BELOW the fields */}
-        {error && (
-          <div className="flex items-center gap-2.5 bg-[#fff0f0] border border-[#ff3b30] rounded-[14px] px-4 py-3">
-            <div className="w-5 h-5 rounded-full bg-[#ff3b30] flex items-center justify-center flex-shrink-0">
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path d="M2.5 2.5L7.5 7.5M7.5 2.5L2.5 7.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-              </svg>
-            </div>
-            <p
-              className="text-[#ff3b30] text-[14px] font-medium"
-              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-            >
-              Incorrect username or password. Please try again.
-            </p>
-          </div>
-        )}
-
         {/* Forgot password */}
         <div className="flex justify-end -mt-1">
           <button
@@ -168,14 +159,20 @@ export default function LoginPage() {
         {/* Login button */}
         <button
           type="submit"
-          disabled={loading}
-          className="w-full h-[56px] bg-[#248a3d] rounded-[16px] flex items-center justify-center mt-1 active:opacity-80 transition-opacity disabled:opacity-60"
+          disabled={loading || success}
+          className="w-full h-[56px] bg-[#248a3d] rounded-[16px] flex items-center justify-center gap-2 mt-1 active:opacity-80 transition-opacity disabled:opacity-80"
         >
+          {(loading || success) && (
+            <svg className="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="3" />
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="white" strokeWidth="3" strokeLinecap="round" />
+            </svg>
+          )}
           <span
             className="text-[20px] font-semibold leading-[25px] tracking-[0.38px] text-white"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
           >
-            {loading ? 'Signing in…' : 'Login'}
+            {success ? 'Login successful!' : loading ? 'Signing in…' : 'Login'}
           </span>
         </button>
       </form>
