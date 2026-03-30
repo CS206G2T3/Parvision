@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import golfIllustration from '../assets/man-playing-golf-2986601-2490937 1.png'
+import loginLogo from '../assets/loginpagelogo.png'
 import alternateEmail from '../assets/alternate_email.png'
 import { IMG_LOCK_ICON, IMG_ARROW_BACK, IMG_GB_FLAG, IMG_EXPAND_MORE } from '../icons'
 
-const IMG_GOLF_ILLUSTRATION = golfIllustration
+const IMG_GOLF_ILLUSTRATION = loginLogo
 const IMG_EMAIL_ICON = alternateEmail
 
 export default function LoginPage() {
@@ -43,10 +43,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="relative w-full bg-white flex flex-col min-h-[852px]">
+    <div className="relative w-full bg-[#fcfcfc] flex flex-col min-h-[852px]">
 
       {/* Header bar */}
-      <div className="relative w-full h-[129px] bg-white flex-shrink-0">
+      <div className="relative w-full h-[69px] bg-[#fcfcfc] flex-shrink-0">
         <button
           onClick={() => navigate(-1)}
           className="absolute left-6 top-[53px] w-6 h-6 flex items-center justify-center"
@@ -62,11 +62,11 @@ export default function LoginPage() {
 
       {/* Golf illustration — hidden when error state is shown */}
       {!error && (
-        <div className="flex-shrink-0 px-6 mt-2">
+        <div className="flex-shrink-0 px-6 mt--5">
           <img
             src={IMG_GOLF_ILLUSTRATION}
             alt="Golf illustration"
-            className="w-full max-w-[345px] h-[242px] object-contain mx-auto"
+            className="w-full max-w-[360px] h-[360px] object-contain mx-auto"
           />
         </div>
       )}
@@ -80,7 +80,7 @@ export default function LoginPage() {
           Login
         </h1>
         <p
-          className="mt-1 text-[15px] font-semibold leading-[20px] tracking-[-0.5px] text-[#38383a]"
+          className="mt-1 text-[15px] font-medium leading-[20px] tracking-[-0.5px] text-[#38383a]"
           style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
         >
           Please Sign in to continue.
