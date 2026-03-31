@@ -237,17 +237,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Badges collected */}
-          <div className="mt-1">
-            <button className="inline-flex items-center gap-1.5 bg-[#fef3c7] px-3 py-1 rounded-full">
-              <img src={badgeIcon} alt="badge" className="w-5 h-5 object-contain" />
-              <span className="text-[#d97706] text-[13px] font-light"
-                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
-                13 Badges Collected
-              </span>
-            </button>
-          </div>
-
           {/* Main heading */}
           <h1 className="text-[23px] font-bold leading-[34px] text-[#1c1c1e] mt-1.5"
             style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
