@@ -1,31 +1,63 @@
 import { useState, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import ballTracerSetupImg from '../assets/balltracer-setup.png'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function BallTracerSetupPage() {
   const navigate = useNavigate()
+  const { state } = useLocation()
+  const video = state?.video || null
+  const thumb = state?.thumb || null
+
+  // Video playback
+  const videoRef = useRef(null)
+  const containerRef = useRef(null)
   const [playing, setPlaying] = useState(false)
-  const [currentSec, setCurrentSec] = useState(2)
-  const TOTAL_SEC = 9
-  const progress = (currentSec / TOTAL_SEC) * 100
-  const stepBack = () => setCurrentSec((t) => Math.max(0, t - 1))
-  const stepForward = () => setCurrentSec((t) => Math.min(TOTAL_SEC, t + 1))
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const progress = duration ? (currentTime / duration) * 100 : 0
+
+  const formatTime = (s) => `0:${String(Math.floor(s)).padStart(2, '0')}`
+
+  const togglePlay = () => {
+    const v = videoRef.current
+    if (!v) return
+    if (playing) { v.pause() } else { v.play() }
+    setPlaying(!playing)
+  }
+
+  const stepBack = () => {
+    if (videoRef.current) videoRef.current.currentTime = Math.max(0, videoRef.current.currentTime - 1)
+  }
+  const stepForward = () => {
+    if (videoRef.current) videoRef.current.currentTime = Math.min(videoRef.current.duration || 0, videoRef.current.currentTime + 1)
+  }
+
+  const handleTimeUpdate = () => {
+    const v = videoRef.current
+    if (!v) return
+    setCurrentTime(v.currentTime)
+  }
+
+  const handleSeek = (e) => {
+    const v = videoRef.current
+    if (!v || !v.duration) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    const ratio = (e.clientX - rect.left) / rect.width
+    v.currentTime = ratio * v.duration
+  }
 
   // Marker position as % of container
   const [markerPos, setMarkerPos] = useState({ x: 50, y: 40 })
   const [dragging, setDragging] = useState(false)
-  const videoRef = useRef(null)
 
   const getRelativePos = useCallback((clientX, clientY) => {
-    const rect = videoRef.current?.getBoundingClientRect()
+    const rect = containerRef.current?.getBoundingClientRect()
     if (!rect) return null
     const x = Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100))
     const y = Math.max(0, Math.min(100, ((clientY - rect.top) / rect.height) * 100))
     return { x, y }
   }, [])
 
-  // Mouse events
-  const onMouseDown = (e) => { e.preventDefault(); setDragging(true) }
+  const onMouseDown = (e) => { e.preventDefault(); e.stopPropagation(); setDragging(true) }
   const onMouseMove = useCallback((e) => {
     if (!dragging) return
     const pos = getRelativePos(e.clientX, e.clientY)
@@ -33,8 +65,7 @@ export default function BallTracerSetupPage() {
   }, [dragging, getRelativePos])
   const onMouseUp = () => setDragging(false)
 
-  // Touch events
-  const onTouchStart = (e) => { e.preventDefault(); setDragging(true) }
+  const onTouchStart = (e) => { e.preventDefault(); e.stopPropagation(); setDragging(true) }
   const onTouchMove = useCallback((e) => {
     if (!dragging) return
     const t = e.touches[0]
@@ -55,7 +86,7 @@ export default function BallTracerSetupPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-14 pb-4 border-b border-[#f0f0f0] flex-shrink-0">
         <button
-          onClick={() => navigate('/upload/select-mode')}
+          onClick={() => navigate('/upload/select-mode', { state: { thumb, video } })}
           className="flex items-center gap-1"
         >
           <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
@@ -74,12 +105,17 @@ export default function BallTracerSetupPage() {
         >
           Upload
         </p>
-        <div className="w-14" />
+        <button
+          onClick={() => navigate('/upload/processing', { state: { mode: 'ball-tracer', video, thumb } })}
+          className="text-[15px] font-semibold text-[#248a3d]"
+          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+        >
+          Done ›
+        </button>
       </div>
 
       <div className="flex-1 flex flex-col px-5 pt-4">
 
-        {/* Title */}
         <p
           className="text-[17px] font-bold text-[#1c1c1e] leading-[22px]"
           style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
@@ -95,11 +131,32 @@ export default function BallTracerSetupPage() {
 
         {/* Video with draggable marker */}
         <div
-          ref={videoRef}
+          ref={containerRef}
           className="relative rounded-2xl overflow-hidden w-full"
           style={{ aspectRatio: '9/16', touchAction: 'none' }}
         >
-          <img src={ballTracerSetupImg} alt="Swing video" className="w-full h-full object-cover" />
+          {video ? (
+            <video
+              ref={videoRef}
+              src={video}
+              poster={thumb || undefined}
+              className="w-full h-full object-cover"
+              playsInline
+              preload="auto"
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={() => {
+                const v = videoRef.current
+                if (!v) return
+                setDuration(v.duration || 0)
+                v.currentTime = 0.01
+              }}
+              onEnded={() => setPlaying(false)}
+            />
+          ) : (
+            <div className="w-full h-full bg-[#1c1c1e] flex items-center justify-center">
+              <p className="text-white/40 text-[13px]">No video selected</p>
+            </div>
+          )}
           <div className="absolute inset-0 bg-black/10" />
 
           {/* Draggable marker */}
@@ -114,7 +171,6 @@ export default function BallTracerSetupPage() {
             onMouseDown={onMouseDown}
             onTouchStart={onTouchStart}
           >
-            {/* Outer ring */}
             <div className="relative">
               <div
                 className="w-9 h-9 rounded-full border-[3px] flex items-center justify-center"
@@ -124,7 +180,6 @@ export default function BallTracerSetupPage() {
                   boxShadow: '0 0 0 1px rgba(0,0,0,0.3)',
                 }}
               >
-                {/* Inner dot */}
                 <div
                   className="w-3 h-3 rounded-full"
                   style={{ backgroundColor: dragging ? '#ff3b30' : 'white' }}
@@ -140,13 +195,10 @@ export default function BallTracerSetupPage() {
             className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 text-right flex-shrink-0"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
-            0:0{currentSec}
+            {formatTime(currentTime)}
           </span>
-          <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full">
-            <div
-              className="h-1 bg-[#248a3d] rounded-full relative"
-              style={{ width: `${progress}%` }}
-            >
+          <div className="flex-1 h-1 bg-[#e5e5ea] rounded-full cursor-pointer" onClick={handleSeek}>
+            <div className="h-1 bg-[#248a3d] rounded-full relative pointer-events-none" style={{ width: `${progress}%` }}>
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-[#248a3d] rounded-full -mr-1.5 shadow" />
             </div>
           </div>
@@ -154,12 +206,12 @@ export default function BallTracerSetupPage() {
             className="text-[12px] text-[rgba(60,60,67,0.5)] w-8 flex-shrink-0"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
-            0:09
+            {formatTime(duration)}
           </span>
         </div>
 
         {/* Playback controls */}
-        <div className="flex items-center justify-center gap-8 mt-4">
+        <div className="flex items-center justify-center gap-8 mt-4 mb-6">
           <button onClick={stepBack} className="w-10 h-10 flex items-center justify-center active:opacity-60">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
               <path d="M22 22L10 14L22 6V22Z" fill="#248a3d" />
@@ -167,7 +219,7 @@ export default function BallTracerSetupPage() {
             </svg>
           </button>
           <button
-            onClick={() => setPlaying(!playing)}
+            onClick={togglePlay}
             className="w-14 h-14 bg-[#248a3d] rounded-full flex items-center justify-center shadow-md active:opacity-80"
           >
             {playing ? (
@@ -188,22 +240,6 @@ export default function BallTracerSetupPage() {
             </svg>
           </button>
         </div>
-
-        {/* Confirm button */}
-        <button
-          onClick={() => navigate('/upload/processing', { state: { mode: 'ball-tracer' } })}
-          className="w-full h-[52px] bg-[#248a3d] rounded-2xl flex items-center justify-center gap-2 mt-6 active:opacity-80 transition-opacity"
-        >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M3 9L7 13L15 5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span
-            className="text-white text-[17px] font-bold"
-            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
-          >
-            Confirm
-          </span>
-        </button>
 
       </div>
     </div>

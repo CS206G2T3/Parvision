@@ -1,35 +1,29 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BottomNav from '../components/BottomNav'
-import swingImg from '../assets/swing.png'
-import foursomeImg from '../assets/foursome.png'
 import golfIcon from '../assets/upload_golf_icon.png'
 
-const PREVIOUS_UPLOADS = [
-  {
-    id: 1,
-    title: 'Friday Night Iron Swing',
-    date: '1d ago',
-    duration: '0:35',
-    thumb: swingImg,
-    tag: 'Ball Tracer',
-    desc: 'Swinging at Orchid Country Club, ball kept swerving left but massive improvement from last time.',
-  },
-  {
-    id: 2,
-    title: 'Chill Range Zero',
-    date: '3d ago',
-    duration: '0:09',
-    thumb: foursomeImg,
-    tag: 'Swing Analyser',
-    desc: 'Casual range session, working on follow-through consistency.',
-  },
-]
+function formatDate(iso) {
+  const d = new Date(iso)
+  const now = new Date()
+  const diff = Math.floor((now - d) / 1000)
+  if (diff < 60) return 'Just now'
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
 
 export default function UploadPage() {
   const navigate = useNavigate()
   const fileRef = useRef(null)
   const [dragging, setDragging] = useState(false)
+  const [history, setHistory] = useState([])
+
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem('parvision_upload_history') || '[]')
+    setHistory(data.slice(0, 2))
+  }, [])
 
   const handleFileSelect = () => {
     navigate('/upload/gallery')
@@ -129,56 +123,75 @@ export default function UploadPage() {
 
           <div className="bg-white rounded-2xl border border-[#f0f0f0] overflow-hidden"
             style={{ boxShadow: '0 1px 6px rgba(0,0,0,0.06)' }}>
-            {PREVIOUS_UPLOADS.map((upload, idx) => (
-              <div key={upload.id}>
-                <button
-                  onClick={() => navigate('/upload/select-mode', { state: { thumb: upload.thumb } })}
-                  className="flex items-start gap-3 p-4 w-full text-left active:bg-[#f9f9f9] transition-colors"
+            {history.length === 0 ? (
+              <div className="px-4 py-5 flex items-center gap-3">
+                <div className="w-[90px] h-[68px] rounded-xl flex-shrink-0 bg-[#f4f4f4] flex items-center justify-center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M8 5L19 12L8 19V5Z" fill="#c7c7cc" />
+                  </svg>
+                </div>
+                <p
+                  className="text-[13px] text-[rgba(60,60,67,0.45)] leading-[18px]"
+                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
                 >
-                  {/* Thumbnail */}
-                  <div className="w-[90px] h-[68px] rounded-xl flex-shrink-0 overflow-hidden relative">
-                    <img src={upload.thumb} alt={upload.title} className="w-full h-full object-cover" />
-                    <div className="absolute bottom-1 left-1 bg-black/60 rounded px-1">
-                      <span className="text-white text-[10px] font-semibold">{upload.duration}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    {/* Title + date + menu */}
-                    <div className="flex items-center justify-between gap-1">
-                      <p
-                        className="text-[14px] font-semibold text-[#1c1c1e] truncate"
-                        style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-                      >
-                        {upload.title}
-                      </p>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <span className="text-[12px] text-[rgba(60,60,67,0.45)]">{upload.date}</span>
-                        <span className="text-[rgba(60,60,67,0.4)] text-[16px] leading-none tracking-widest">···</span>
-                      </div>
-                    </div>
-
-                    {/* Tag chip */}
-                    <div className="mt-1">
-                      <span className="text-[11px] font-medium text-[rgba(60,60,67,0.6)] border border-[#e0e0e0] rounded-full px-2 py-0.5">
-                        ↗ {upload.tag}
-                      </span>
-                    </div>
-
-                    {/* Description */}
-                    <p
-                      className="text-[12px] text-[rgba(60,60,67,0.55)] mt-1.5 leading-[16px] line-clamp-2"
-                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-                    >
-                      {upload.desc}
-                    </p>
-                  </div>
-                </button>
-                {idx < PREVIOUS_UPLOADS.length - 1 && (
-                  <div className="h-px bg-[#f0f0f0] mx-4" />
-                )}
+                  No uploads yet. Analyse a swing to see it here.
+                </p>
               </div>
-            ))}
+            ) : (
+              history.map((upload, idx) => (
+                <div key={upload.id}>
+                  <button
+                    onClick={() => navigate(`/upload/history/${upload.id}`)}
+                    className="flex items-start gap-3 p-4 w-full text-left active:bg-[#f9f9f9] transition-colors"
+                  >
+                    {/* Thumbnail */}
+                    <div className="w-[90px] h-[68px] rounded-xl flex-shrink-0 overflow-hidden relative bg-[#f0f0f0]">
+                      {upload.thumb ? (
+                        <img src={upload.thumb} alt={upload.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-[#248a3d]/20 to-[#248a3d]/5 flex items-center justify-center">
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                            <path d="M8 5L19 12L8 19V5Z" fill="#248a3d" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1">
+                        <p
+                          className="text-[14px] font-semibold text-[#1c1c1e] truncate"
+                          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                        >
+                          {upload.title}
+                        </p>
+                        <span className="text-[12px] text-[rgba(60,60,67,0.45)] flex-shrink-0">
+                          {formatDate(upload.date)}
+                        </span>
+                      </div>
+
+                      <div className="mt-1">
+                        <span className="text-[11px] font-medium text-[rgba(60,60,67,0.6)] border border-[#e0e0e0] rounded-full px-2 py-0.5">
+                          ↗ {upload.mode === 'ball-tracer' ? 'Ball Tracer' : 'Swing Analyser'}
+                        </span>
+                      </div>
+
+                      {upload.description ? (
+                        <p
+                          className="text-[12px] text-[rgba(60,60,67,0.55)] mt-1.5 leading-[16px] line-clamp-2"
+                          style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                        >
+                          {upload.description}
+                        </p>
+                      ) : null}
+                    </div>
+                  </button>
+                  {idx < history.length - 1 && (
+                    <div className="h-px bg-[#f0f0f0] mx-4" />
+                  )}
+                </div>
+              ))
+            )}
 
             {/* View full history */}
             <div className="h-px bg-[#f0f0f0]" />

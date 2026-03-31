@@ -1,24 +1,25 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import swingImg from '../assets/swing.png'
 import bodyanalysedThumb from '../assets/Bodyanalysed1_thumbnail.png'
 import bodyanalysed2Thumb from '../assets/Bodyanalysed2_thumbnail.png'
+import ballTracerSetupImg from '../assets/balltracer-setup.png'
+import balltraceMp4 from '../assets/balltrace.mp4'
 
-// Mock gallery items — videos and images mixed like a real photo library
+// First 3 items are the feature videos (leftmost = swing analyser, middle = ball tracer, rightmost = second swing)
 const GALLERY_ITEMS = [
-  { id: 1, type: 'image', bg: 'linear-gradient(135deg, #a855f7, #ec4899, #f97316)' },
-  { id: 2, type: 'image', bg: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)' },
-  { id: 3, type: 'image', bg: 'linear-gradient(135deg, #10b981, #059669, #1d4ed8)' },
-  { id: 4, type: 'video', duration: '0:14', thumb: bodyanalysedThumb, video: '/Bodyanalysed1.mp4' },
-  { id: 5, type: 'video', duration: '0:09', thumb: swingImg },
-  { id: 13, type: 'video', duration: '0:14', thumb: bodyanalysed2Thumb, video: '/Bodyanalysed2.mp4' },
-  { id: 6, type: 'image', bg: 'linear-gradient(135deg, #84cc16, #22c55e)' },
-  { id: 7, type: 'image', bg: 'linear-gradient(135deg, #ec4899, #f43f5e)' },
-  { id: 8, type: 'image', bg: 'linear-gradient(135deg, #f97316, #ef4444, #7c3aed)' },
-  { id: 9, type: 'image', bg: 'linear-gradient(135deg, #0ea5e9, #6366f1)' },
-  { id: 10, type: 'image', bg: 'linear-gradient(135deg, #f59e0b, #ef4444)' },
-  { id: 11, type: 'image', bg: 'linear-gradient(135deg, #8b5cf6, #3b82f6)' },
-  { id: 12, type: 'image', bg: 'linear-gradient(135deg, #06b6d4, #0284c7)' },
+  { id: 1, type: 'video', duration: '0:14', thumb: bodyanalysedThumb, video: '/Bodyanalysed1.mp4' },
+  { id: 2, type: 'video', duration: '0:09', thumb: ballTracerSetupImg, video: balltraceMp4 },
+  { id: 3, type: 'video', duration: '0:14', thumb: bodyanalysed2Thumb, video: '/Bodyanalysed2.mp4' },
+  { id: 4, type: 'image', bg: 'linear-gradient(135deg, #a855f7, #ec4899, #f97316)' },
+  { id: 5, type: 'image', bg: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)' },
+  { id: 6, type: 'image', bg: 'linear-gradient(135deg, #10b981, #059669, #1d4ed8)' },
+  { id: 7, type: 'image', bg: 'linear-gradient(135deg, #84cc16, #22c55e)' },
+  { id: 8, type: 'image', bg: 'linear-gradient(135deg, #ec4899, #f43f5e)' },
+  { id: 9, type: 'image', bg: 'linear-gradient(135deg, #f97316, #ef4444, #7c3aed)' },
+  { id: 10, type: 'image', bg: 'linear-gradient(135deg, #0ea5e9, #6366f1)' },
+  { id: 11, type: 'image', bg: 'linear-gradient(135deg, #f59e0b, #ef4444)' },
+  { id: 12, type: 'image', bg: 'linear-gradient(135deg, #8b5cf6, #3b82f6)' },
+  { id: 13, type: 'image', bg: 'linear-gradient(135deg, #06b6d4, #0284c7)' },
 ]
 
 export default function GalleryPage() {
