@@ -5,7 +5,6 @@ import clubIronImg from '../assets/club_iron.png'
 import clubWedgeImg from '../assets/club_wedge.png'
 import clubPutterImg from '../assets/club_putter.png'
 import golfBagImg from '../assets/golfbag.png'
-import glovesImg from '../assets/gloves.png'
 
 const CLUB_CATEGORIES = [
   {
@@ -41,7 +40,7 @@ const CLUB_CATEGORIES = [
     label: 'Miscellaneous',
     count: 2,
     countLabel: 'items',
-    img: glovesImg,
+    img: null,
   },
 ]
 
@@ -115,10 +114,10 @@ export default function CollectionPage() {
           className="flex items-center gap-1 mb-4"
         >
           <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
-            <path d="M7 1L1 7L7 13" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7 1L1 7L7 13" stroke="#248a3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span
-            className="text-[15px] font-medium text-[#1c1c1e] ml-1"
+            className="text-[15px] font-medium text-[#248a3d] ml-1"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
             Home
@@ -127,7 +126,7 @@ export default function CollectionPage() {
 
         {/* Title row */}
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-[88px] h-[88px] bg-white rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden" style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}>
+          <div className="w-[88px] h-[88px] bg-[#f4f4f4] rounded-2xl flex items-center justify-center flex-shrink-0 overflow-hidden">
             <img src={golfBagImg} alt="Golf Bag" className="w-[76px] h-[76px] object-contain" />
           </div>
           <div>

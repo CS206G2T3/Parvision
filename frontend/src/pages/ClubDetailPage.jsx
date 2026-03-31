@@ -124,10 +124,10 @@ export default function ClubDetailPage() {
           aria-label="Go back"
         >
           <svg width="8" height="14" viewBox="0 0 8 14" fill="none">
-            <path d="M7 1L1 7L7 13" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M7 1L1 7L7 13" stroke="#248a3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span
-            className="text-[15px] font-medium text-[#1c1c1e] ml-1"
+            className="text-[15px] font-medium text-[#248a3d] ml-1"
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
             Collection
