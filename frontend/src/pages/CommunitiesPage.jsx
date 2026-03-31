@@ -167,7 +167,7 @@ function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, on
   }
 
   return (
-    <div className="phone-overlay flex flex-col justify-end" style={{ background: 'rgba(0,0,0,0.45)' }} onClick={onClose}>
+    <div className="phone-overlay flex flex-col justify-end" style={{ background: 'rgba(0,0,0,0.45)', zIndex: 110 }} onClick={onClose}>
       <div
         className="bg-white rounded-t-3xl flex flex-col"
         style={{ maxHeight: '75%', boxShadow: '0 -4px 30px rgba(0,0,0,0.15)' }}
@@ -308,7 +308,7 @@ function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, on
         )}
 
         {/* Input row */}
-        <div className="flex-shrink-0 border-t border-[#f0f0f0] px-4 py-3 flex items-center gap-3">
+        <div className="flex-shrink-0 border-t border-[#f0f0f0] px-4 pt-3 pb-6 flex items-center gap-3" style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom, 1.5rem))' }}>
           <div className="w-8 h-8 rounded-full bg-[#409cff] flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0">
             J
           </div>
