@@ -103,7 +103,7 @@ export default function BallTracerSetupPage() {
           className="text-[17px] font-bold text-[#1c1c1e] uppercase tracking-[1px]"
           style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
         >
-          Upload
+          Ball Trace
         </p>
         <button
           onClick={() => navigate('/upload/processing', { state: { mode: 'ball-tracer', video, thumb } })}
