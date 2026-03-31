@@ -1,6 +1,7 @@
 import foursomeImg from '../assets/foursome.png'
 import swingImg from '../assets/swing.png'
 import balltraceVideo from '../assets/balltrace.mp4'
+import swingVideo from '../assets/output_mediapipe1.mp4'
 
 const STORAGE_KEY = 'parvision_posts'
 
@@ -33,6 +34,7 @@ export const SEED_POSTS = [
     likes: 40,
     comments: 14,
     img: swingImg,
+    video: swingVideo,
     tags: ['Swing Analyzer'],
   },
   {
