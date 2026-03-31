@@ -6,6 +6,7 @@ export default function UploadProcessingPage() {
   const { state } = useLocation()
   const mode = state?.mode || 'ball-tracer'
   const video = state?.video || null
+  const thumb = state?.thumb || null
   const isBallTracer = mode === 'ball-tracer'
 
   const [dotCount, setDotCount] = useState(1)
@@ -33,10 +34,10 @@ export default function UploadProcessingPage() {
   // Auto-navigate to results after 3 seconds
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate('/upload/results', { state: { mode, video } })
+      navigate('/upload/results', { state: { mode, video, thumb } })
     }, 3000)
     return () => clearTimeout(timer)
-  }, [navigate, mode])
+  }, [navigate, mode, video, thumb])
 
   return (
     <div className="relative w-full bg-[#248a3d] flex flex-col items-center justify-center min-h-[852px]">

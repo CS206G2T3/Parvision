@@ -11,7 +11,7 @@ export default function UploadSelectModePage() {
   const selectedVideo = state?.video || null
 
   return (
-    <div className="relative w-full bg-white flex flex-col min-h-[852px]">
+    <div className="relative w-full bg-white flex flex-col min-h-[852px] overflow-y-auto">
 
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-14 pb-4 border-b border-[#f0f0f0] flex-shrink-0">
@@ -38,8 +38,8 @@ export default function UploadSelectModePage() {
         <div className="w-14" />
       </div>
 
-      {/* Video preview */}
-      <div className="relative mx-5 mt-4 rounded-2xl overflow-hidden h-[300px]">
+      {/* Video preview — full 9:16 so nothing is cropped */}
+      <div className="relative mx-5 mt-4 rounded-2xl overflow-hidden" style={{ aspectRatio: '9/16' }}>
         <img src={IMG_DRILL_THUMB} alt="Selected swing video" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/10" />
       </div>
@@ -60,11 +60,11 @@ export default function UploadSelectModePage() {
       </div>
 
       {/* Mode cards */}
-      <div className="px-5 mt-5 flex gap-5 justify-center">
+      <div className="px-5 mt-5 pb-12 flex gap-5 justify-center">
 
         {/* Ball Tracer */}
         <button
-          onClick={() => navigate('/upload/ball-tracer-setup')}
+          onClick={() => navigate('/upload/ball-tracer-setup', { state: { thumb: IMG_DRILL_THUMB, video: selectedVideo } })}
           className="flex-1 flex flex-col items-center gap-3 active:opacity-80 transition-opacity"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#f0f0f0] shadow-md">
@@ -88,7 +88,7 @@ export default function UploadSelectModePage() {
 
         {/* Swing Analyzer */}
         <button
-          onClick={() => navigate('/upload/processing', { state: { mode: 'swing-analyser', video: selectedVideo } })}
+          onClick={() => navigate('/upload/swing-analyser-setup', { state: { thumb: IMG_DRILL_THUMB, video: selectedVideo } })}
           className="flex-1 flex flex-col items-center gap-3 active:opacity-80 transition-opacity"
         >
           <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-[#f0f0f0] shadow-md">

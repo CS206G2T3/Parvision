@@ -14,6 +14,10 @@ import UploadSelectModePage   from './pages/UploadSelectModePage'
 import BallTracerSetupPage    from './pages/BallTracerSetupPage'
 import UploadProcessingPage   from './pages/UploadProcessingPage'
 import UploadResultsPage      from './pages/UploadResultsPage'
+import SwingAnalyserSetupPage from './pages/SwingAnalyserSetupPage'
+import NameSwingPage          from './pages/NameSwingPage'
+import UploadHistoryPage      from './pages/UploadHistoryPage'
+import SwingHistoryDetailPage from './pages/SwingHistoryDetailPage'
 import CommunitiesPage     from './pages/CommunitiesPage'
 import ActivityPage        from './pages/ActivityPage'
 import VideoPage           from './pages/VideoPage'
@@ -50,7 +54,11 @@ function AppRoutes() {
       <Route path="/upload/select-mode"      element={<ProtectedRoute><UploadSelectModePage /></ProtectedRoute>} />
       <Route path="/upload/ball-tracer-setup" element={<ProtectedRoute><BallTracerSetupPage /></ProtectedRoute>} />
       <Route path="/upload/processing"       element={<ProtectedRoute><UploadProcessingPage /></ProtectedRoute>} />
-      <Route path="/upload/results"          element={<ProtectedRoute><UploadResultsPage /></ProtectedRoute>} />
+      <Route path="/upload/results"              element={<ProtectedRoute><UploadResultsPage /></ProtectedRoute>} />
+      <Route path="/upload/swing-analyser-setup" element={<ProtectedRoute><SwingAnalyserSetupPage /></ProtectedRoute>} />
+      <Route path="/upload/name-swing"           element={<ProtectedRoute><NameSwingPage /></ProtectedRoute>} />
+      <Route path="/upload/history"              element={<ProtectedRoute><UploadHistoryPage /></ProtectedRoute>} />
+      <Route path="/upload/history/:id"          element={<ProtectedRoute><SwingHistoryDetailPage /></ProtectedRoute>} />
       <Route path="/community"  element={<ProtectedRoute><CommunitiesPage /></ProtectedRoute>} />
       <Route path="/activity"   element={<ProtectedRoute><ActivityPage /></ProtectedRoute>} />
       <Route path="/video"      element={<ProtectedRoute><VideoPage /></ProtectedRoute>} />
