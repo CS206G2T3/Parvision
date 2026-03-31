@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
-import SplashScreen from './components/SplashScreen'
+import SplashScreen from './components/splashscreen'
 
 // Pages
 import LoginPage           from './pages/LoginPage'
