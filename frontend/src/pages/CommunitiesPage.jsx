@@ -494,7 +494,7 @@ function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSh
         >
           {post.community}
         </span>
-        <button className="text-[rgba(60,60,67,0.35)]" onClick={() => isOwn && onMenuPress && onMenuPress()}>
+        <button className="text-[rgba(60,60,67,0.35)]" onClick={() => onMenuPress && onMenuPress()}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
           </svg>
@@ -900,6 +900,8 @@ export default function CommunitiesPage() {
   const [friendActionSheet, setFriendActionSheet] = useState(null)
   const [removeFriendConfirm, setRemoveFriendConfirm] = useState(null)
   const [sharePostId, setSharePostId] = useState(null)
+  const [hiddenPostIds, setHiddenPostIds] = useState(new Set())
+  const [reportConfirmPostId, setReportConfirmPostId] = useState(null)
 
   const fetchFriendsData = useCallback(() => {
     if (!user?.id) return
@@ -1063,9 +1065,13 @@ export default function CommunitiesPage() {
     !query || c.name.toLowerCase().includes(query.toLowerCase())
   )
 
-  const filteredPosts = activeCommunity
+  const filteredPosts = (activeCommunity
     ? posts.filter((p) => p.community === activeCommunity)
     : posts
+  ).filter((p) => !hiddenPostIds.has(p.id))
+
+  const actionSheetTarget = actionSheetPostId ? posts.find((p) => p.id === actionSheetPostId) : null
+  const isActionSheetOwn = actionSheetTarget?.user === 'Jared Mango'
 
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
@@ -1180,6 +1186,22 @@ export default function CommunitiesPage() {
                 ))}
               </div>
             </div>
+
+            {/* Hidden posts banner */}
+            {hiddenPostIds.size > 0 && (
+              <div className="flex items-center justify-between px-5 py-2.5 bg-white border-b border-[#f0f0f0]">
+                <span className="text-[13px] text-[rgba(60,60,67,0.6)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                  {hiddenPostIds.size} hidden {hiddenPostIds.size === 1 ? 'post' : 'posts'}
+                </span>
+                <button
+                  className="text-[13px] font-semibold text-[#007aff]"
+                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                  onClick={() => setHiddenPostIds(new Set())}
+                >
+                  Unhide All
+                </button>
+              </div>
+            )}
 
             {/* Posts */}
             <div className="pt-2">
@@ -1587,15 +1609,16 @@ export default function CommunitiesPage() {
 
       {actionSheetPostId && (
         <ActionSheet
-          options={[
-            { label: 'Edit Post', onTap: () => {
-              const p = posts.find((x) => x.id === actionSheetPostId)
-              if (p) setEditingPost(p)
-            }},
-            { label: 'Delete Post', destructive: true, onTap: () => {
-              setDeleteConfirmPostId(actionSheetPostId)
-            }},
-          ]}
+          options={isActionSheetOwn
+            ? [
+                { label: 'Edit Post', onTap: () => { if (actionSheetTarget) setEditingPost(actionSheetTarget) }},
+                { label: 'Delete Post', destructive: true, onTap: () => { setDeleteConfirmPostId(actionSheetPostId) }},
+              ]
+            : [
+                { label: 'Report Post', destructive: true, onTap: () => { setReportConfirmPostId(actionSheetPostId) }},
+                { label: 'Hide Post', onTap: () => { setHiddenPostIds(prev => new Set([...prev, actionSheetPostId])) }},
+              ]
+          }
           onClose={() => setActionSheetPostId(null)}
         />
       )}
@@ -1616,6 +1639,17 @@ export default function CommunitiesPage() {
           destructive
           onConfirm={() => { deletePost(deleteConfirmPostId); setDeleteConfirmPostId(null) }}
           onCancel={() => setDeleteConfirmPostId(null)}
+        />
+      )}
+
+      {reportConfirmPostId && (
+        <ConfirmDialog
+          title="Report Post?"
+          message="This post will be reported to the community moderators for review."
+          confirmLabel="Report"
+          destructive
+          onConfirm={() => setReportConfirmPostId(null)}
+          onCancel={() => setReportConfirmPostId(null)}
         />
       )}
 
