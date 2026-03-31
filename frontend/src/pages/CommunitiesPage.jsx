@@ -1161,10 +1161,10 @@ export default function CommunitiesPage() {
                     name={c.name}
                     abbr={c.abbr}
                     color={c.color}
-                    active={activeCommunity === c.name}
+                    active={activeCommunity === c.name.replace('\n', ' ')}
                     onPress={() =>
                       setActiveCommunity((prev) =>
-                        prev === c.name ? null : c.name
+                        prev === c.name.replace('\n', ' ') ? null : c.name.replace('\n', ' ')
                       )
                     }
                   />
