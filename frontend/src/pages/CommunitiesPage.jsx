@@ -457,8 +457,7 @@ function CommunityBubble({ name, abbr, color, active, onPress }) {
   )
 }
 
-function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSharePress }) {
-  const [liked, setLiked] = useState(false)
+function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSharePress, onLike, liked }) {
   const [playing, setPlaying] = useState(false)
   const videoRef = useRef(null)
 
@@ -560,7 +559,7 @@ function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSh
       {/* Action row */}
       <div className="flex items-center px-4 pb-3.5 gap-5 border-t border-[#f4f4f4] pt-2.5">
         <button
-          onClick={() => setLiked(!liked)}
+          onClick={() => { onLike && onLike(post.id, !liked) }}
           className="flex items-center gap-1.5"
         >
           <svg width="18" height="18" viewBox="0 0 24 24"
@@ -574,7 +573,7 @@ function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSh
             className={`text-[13px] font-medium ${liked ? 'text-[#ff3b30]' : 'text-[rgba(60,60,67,0.5)]'}`}
             style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
           >
-            {liked ? post.likes + 1 : post.likes}
+            {post.likes}
           </span>
         </button>
         <button onClick={onCommentPress} className="flex items-center gap-1.5">
@@ -878,6 +877,14 @@ export default function CommunitiesPage() {
     }
   })
 
+  const [likedPostIds, setLikedPostIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('parvision_liked_posts')
+      return saved ? new Set(JSON.parse(saved)) : new Set()
+    } catch {
+      return new Set()
+    }
+  })
   const [actionSheetPostId, setActionSheetPostId] = useState(null)
   const [editingPost, setEditingPost] = useState(null)
   const [deleteConfirmPostId, setDeleteConfirmPostId] = useState(null)
@@ -996,6 +1003,25 @@ export default function CommunitiesPage() {
         ],
       }
       localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      setPosts((prev) => {
+        const synced = prev.map((p) => p.id === postId ? { ...p, comments: updated[postId].length } : p)
+        savePosts(synced)
+        return synced
+      })
+      return updated
+    })
+  }
+
+  const likePost = (postId, isLiked) => {
+    setPosts((prev) => {
+      const updated = prev.map((p) => p.id === postId ? { ...p, likes: p.likes + (isLiked ? 1 : -1) } : p)
+      savePosts(updated)
+      return updated
+    })
+    setLikedPostIds((prev) => {
+      const updated = new Set(prev)
+      if (isLiked) updated.add(postId); else updated.delete(postId)
+      localStorage.setItem('parvision_liked_posts', JSON.stringify([...updated]))
       return updated
     })
   }
@@ -1042,6 +1068,11 @@ export default function CommunitiesPage() {
         [postId]: (prev[postId] || []).filter((c) => c.id !== commentId),
       }
       localStorage.setItem('parvision_comments', JSON.stringify(updated))
+      setPosts((prev) => {
+        const synced = prev.map((p) => p.id === postId ? { ...p, comments: updated[postId].length } : p)
+        savePosts(synced)
+        return synced
+      })
       return updated
     })
   }
@@ -1224,6 +1255,8 @@ export default function CommunitiesPage() {
                     isOwn={post.user === 'Jared Mango'}
                     onMenuPress={() => setActionSheetPostId(post.id)}
                     onSharePress={() => setSharePostId(post.id)}
+                    onLike={likePost}
+                    liked={likedPostIds.has(post.id)}
                   />
                 ))
               ) : (
