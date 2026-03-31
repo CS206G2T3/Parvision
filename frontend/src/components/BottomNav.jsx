@@ -1,7 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect, useRef } from 'react'
 
-// Module-level — persists across re-mounts/navigation
 let cachedBubbleX = null
 
 function HomeIcon({ active }) {
@@ -81,7 +80,6 @@ export default function BottomNav() {
   const navRef   = useRef(null)
   const itemRefs = useRef([])
 
-  // Initialize from cache so re-mounts start from the right position
   const [bubbleX, setBubbleX] = useState(cachedBubbleX)
   const [ready, setReady]     = useState(cachedBubbleX !== null)
 
@@ -94,9 +92,8 @@ export default function BottomNav() {
     return ir.left - nr.left + ir.width / 2 - BUBBLE_SIZE / 2
   }
 
-  // On mount: if no cache, snap to position then enable transitions
   useEffect(() => {
-    if (cachedBubbleX !== null) return // already have position, skip
+    if (cachedBubbleX !== null) return
     requestAnimationFrame(() => {
       const x = measure(activeIndex)
       if (x !== null) {
@@ -107,7 +104,6 @@ export default function BottomNav() {
     })
   }, [])
 
-  // On tab change: slide to new position
   useEffect(() => {
     if (!ready) return
     requestAnimationFrame(() => {
@@ -120,42 +116,62 @@ export default function BottomNav() {
   }, [activeIndex, ready])
 
   return (
-    <div className="bottom-nav-bar bg-white border-t border-[#f0f0f0] z-50 overflow-visible">
-      <div ref={navRef} className="relative flex items-center justify-around h-[60px] px-2 overflow-visible">
+    <>
+      {/* Spacer so page content doesn't hide behind the fixed bar */}
+      <div style={{ height: 80 }} />
 
-        {/* Floating bubble */}
+      {/* Fixed bar — always sticks to bottom of screen */}
+      <div
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          backgroundColor: 'white',
+          borderTop: '1px solid #f0f0f0',
+          boxShadow: '0 -2px 12px rgba(0,0,0,0.06)',
+        }}
+      >
         <div
-          className="absolute rounded-full bg-[#248a3d] pointer-events-none"
-          style={{
-            width:     BUBBLE_SIZE,
-            height:    BUBBLE_SIZE,
-            left:      bubbleX ?? 0,
-            top:       '50%',
-            transform: 'translateY(-68%)',
-            opacity:   ready ? 1 : 0,
-            transition: ready ? 'left 0.4s cubic-bezier(0.34, 1.3, 0.64, 1)' : 'none',
-            boxShadow: '0 4px 16px rgba(36,138,61,0.4)',
-          }}
-        />
+          ref={navRef}
+          className="relative flex items-center justify-around px-2 overflow-visible"
+          style={{ height: 60 }}
+        >
+          {/* Floating bubble */}
+          <div
+            className="absolute rounded-full bg-[#248a3d] pointer-events-none"
+            style={{
+              width:      BUBBLE_SIZE,
+              height:     BUBBLE_SIZE,
+              left:       bubbleX ?? 0,
+              top:        '50%',
+              transform:  'translateY(-68%)',
+              opacity:    ready ? 1 : 0,
+              transition: ready ? 'left 0.4s cubic-bezier(0.34, 1.3, 0.64, 1)' : 'none',
+              boxShadow:  '0 4px 16px rgba(36,138,61,0.4)',
+            }}
+          />
 
-        {NAV_ITEMS.map(({ path, Icon }, i) => {
-          const active = i === activeIndex
-          return (
-            <button
-              key={path}
-              ref={el => itemRefs.current[i] = el}
-              onClick={() => navigate(path)}
-              className="relative flex items-center justify-center flex-1 h-full z-10"
-              style={{
-                transform:  active ? 'translateY(-8px)' : 'translateY(0px)',
-                transition: 'transform 0.4s cubic-bezier(0.34, 1.3, 0.64, 1)',
-              }}
-            >
-              <Icon active={active} />
-            </button>
-          )
-        })}
+          {NAV_ITEMS.map(({ path, Icon }, i) => {
+            const active = i === activeIndex
+            return (
+              <button
+                key={path}
+                ref={el => itemRefs.current[i] = el}
+                onClick={() => navigate(path)}
+                className="relative flex items-center justify-center flex-1 h-full z-10"
+                style={{
+                  transform:  active ? 'translateY(-8px)' : 'translateY(0px)',
+                  transition: 'transform 0.4s cubic-bezier(0.34, 1.3, 0.64, 1)',
+                }}
+              >
+                <Icon active={active} />
+              </button>
+            )
+          })}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
