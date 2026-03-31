@@ -39,13 +39,6 @@
   ],
   "friends": [
     {
-      "id": 1,
-      "userId": 7,
-      "friendId": 3,
-      "friendName": "Jared Yeo",
-      "createdAt": "2026-03-15T09:00:00.000Z"
-    },
-    {
       "id": 3,
       "userId": 7,
       "friendId": 4,

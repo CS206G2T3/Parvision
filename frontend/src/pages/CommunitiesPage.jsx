@@ -898,7 +898,6 @@ export default function CommunitiesPage() {
   const [friendsSubTab, setFriendsSubTab] = useState('list') // 'list' | 'requests'
   const [friendSearch, setFriendSearch] = useState('')
   const [friendSearchResults, setFriendSearchResults] = useState([])
-  const [friendActionSheet, setFriendActionSheet] = useState(null)
   const [removeFriendConfirm, setRemoveFriendConfirm] = useState(null)
   const [sharePostId, setSharePostId] = useState(null)
   const [hiddenPostIds, setHiddenPostIds] = useState(new Set())
@@ -1448,14 +1447,11 @@ export default function CommunitiesPage() {
                                     <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{f.friendName}</p>
                                   </div>
                                   <button
-                                    onClick={() => setFriendActionSheet(f)}
-                                    className="w-8 h-8 flex items-center justify-center"
+                                    onClick={() => setRemoveFriendConfirm(f)}
+                                    className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#ff3b30] bg-[#fff5f5]"
+                                    style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
                                   >
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(60,60,67,0.4)">
-                                      <circle cx="12" cy="5" r="2" />
-                                      <circle cx="12" cy="12" r="2" />
-                                      <circle cx="12" cy="19" r="2" />
-                                    </svg>
+                                    Remove
                                   </button>
                                 </div>
                                 {i < filteredFriends.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
@@ -1689,15 +1685,6 @@ export default function CommunitiesPage() {
           destructive
           onConfirm={() => setReportConfirmPostId(null)}
           onCancel={() => setReportConfirmPostId(null)}
-        />
-      )}
-
-      {friendActionSheet && (
-        <ActionSheet
-          options={[
-            { label: 'Remove Friend', destructive: true, onTap: () => setRemoveFriendConfirm(friendActionSheet) },
-          ]}
-          onClose={() => setFriendActionSheet(null)}
         />
       )}
 
