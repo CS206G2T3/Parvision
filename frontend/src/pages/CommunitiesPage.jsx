@@ -894,10 +894,9 @@ export default function CommunitiesPage() {
   const [friends, setFriends] = useState([])
   const [friendRequests, setFriendRequests] = useState([])
   const [outgoingRequests, setOutgoingRequests] = useState([])
-  const [friendsSubTab, setFriendsSubTab] = useState('list') // 'list' | 'requests' | 'add'
+  const [friendsSubTab, setFriendsSubTab] = useState('list') // 'list' | 'requests'
   const [friendSearch, setFriendSearch] = useState('')
   const [friendSearchResults, setFriendSearchResults] = useState([])
-  const [friendListSearch, setFriendListSearch] = useState('')
   const [friendActionSheet, setFriendActionSheet] = useState(null)
   const [removeFriendConfirm, setRemoveFriendConfirm] = useState(null)
   const [sharePostId, setSharePostId] = useState(null)
@@ -917,7 +916,7 @@ export default function CommunitiesPage() {
 
   const searchFriendsDebounceRef = useRef(null)
   useEffect(() => {
-    if (friendsSubTab !== 'add' || !friendSearch.trim()) {
+    if (friendsSubTab !== 'list' || !friendSearch.trim()) {
       setFriendSearchResults([])
       return
     }
@@ -1348,7 +1347,6 @@ export default function CommunitiesPage() {
               {[
                 { key: 'list', label: 'My Friends' },
                 { key: 'requests', label: 'Requests', badge: friendRequests.length },
-                { key: 'add', label: 'Add Friends' },
               ].map(({ key, label, badge }) => (
                 <button
                   key={key}
@@ -1373,84 +1371,146 @@ export default function CommunitiesPage() {
             {/* ── My Friends sub-tab ── */}
             {friendsSubTab === 'list' && (
               <div>
-                {/* Search bar */}
-                {friends.length > 0 && (
-                  <div className="bg-white px-5 py-3 border-b border-[#f0f0f0]">
-                    <div className="flex items-center bg-[#f4f4f4] rounded-[12px] h-[36px] px-3 gap-2">
-                      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <circle cx="6" cy="6" r="4.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
-                        <path d="M10 10L12.5 12.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-                      </svg>
-                      <input
-                        type="text"
-                        value={friendListSearch}
-                        onChange={(e) => setFriendListSearch(e.target.value)}
-                        placeholder="Search friends"
-                        className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
-                        style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-                      />
-                      {friendListSearch ? (
-                        <button onClick={() => setFriendListSearch('')} className="text-[rgba(60,60,67,0.4)]">
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                            <circle cx="12" cy="12" r="10" opacity="0.3" />
-                            <path d="M15 9l-6 6M9 9l6 6" stroke="rgba(60,60,67,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
-                          </svg>
-                        </button>
-                      ) : null}
-                    </div>
+                {/* Search bar — always visible for searching friends + adding new ones */}
+                <div className="bg-white px-5 py-3 border-b border-[#f0f0f0]">
+                  <div className="flex items-center bg-[#f4f4f4] rounded-[12px] h-[36px] px-3 gap-2">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="6" cy="6" r="4.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
+                      <path d="M10 10L12.5 12.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    <input
+                      type="text"
+                      value={friendSearch}
+                      onChange={(e) => setFriendSearch(e.target.value)}
+                      placeholder="Search or add friends"
+                      className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
+                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                    />
+                    {friendSearch ? (
+                      <button onClick={() => setFriendSearch('')} className="text-[rgba(60,60,67,0.4)]">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <circle cx="12" cy="12" r="10" opacity="0.3" />
+                          <path d="M15 9l-6 6M9 9l6 6" stroke="rgba(60,60,67,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
+                        </svg>
+                      </button>
+                    ) : null}
                   </div>
-                )}
+                </div>
 
-                <div className="px-4 pt-4">
-                {friends.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <div className="w-14 h-14 bg-[#f4f4f4] rounded-full flex items-center justify-center mb-3">
-                      <span className="text-[24px]">👥</span>
-                    </div>
-                    <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No friends yet</p>
-                    <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Search and add friends to get started</p>
-                  </div>
-                ) : (() => {
-                  const filtered = friends.filter(f =>
-                    f.friendName?.charAt(0)?.toLowerCase().startsWith(friendListSearch.charAt(0)?.toLowerCase()) || !friendListSearch.trim()
-                  );
-                  return filtered.length > 0 ? (
-                  <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-                    {filtered.map((f, i) => (
-                      <div key={f.id}>
-                        <div className="flex items-center px-4 py-3.5 gap-3">
-                          <div
-                            className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
-                            style={{ backgroundColor: '#' + ((f.friendId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
-                          >
-                            {f.friendName?.charAt(0)?.toUpperCase() || '?'}
+                {(() => {
+                  const query = friendSearch.trim().toLowerCase();
+                  const filteredFriends = query
+                    ? friends.filter(f => f.friendName?.charAt(0)?.toLowerCase() === query.charAt(0))
+                    : friends;
+                  const friendIds = new Set(friends.map(f => f.friendId));
+                  const nonFriendResults = friendSearchResults.filter(u => u.id !== user?.id && !friendIds.has(u.id));
+
+                  return (
+                    <div className="px-4 pt-4">
+                      {/* Existing friends */}
+                      {filteredFriends.length > 0 && (
+                        <>
+                          {query && (
+                            <p className="text-[12px] font-semibold text-[rgba(60,60,67,0.5)] uppercase tracking-wide mb-2 px-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                              My Friends
+                            </p>
+                          )}
+                          <div className="bg-white rounded-2xl overflow-hidden mb-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                            {filteredFriends.map((f, i) => (
+                              <div key={f.id}>
+                                <div className="flex items-center px-4 py-3.5 gap-3">
+                                  <div
+                                    className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                                    style={{ backgroundColor: '#' + ((f.friendId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                                  >
+                                    {f.friendName?.charAt(0)?.toUpperCase() || '?'}
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{f.friendName}</p>
+                                  </div>
+                                  <button
+                                    onClick={() => setFriendActionSheet(f)}
+                                    className="w-8 h-8 flex items-center justify-center"
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(60,60,67,0.4)">
+                                      <circle cx="12" cy="5" r="2" />
+                                      <circle cx="12" cy="12" r="2" />
+                                      <circle cx="12" cy="19" r="2" />
+                                    </svg>
+                                  </button>
+                                </div>
+                                {i < filteredFriends.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                              </div>
+                            ))}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{f.friendName}</p>
+                        </>
+                      )}
+
+                      {/* Search results — non-friends from API */}
+                      {query && nonFriendResults.length > 0 && (
+                        <>
+                          <p className="text-[12px] font-semibold text-[rgba(60,60,67,0.5)] uppercase tracking-wide mb-2 px-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                            Add Friends
+                          </p>
+                          <div className="bg-white rounded-2xl overflow-hidden mb-4" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
+                            {nonFriendResults.map((u, i) => {
+                              const status = getFriendStatus(u.id);
+                              return (
+                                <div key={u.id}>
+                                  <div className="flex items-center px-4 py-3.5 gap-3">
+                                    <div
+                                      className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
+                                      style={{ backgroundColor: '#' + ((u.id * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
+                                    >
+                                      {u.name?.charAt(0)?.toUpperCase() || '?'}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{u.name}</p>
+                                    </div>
+                                    {status === 'none' && (
+                                      <button
+                                        onClick={() => sendFriendRequest(u)}
+                                        className="px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#248a3d] text-white"
+                                        style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                                      >
+                                        Add Friend
+                                      </button>
+                                    )}
+                                    {status === 'pending-out' && (
+                                      <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[rgba(60,60,67,0.5)] bg-[#f4f4f4]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Pending</span>
+                                    )}
+                                    {status === 'pending-in' && (
+                                      <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#f97316] bg-[#fff7ed]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Respond</span>
+                                    )}
+                                  </div>
+                                  {i < nonFriendResults.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
+                                </div>
+                              );
+                            })}
                           </div>
-                          <button
-                            onClick={() => setFriendActionSheet(f)}
-                            className="w-8 h-8 flex items-center justify-center"
-                          >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(60,60,67,0.4)">
-                              <circle cx="12" cy="5" r="2" />
-                              <circle cx="12" cy="12" r="2" />
-                              <circle cx="12" cy="19" r="2" />
-                            </svg>
-                          </button>
+                        </>
+                      )}
+
+                      {/* Empty states */}
+                      {!query && friends.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                          <div className="w-14 h-14 bg-[#f4f4f4] rounded-full flex items-center justify-center mb-3">
+                            <span className="text-[24px]">👥</span>
+                          </div>
+                          <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No friends yet</p>
+                          <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Search above to find and add friends</p>
                         </div>
-                        {i < filtered.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
-                      </div>
-                    ))}
-                  </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-16 text-center">
-                      <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No matches</p>
-                      <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No friends starting with "{friendListSearch.charAt(0)?.toUpperCase()}"</p>
+                      )}
+
+                      {query && filteredFriends.length === 0 && nonFriendResults.length === 0 && (
+                        <div className="flex flex-col items-center justify-center py-16 text-center">
+                          <p className="text-[15px] font-semibold text-[#1c1c1e] mb-1" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No results</p>
+                          <p className="text-[13px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No users found matching "{friendSearch}"</p>
+                        </div>
+                      )}
                     </div>
                   );
                 })()}
-                </div>
               </div>
             )}
 
@@ -1542,87 +1602,6 @@ export default function CommunitiesPage() {
               </div>
             )}
 
-            {/* ── Add Friends sub-tab ── */}
-            {friendsSubTab === 'add' && (
-              <div>
-                {/* Search bar */}
-                <div className="bg-white px-5 py-3 border-b border-[#f0f0f0]">
-                  <div className="flex items-center bg-[#f4f4f4] rounded-[12px] h-[36px] px-3 gap-2">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <circle cx="6" cy="6" r="4.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
-                      <path d="M10 10L12.5 12.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
-                    </svg>
-                    <input
-                      type="text"
-                      value={friendSearch}
-                      onChange={(e) => setFriendSearch(e.target.value)}
-                      placeholder="Search by name"
-                      className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
-                      style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-                    />
-                    {friendSearch ? (
-                      <button onClick={() => setFriendSearch('')} className="text-[rgba(60,60,67,0.4)]">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                          <circle cx="12" cy="12" r="10" opacity="0.3" />
-                          <path d="M15 9l-6 6M9 9l6 6" stroke="rgba(60,60,67,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
-                        </svg>
-                      </button>
-                    ) : null}
-                  </div>
-                </div>
-
-                {/* Results */}
-                {friendSearchResults.length > 0 && (
-                  <div className="px-4 pt-4">
-                    <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
-                      {friendSearchResults.filter(u => u.id !== user?.id).map((u, i, arr) => {
-                        const status = getFriendStatus(u.id)
-                        return (
-                          <div key={u.id}>
-                            <div className="flex items-center px-4 py-3.5 gap-3">
-                              <div
-                                className="w-11 h-11 rounded-full flex items-center justify-center text-white text-[15px] font-bold flex-shrink-0"
-                                style={{ backgroundColor: '#' + ((u.id * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0') }}
-                              >
-                                {u.name?.charAt(0)?.toUpperCase() || '?'}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-[15px] font-semibold text-[#1c1c1e] leading-[20px] truncate" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>{u.name}</p>
-                              </div>
-                              {status === 'none' && (
-                                <button
-                                  onClick={() => sendFriendRequest(u)}
-                                  className="px-3 py-1.5 rounded-full text-[12px] font-semibold bg-[#248a3d] text-white"
-                                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-                                >
-                                  Add Friend
-                                </button>
-                              )}
-                              {status === 'pending-out' && (
-                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[rgba(60,60,67,0.5)] bg-[#f4f4f4]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Pending</span>
-                              )}
-                              {status === 'pending-in' && (
-                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#f97316] bg-[#fff7ed]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Respond</span>
-                              )}
-                              {status === 'friends' && (
-                                <span className="px-3 py-1.5 rounded-full text-[12px] font-semibold text-[#248a3d] bg-[#e5f8e9]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>Friends</span>
-                              )}
-                            </div>
-                            {i < arr.length - 1 && <div className="h-px bg-[#f0f0f0] ml-[68px]" />}
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {friendSearch.trim() && friendSearchResults.filter(u => u.id !== user?.id).length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-16 text-center">
-                    <p className="text-[15px] text-[rgba(60,60,67,0.5)]" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>No users found</p>
-                  </div>
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>
