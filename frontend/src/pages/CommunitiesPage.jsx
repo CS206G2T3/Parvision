@@ -57,15 +57,6 @@ const INITIAL_COMMENTS = {
     { id: 13, user: 'Par Pete', avatarColor: '#84cc16', avatarLetter: 'P', time: '3m ago', text: 'Marcus post the next swing, we\'ll all review it!' },
     { id: 14, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2m ago', text: 'Great progress, looking forward to the next post!' },
   ],
-  3: [
-    { id: 1, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '4h 50m ago', text: 'That lighting is unreal 😍 Sentosa at golden hour hits different.' },
-    { id: 2, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: '4h 30m ago', text: '247 yards?! What driver are you using??' },
-    { id: 3, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '4h 10m ago', text: 'Ball Tracer is so accurate. I\'ve been using it every session now.' },
-    { id: 4, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '3h 50m ago', text: 'Best drive this year — and you\'re posting it at golden hour. Elite content 🙌' },
-    { id: 5, user: 'Non-Significant Other', avatarColor: '#a3c4a8', avatarLetter: 'N', time: '3h 20m ago', text: 'The vibe of this course is insane. Need to get a round in there soon.' },
-    { id: 6, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '2h 45m ago', text: 'Great tempo on that swing. The distance will keep coming as you stay consistent.' },
-    { id: 7, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '1h 30m ago', text: 'Ball Tracer + Sentosa + golden hour = perfect post 🔥' },
-  ],
   4: [
     { id: 1, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '22h ago', text: 'I need to try this before my next round!' },
     { id: 2, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '20h ago', text: 'Same here, my hip mobility is terrible in the first 3 holes.' },
