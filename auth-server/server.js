@@ -94,7 +94,7 @@ server.get('/users/search', (req, res) => {
   const db = router.db
   const users = db.get('users').value()
   const results = users
-    .filter(u => u.name.toLowerCase().includes(q))
+    .filter(u => u.name.toLowerCase().startsWith(q))
     .map(({ password, ...safe }) => safe)
   return res.json(results)
 })
