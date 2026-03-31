@@ -875,6 +875,7 @@ export default function CommunitiesPage() {
 
   const [activeCommunity, setActiveCommunity] = useState(null)
   const [query, setQuery] = useState('')
+  const [postSearch, setPostSearch] = useState('')
   const [communities, setCommunities] = useState(ALL_COMMUNITIES)
   const [activeCommentPostId, setActiveCommentPostId] = useState(null)
   const [allComments, setAllComments] = useState(() => {
@@ -1069,6 +1070,7 @@ export default function CommunitiesPage() {
     ? posts.filter((p) => p.community === activeCommunity)
     : posts
   ).filter((p) => !hiddenPostIds.has(p.id))
+   .filter((p) => !postSearch.trim() || p.body?.toLowerCase().includes(postSearch.trim().toLowerCase()) || p.user?.toLowerCase().includes(postSearch.trim().toLowerCase()) || p.community?.toLowerCase().includes(postSearch.trim().toLowerCase()))
 
   const actionSheetTarget = actionSheetPostId ? posts.find((p) => p.id === actionSheetPostId) : null
   const isActionSheetOwn = actionSheetTarget?.user === 'Jared Mango'
@@ -1085,22 +1087,6 @@ export default function CommunitiesPage() {
           >
             Communities
           </h1>
-          <div className="flex items-center gap-2.5">
-            <button onClick={() => setTab('communities')} className="w-8 h-8 flex items-center justify-center text-[#1c1c1e]">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="rgba(60,60,67,0.6)" strokeWidth="2" strokeLinecap="round">
-                <circle cx="11" cy="11" r="8" />
-                <path d="M21 21l-4.35-4.35" />
-              </svg>
-            </button>
-            <button onClick={() => openCompose()} className="w-8 h-8 bg-[#248a3d] rounded-full flex items-center justify-center shadow-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                stroke="white" strokeWidth="2.5" strokeLinecap="round">
-                <line x1="12" y1="5" x2="12" y2="19" />
-                <line x1="5" y1="12" x2="19" y2="12" />
-              </svg>
-            </button>
-          </div>
         </div>
 
         {/* Tab bar */}
@@ -1185,6 +1171,39 @@ export default function CommunitiesPage() {
                   />
                 ))}
               </div>
+            </div>
+
+            {/* Search bar + Add Post */}
+            <div className="bg-white px-5 py-3 border-b border-[#f0f0f0] flex items-center gap-2.5">
+              <div className="flex-1 flex items-center bg-[#f4f4f4] rounded-[12px] h-[36px] px-3 gap-2">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="6" cy="6" r="4.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" />
+                  <path d="M10 10L12.5 12.5" stroke="rgba(60,60,67,0.4)" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <input
+                  type="text"
+                  value={postSearch}
+                  onChange={(e) => setPostSearch(e.target.value)}
+                  placeholder="Search posts"
+                  className="flex-1 bg-transparent text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.4)] focus:outline-none"
+                  style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                />
+                {postSearch ? (
+                  <button onClick={() => setPostSearch('')} className="text-[rgba(60,60,67,0.4)]">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="12" r="10" opacity="0.3" />
+                      <path d="M15 9l-6 6M9 9l6 6" stroke="rgba(60,60,67,0.7)" strokeWidth="2" strokeLinecap="round" fill="none" />
+                    </svg>
+                  </button>
+                ) : null}
+              </div>
+              <button onClick={() => openCompose()} className="w-9 h-9 bg-[#248a3d] rounded-full flex items-center justify-center shadow-sm flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="white" strokeWidth="2.5" strokeLinecap="round">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+              </button>
             </div>
 
             {/* Hidden posts banner */}
