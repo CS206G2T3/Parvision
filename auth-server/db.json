@@ -39,6 +39,20 @@
   ],
   "friends": [
     {
+      "id": 1,
+      "userId": 7,
+      "friendId": 3,
+      "friendName": "Jared Yeo",
+      "createdAt": "2026-03-15T09:00:00.000Z"
+    },
+    {
+      "id": 2,
+      "userId": 3,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
+      "createdAt": "2026-03-15T09:00:00.000Z"
+    },
+    {
       "id": 3,
       "userId": 7,
       "friendId": 4,
@@ -46,10 +60,24 @@
       "createdAt": "2026-03-18T12:30:00.000Z"
     },
     {
+      "id": 4,
+      "userId": 4,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
+      "createdAt": "2026-03-18T12:30:00.000Z"
+    },
+    {
       "id": 5,
       "userId": 7,
       "friendId": 5,
       "friendName": "Sarah Wong",
+      "createdAt": "2026-03-20T16:45:00.000Z"
+    },
+    {
+      "id": 6,
+      "userId": 5,
+      "friendId": 7,
+      "friendName": "Marcus Lee",
       "createdAt": "2026-03-20T16:45:00.000Z"
     }
   ],
