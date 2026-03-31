@@ -349,6 +349,104 @@ function CommentSheet({ post, comments, onClose, onAddComment, onEditComment, on
   )
 }
 
+function ShareSheet({ friends, onClose }) {
+  const [sentIds, setSentIds] = useState(new Set())
+
+  const handleSend = (friendId) => {
+    setSentIds((prev) => new Set(prev).add(friendId))
+  }
+
+  return (
+    <div className="phone-overlay" style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+      <div style={{ flex: 1, background: 'rgba(0,0,0,0.45)' }} onClick={onClose} />
+      <div style={{ background: '#fff', borderRadius: '20px 20px 0 0', maxHeight: '55vh', display: 'flex', flexDirection: 'column' }}>
+        {/* Drag handle */}
+        <div className="flex justify-center pt-2.5 pb-1">
+          <div className="w-9 h-[5px] rounded-full bg-[#e0e0e0]" />
+        </div>
+
+        {/* Header */}
+        <div className="px-4 pb-3 pt-1 border-b border-[#f0f0f0]">
+          <p
+            className="text-[17px] font-bold text-[#1c1c1e] text-center"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
+          >
+            Share with Friends
+          </p>
+          <p
+            className="text-[13px] text-[rgba(60,60,67,0.5)] text-center mt-0.5"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+          >
+            {friends.length} friend{friends.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+
+        {/* Friends list or empty state */}
+        <div className="overflow-y-auto flex-1" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {friends.length > 0 ? (
+            friends.map((f) => {
+              const avatarColor = '#' + ((f.friendId * 987654 + 333) % 0xffffff).toString(16).padStart(6, '0')
+              const sent = sentIds.has(f.friendId)
+              return (
+                <div key={f.friendId} className="flex items-center px-4 py-3 gap-3">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0"
+                    style={{ backgroundColor: avatarColor }}
+                  >
+                    {f.friendName.charAt(0).toUpperCase()}
+                  </div>
+                  <p
+                    className="flex-1 text-[15px] font-medium text-[#1c1c1e] truncate"
+                    style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+                  >
+                    {f.friendName}
+                  </p>
+                  <button
+                    onClick={() => handleSend(f.friendId)}
+                    disabled={sent}
+                    className="px-4 py-1.5 rounded-full text-[13px] font-semibold flex-shrink-0 transition-all"
+                    style={{
+                      fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                      backgroundColor: sent ? '#f4f4f4' : '#248a3d',
+                      color: sent ? 'rgba(60,60,67,0.5)' : '#fff',
+                    }}
+                  >
+                    {sent ? 'Sent' : 'Send'}
+                  </button>
+                </div>
+              )
+            })
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 px-8 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#f4f4f4] flex items-center justify-center mb-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                  stroke="rgba(60,60,67,0.35)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <p
+                className="text-[16px] font-semibold text-[#1c1c1e] mb-1"
+                style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}
+              >
+                No friends yet
+              </p>
+              <p
+                className="text-[13px] text-[rgba(60,60,67,0.5)]"
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+              >
+                Add friends to share posts
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function CommunityBubble({ name, abbr, color, active, onPress }) {
   return (
     <button onClick={onPress} className="flex flex-col items-center gap-1.5 flex-shrink-0">
@@ -368,7 +466,7 @@ function CommunityBubble({ name, abbr, color, active, onPress }) {
   )
 }
 
-function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress }) {
+function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress, onSharePress }) {
   const [liked, setLiked] = useState(false)
   const [playing, setPlaying] = useState(false)
   const videoRef = useRef(null)
@@ -500,7 +598,7 @@ function PostCard({ post, commentCount, onCommentPress, isOwn, onMenuPress }) {
             {commentCount}
           </span>
         </button>
-        <button className="flex items-center gap-1.5 ml-auto">
+        <button className="flex items-center gap-1.5 ml-auto" onClick={onSharePress}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
             stroke="rgba(60,60,67,0.45)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
@@ -801,6 +899,7 @@ export default function CommunitiesPage() {
   const [friendSearchResults, setFriendSearchResults] = useState([])
   const [friendActionSheet, setFriendActionSheet] = useState(null)
   const [removeFriendConfirm, setRemoveFriendConfirm] = useState(null)
+  const [sharePostId, setSharePostId] = useState(null)
 
   const fetchFriendsData = useCallback(() => {
     if (!user?.id) return
@@ -810,9 +909,8 @@ export default function CommunitiesPage() {
   }, [user?.id])
 
   useEffect(() => {
-    if (tab !== 'friends') return
     fetchFriendsData()
-  }, [tab, fetchFriendsData])
+  }, [fetchFriendsData])
 
   const searchFriendsDebounceRef = useRef(null)
   useEffect(() => {
@@ -1094,6 +1192,7 @@ export default function CommunitiesPage() {
                     onCommentPress={() => setActiveCommentPostId(post.id)}
                     isOwn={post.user === 'Jared Mango'}
                     onMenuPress={() => setActionSheetPostId(post.id)}
+                    onSharePress={() => setSharePostId(post.id)}
                   />
                 ))
               ) : (
@@ -1537,6 +1636,13 @@ export default function CommunitiesPage() {
           destructive
           onConfirm={() => { removeFriend(removeFriendConfirm.friendId); setRemoveFriendConfirm(null) }}
           onCancel={() => setRemoveFriendConfirm(null)}
+        />
+      )}
+
+      {sharePostId !== null && (
+        <ShareSheet
+          friends={friends}
+          onClose={() => setSharePostId(null)}
         />
       )}
     </div>
