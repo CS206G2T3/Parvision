@@ -58,20 +58,20 @@ const INITIAL_COMMENTS = {
     { id: 14, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2m ago', text: 'Great progress, looking forward to the next post!' },
   ],
   4: [
-    { id: 1, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '22h ago', text: 'I need to try this before my next round!' },
-    { id: 2, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '20h ago', text: 'Same here, my hip mobility is terrible in the first 3 holes.' },
-    { id: 3, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '18h ago', text: 'Which exercises helped the most for you?' },
-    { id: 4, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '16h ago', text: 'The hip circles are the key move. 2 mins each side.' },
-    { id: 5, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '12h ago', text: 'Highly recommend adding the shoulder rotation too.' },
-    { id: 6, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: '8h ago', text: 'Does this work if you only have 10 mins before teeing off?' },
-    { id: 7, user: 'Par Pete', avatarColor: '#84cc16', avatarLetter: 'P', time: '4h ago', text: 'Yes! Even 5 mins of this makes a difference. Do it on the range.' },
-    { id: 8, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2h ago', text: 'Saved this post. Doing it tomorrow morning!' },
-    { id: 9, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '1h ago', text: 'Thanks Phil, trying the hip circles now 🙏' },
-    { id: 10, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '30m ago', text: 'Update: hole 1 felt completely different. Believer now 🔥' },
-    { id: 11, user: 'Non-Significant Other', avatarColor: '#a3c4a8', avatarLetter: 'N', time: '15m ago', text: 'Adding this to my pre-round ritual from now on!' },
-    { id: 12, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '5m ago', text: 'Love to see it. Keep it up everyone!' },
-    { id: 13, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '1m ago', text: 'Great thread 🙌 See you all on the fairway.' },
-    { id: 14, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: 'just now', text: 'This community is the best 💚' },
+    { id: 1, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '22h ago', text: 'I\'m down! Haven\'t been to OCC in ages' },
+    { id: 2, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '20h ago', text: 'Count me in! Do they have mats or is it off grass?' },
+    { id: 3, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '18h ago', text: 'Saturday works for me, how many bays are we grabbing?' },
+    { id: 4, user: 'Fairway Phil', avatarColor: '#a855f7', avatarLetter: 'F', time: '16h ago', text: 'OCC range is solid. I\'ll be there! Need to work on my irons anyway' },
+    { id: 5, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '12h ago', text: 'Great spot. I can give some tips if anyone wants swing feedback on the day' },
+    { id: 6, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: '8h ago', text: '7pm perfect, just nice after the heat dies down 🙌' },
+    { id: 7, user: 'Par Pete', avatarColor: '#84cc16', avatarLetter: 'P', time: '4h ago', text: 'Is parking easy there on Saturday evenings?' },
+    { id: 8, user: 'Birdie Bob', avatarColor: '#06b6d4', avatarLetter: 'B', time: '2h ago', text: 'Let\'s go! I\'ll bring extra balls to share 🏌️' },
+    { id: 9, user: 'Iron Ian', avatarColor: '#ec4899', avatarLetter: 'I', time: '1h ago', text: 'Parking is fine, there\'s a big lot right next to the range' },
+    { id: 10, user: 'Sandy Wedge', avatarColor: '#409cff', avatarLetter: 'S', time: '30m ago', text: 'Can we do a mini closest-to-pin challenge while we\'re there? 😂' },
+    { id: 11, user: 'Non-Significant Other', avatarColor: '#a3c4a8', avatarLetter: 'N', time: '15m ago', text: 'I\'m coming too! Should we grab dinner after?' },
+    { id: 12, user: 'Coach Dave', avatarColor: '#248a3d', avatarLetter: 'C', time: '5m ago', text: 'Dinner sounds good, there\'s a hawker centre nearby' },
+    { id: 13, user: 'Marcus Hooy', avatarColor: '#f97316', avatarLetter: 'M', time: '1m ago', text: 'This is gonna be a great session, see everyone Saturday! 🔥' },
+    { id: 14, user: 'Weekend Wanda', avatarColor: '#f59e0b', avatarLetter: 'W', time: 'just now', text: 'Love OpenJio posts like these, best way to meet up 💚' },
   ],
 }
 
@@ -82,6 +82,7 @@ const AVAILABLE_TAGS = [
   'Course Review',
   'Tips & Tricks',
   'Gear Talk',
+  'OpenJio',
 ]
 
 // ── sub-components ─────────────────────────────────────────────────────────────

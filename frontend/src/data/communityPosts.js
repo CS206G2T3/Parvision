@@ -45,11 +45,11 @@ export const SEED_POSTS = [
     avatarColor: '#a855f7',
     avatarLetter: 'F',
     time: '1d ago',
-    body: 'Did the Dynamic Warmup routine before the game today \u2014 huge difference in my hip mobility by hole 5. Highly recommend it to everyone just starting out!',
+    body: 'Hitting the golf range this coming Saturday 7pm at OCC, whos coming?',
     likes: 88,
     comments: 14,
     img: null,
-    tags: ['Warmup'],
+    tags: ['OpenJio'],
   },
 ]
 
