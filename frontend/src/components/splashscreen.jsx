@@ -27,70 +27,65 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col items-center justify-center z-50"
+      className="absolute inset-0 flex flex-col items-center justify-center z-50 overflow-hidden"
       style={{
         background: '#ffffff',
         opacity: fadeOut ? 0 : 1,
         transition: 'opacity 0.6s ease-in-out',
       }}
     >
-      {/* Decorative background rings */}
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 340,
-          height: 340,
-          top: 0, left: 0, right: 0, bottom: 0,
-          margin: 'auto',
-          border: '2px solid rgba(36, 138, 61, 0.30)',
-          animation: 'ringPulse 3s ease-in-out infinite',
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 460,
-          height: 460,
-          top: 0, left: 0, right: 0, bottom: 0,
-          margin: 'auto',
-          border: '2px solid rgba(36, 138, 61, 0.18)',
-          animation: 'ringPulse 3s ease-in-out 0.5s infinite',
-        }}
-      />
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 580,
-          height: 580,
-          top: 0, left: 0, right: 0, bottom: 0,
-          margin: 'auto',
-          border: '1.5px solid rgba(36, 138, 61, 0.09)',
-          animation: 'ringPulse 3s ease-in-out 1s infinite',
-        }}
-      />
-
-      {/* Glow behind logo */}
-      <div
-        className="absolute rounded-full"
-        style={{
-          width: 280,
-          height: 280,
-          top: 0, left: 0, right: 0, bottom: 0,
-          margin: 'auto',
-          background: 'radial-gradient(circle, rgba(36,138,61,0.10) 0%, transparent 70%)',
-          filter: 'blur(24px)',
-          animation: 'glowPulse 2.5s ease-in-out infinite',
-        }}
-      />
-
-      {/* Logo */}
+      {/* Logo + rings — all centered together */}
       <div
         style={{
+          position: 'relative',
+          width: 288,
+          height: 288,
           transform: entered && !fadeOut ? 'scale(1) translateY(0)' : fadeOut ? 'scale(0.94) translateY(4px)' : 'scale(0.82) translateY(16px)',
           opacity: entered && !fadeOut ? 1 : fadeOut ? 0 : 0,
           transition: entered ? 'transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease' : 'none',
         }}
       >
+        {/* Rings — absolutely centered on the logo */}
+        {[
+          { size: 340, border: '2px solid rgba(36,138,61,0.30)', delay: '0s' },
+          { size: 460, border: '2px solid rgba(36,138,61,0.18)', delay: '0.5s' },
+          { size: 580, border: '1.5px solid rgba(36,138,61,0.09)', delay: '1s' },
+        ].map(({ size, border, delay }) => (
+          <div
+            key={size}
+            className="rounded-full"
+            style={{
+              position: 'absolute',
+              width: size,
+              height: size,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              border,
+              animation: `ringPulse 3s ease-in-out ${delay} infinite`,
+              pointerEvents: 'none',
+            }}
+          />
+        ))}
+
+        {/* Glow */}
+        <div
+          className="rounded-full"
+          style={{
+            position: 'absolute',
+            width: 280,
+            height: 280,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'radial-gradient(circle, rgba(36,138,61,0.10) 0%, transparent 70%)',
+            filter: 'blur(24px)',
+            animation: 'glowPulse 2.5s ease-in-out infinite',
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Logo circle */}
         <div
           style={{
             width: 288,
@@ -98,6 +93,7 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
             borderRadius: '50%',
             overflow: 'hidden',
             filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.08))',
+            position: 'relative',
           }}
         >
           <img
@@ -162,12 +158,12 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
 
       <style>{`
         @keyframes ringPulse {
-          0%, 100% { transform: scale(1);    opacity: 1; }
-          50%       { transform: scale(1.06); opacity: 0.35; }
+          0%, 100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+          50%       { transform: translate(-50%, -50%) scale(1.06); opacity: 0.35; }
         }
         @keyframes glowPulse {
-          0%, 100% { opacity: 0.7; transform: scale(1); }
-          50%       { opacity: 1;   transform: scale(1.1); }
+          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+          50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.1); }
         }
         @keyframes progressFill {
           from { width: 0%; }
