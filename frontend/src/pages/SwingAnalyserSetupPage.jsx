@@ -70,7 +70,7 @@ export default function SwingAnalyserSetupPage() {
     >
 
       {/* Header */}
-      <div className="flex items-center justify-between px-5 pt-14 pb-4 border-b border-[#f0f0f0] flex-shrink-0">
+      <div className="sticky top-0 z-10 bg-white flex items-center justify-between px-5 pt-14 pb-4 border-b border-[#f0f0f0] flex-shrink-0">
         <button
           onClick={() => navigate('/upload/select-mode', { state: { thumb, video } })}
           className="flex items-center gap-1"

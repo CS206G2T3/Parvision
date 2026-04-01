@@ -120,13 +120,10 @@ export default function BottomNav() {
       {/* Spacer so page content doesn't hide behind the fixed bar */}
       <div style={{ height: 80 }} />
 
-      {/* Fixed bar — always sticks to bottom of screen */}
+      {/* Fixed bar — constrained to phone frame on desktop via .bottom-nav-bar */}
       <div
+        className="bottom-nav-bar"
         style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
           zIndex: 100,
           backgroundColor: 'white',
           borderTop: '1px solid #f0f0f0',

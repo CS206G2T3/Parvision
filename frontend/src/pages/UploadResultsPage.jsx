@@ -3,6 +3,180 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import balltraceImg from '../assets/balltrace.png'
 import balltraceVideo from '../assets/balltrace.mp4'
 import warmupImg from '../assets/warmup.jpeg'
+import { loadPosts, savePosts } from '../data/communityPosts'
+
+const MY_COMMUNITIES = [
+  { id: 1, name: 'Singapore\nGolfers', abbr: 'SG', color: '#248a3d' },
+  { id: 2, name: 'Scratch\nClub',      abbr: 'SC', color: '#409cff' },
+  { id: 3, name: 'Beginners\nCorner',  abbr: 'BC', color: '#f97316' },
+  { id: 4, name: 'Weekend\nWarriors',  abbr: 'WW', color: '#a855f7' },
+]
+
+const AVAILABLE_TAGS = ['Ball Tracer', 'Swing Analyzer', 'Warmup', 'Course Review', 'Tips & Tricks', 'Gear Talk']
+
+function ShareModal({ draft, videoSrc, onClose }) {
+  const [caption, setCaption] = useState(draft.caption)
+  const [selectedCommunity, setSelectedCommunity] = useState(MY_COMMUNITIES[0])
+  const [selectedTags, setSelectedTags] = useState(draft.tag ? [draft.tag] : [])
+  const [posted, setPosted] = useState(false)
+
+  const toggleTag = (tag) => setSelectedTags((prev) => prev.includes(tag) ? [] : [tag])
+
+  const handlePost = () => {
+    if (!caption.trim()) return
+    const newPost = {
+      id: Date.now(),
+      community: selectedCommunity.name.replace('\n', ' '),
+      communityColor: selectedCommunity.color,
+      communityAbbr: selectedCommunity.abbr,
+      user: 'Jared Mango',
+      avatarColor: '#409cff',
+      avatarLetter: 'J',
+      time: 'just now',
+      body: caption.trim(),
+      likes: 0,
+      comments: 0,
+      img: null,
+      video: videoSrc,
+      tags: selectedTags,
+    }
+    savePosts([newPost, ...loadPosts()])
+    setPosted(true)
+    setTimeout(() => onClose(), 1800)
+  }
+
+  return (
+    <div className="phone-overlay flex flex-col" style={{ background: 'rgba(0,0,0,0.55)', zIndex: 40 }}>
+      {posted ? (
+        /* ── Success state ── */
+        <div className="mx-4 mt-14 bg-white rounded-3xl flex flex-col items-center py-14 px-6"
+          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
+          <div className="w-16 h-16 rounded-full bg-[#248a3d] flex items-center justify-center mb-5"
+            style={{ boxShadow: '0 4px 20px rgba(36,138,61,0.35)' }}>
+            <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
+              <path d="M2 11L10 19L26 3" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <p className="text-[22px] font-bold text-[#1c1c1e] mb-1"
+            style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+            Posted!
+          </p>
+          <p className="text-[14px] text-[rgba(60,60,67,0.5)] text-center"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Your swing is live in the community
+          </p>
+        </div>
+      ) : (
+        /* ── Compose state ── */
+        <div className="mx-4 mt-14 bg-white rounded-3xl overflow-hidden"
+          style={{ boxShadow: '0 8px 40px rgba(0,0,0,0.18)' }}>
+
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-[#f0f0f0]">
+            <button onClick={onClose}
+              className="text-[15px] text-[rgba(60,60,67,0.5)]"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Cancel
+            </button>
+            <p className="text-[16px] font-bold text-[#1c1c1e]"
+              style={{ fontFamily: '-apple-system, "SF Pro Display", system-ui, sans-serif' }}>
+              New Post
+            </p>
+            <button
+              onClick={handlePost}
+              disabled={!caption.trim()}
+              className="px-4 py-1.5 rounded-full text-[14px] font-semibold bg-[#248a3d] text-white disabled:opacity-40 transition-all"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Post
+            </button>
+          </div>
+
+          {/* Author + caption */}
+          <div className="flex gap-3 px-4 pt-4 pb-3">
+            <div className="w-9 h-9 rounded-full bg-[#409cff] flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0">J</div>
+            <div className="flex-1">
+              <p className="text-[13px] font-semibold text-[#1c1c1e] mb-1"
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                Jared Mango
+              </p>
+              <textarea
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                rows={2}
+                placeholder="What's on your mind?"
+                className="w-full text-[14px] text-[#1c1c1e] placeholder-[rgba(60,60,67,0.35)] resize-none focus:outline-none leading-[20px]"
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
+              />
+            </div>
+          </div>
+
+          {/* Video preview */}
+          <div className="mx-4 mb-3 flex gap-3 items-center bg-[#f4f4f4] rounded-2xl p-2.5">
+            <div className="rounded-xl overflow-hidden bg-black flex-shrink-0" style={{ width: 48, aspectRatio: '9/16' }}>
+              <video src={videoSrc} className="w-full h-full object-cover" muted playsInline autoPlay loop />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[13px] font-semibold text-[#1c1c1e] truncate"
+                style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+                {draft.type === 'ball-tracer' ? 'Ball Trace Video' : 'Swing Analysis Video'}
+              </p>
+              <p className="text-[11px] text-[rgba(60,60,67,0.45)]">Tap to preview</p>
+            </div>
+            {selectedTags.length > 0 && (
+              <div className="flex flex-wrap gap-1 flex-shrink-0">
+                {selectedTags.map((t) => (
+                  <span key={t} className="text-[11px] font-semibold bg-[#e5f8e9] text-[#248a3d] px-2.5 py-1 rounded-full">{t}</span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div className="px-4 pb-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.4)] mb-2"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Tags
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {AVAILABLE_TAGS.map((tag) => (
+                <button key={tag} onClick={() => toggleTag(tag)}
+                  className="px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all"
+                  style={{
+                    backgroundColor: selectedTags.includes(tag) ? '#248a3d' : '#f4f4f4',
+                    color: selectedTags.includes(tag) ? 'white' : '#1c1c1e',
+                    fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                  }}>
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Post to community */}
+          <div className="px-4 pb-4 border-t border-[#f0f0f0] pt-3">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-[rgba(60,60,67,0.4)] mb-2"
+              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+              Post to
+            </p>
+            <div className="flex gap-2 overflow-x-auto no-scrollbar">
+              {MY_COMMUNITIES.map((c) => (
+                <button key={c.id} onClick={() => setSelectedCommunity(c)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold flex-shrink-0 transition-all"
+                  style={{
+                    backgroundColor: selectedCommunity.id === c.id ? c.color : '#f4f4f4',
+                    color: selectedCommunity.id === c.id ? 'white' : '#1c1c1e',
+                    fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif',
+                  }}>
+                  {c.name.replace('\n', ' ')}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 /* ── Swing Analyser data ── */
 const SWING_DATA = {
@@ -65,7 +239,7 @@ function FeedbackItem({ good, title, detail }) {
 }
 
 /* ── Ball Tracer results ── */
-function BallTracerResults({ navigate }) {
+function BallTracerResults({ onShare }) {
   const [playing, setPlaying] = useState(false)
   const [toast, setToast] = useState('')
   const showToast = (msg) => { setToast(msg); setTimeout(() => setToast(''), 2000) }
@@ -118,8 +292,15 @@ function BallTracerResults({ navigate }) {
           src={balltraceVideo}
           className="w-full h-full object-contain"
           onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
+          onLoadedMetadata={() => {
+            const v = videoRef.current
+            if (!v) return
+            setDuration(v.duration || 0)
+            v.play().then(() => setPlaying(true)).catch(() => {})
+          }}
           onEnded={() => setPlaying(false)}
+          autoPlay
+          muted
           playsInline
         />
       </div>
@@ -166,7 +347,7 @@ function BallTracerResults({ navigate }) {
       {/* Action buttons */}
       <div className="mx-5 mt-6 flex gap-3">
         <button
-          onClick={() => navigate('/community', { state: { draft: { type: 'ball-tracer', caption: 'Check out my ball trace! 🏌️ #BallTracer', tag: 'Ball Tracer' } } })}
+          onClick={() => onShare({ type: 'ball-tracer', caption: 'Check out my ball trace! 🏌️ #BallTracer', tag: 'Ball Tracer' })}
           className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -196,7 +377,7 @@ function BallTracerResults({ navigate }) {
 }
 
 /* ── Swing Analyser results ── */
-function SwingAnalyserResults({ navigate, videoSrc }) {
+function SwingAnalyserResults({ videoSrc, onShare }) {
   const data = videoSrc?.includes('Bodyanalysed2') ? SWING_DATA.v2 : SWING_DATA.v1
   const SUGGESTED_DRILL = data.drill
   const [playing, setPlaying] = useState(false)
@@ -386,7 +567,7 @@ function SwingAnalyserResults({ navigate, videoSrc }) {
       {/* Action buttons */}
       <div className="mx-5 flex gap-3">
         <button
-          onClick={() => navigate('/community', { state: { draft: { type: 'swing-analyser', caption: 'Check out my swing analysis! 🏌️ #SwingAnalyzer', tag: 'Swing Analyzer' } } })}
+          onClick={() => onShare({ type: 'swing-analyser', caption: 'Check out my swing analysis! 🏌️ #SwingAnalyzer', tag: 'Swing Analyzer' })}
           className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -425,6 +606,13 @@ export default function UploadResultsPage() {
   const selectedVideo = state?.video || '/Bodyanalysed1.mp4'
   const thumb = state?.thumb || null
 
+  const [shareDraft, setShareDraft] = useState(null)
+
+  const handleShare = (draft) => setShareDraft(draft)
+  const handleShareClose = () => setShareDraft(null)
+
+  const sharedVideoSrc = isBallTracer ? balltraceVideo : selectedVideo
+
   return (
     <div className="relative w-full bg-[#f4f4f4] flex flex-col min-h-[852px]">
 
@@ -456,9 +644,13 @@ export default function UploadResultsPage() {
       </div>
 
       {isBallTracer
-        ? <BallTracerResults navigate={navigate} />
-        : <SwingAnalyserResults navigate={navigate} videoSrc={selectedVideo} />
+        ? <BallTracerResults onShare={handleShare} />
+        : <SwingAnalyserResults videoSrc={selectedVideo} onShare={handleShare} />
       }
+
+      {shareDraft && (
+        <ShareModal draft={shareDraft} videoSrc={sharedVideoSrc} onClose={handleShareClose} />
+      )}
 
     </div>
   )
