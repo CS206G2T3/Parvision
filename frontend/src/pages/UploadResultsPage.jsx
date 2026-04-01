@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import balltraceImg from '../assets/balltrace.png'
 import balltraceVideo from '../assets/balltrace.mp4'
+import swingAnalyserVideo from '../assets/vid1swinganalyser.mp4'
 import warmupImg from '../assets/warmup.jpeg'
 import { loadPosts, savePosts } from '../data/communityPosts'
 
@@ -603,7 +604,7 @@ export default function UploadResultsPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const isBallTracer = state?.mode === 'ball-tracer'
-  const selectedVideo = state?.video || '/Bodyanalysed1.mp4'
+  const selectedVideo = state?.video || swingAnalyserVideo
   const thumb = state?.thumb || null
 
   const [shareDraft, setShareDraft] = useState(null)

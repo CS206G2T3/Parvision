@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import vid1Png from '../assets/Bodyanalysed1_thumbnail.png'
+import swingAnalyserVideo from '../assets/vid1swinganalyser.mp4'
 
 const CHECKS = [
   'Full body visible in frame',
@@ -12,7 +13,7 @@ export default function SwingAnalyserSetupPage() {
   const navigate = useNavigate()
   const { state } = useLocation()
   const thumb = state?.thumb || vid1Png
-  const video = state?.video || '/Bodyanalysed1.mp4'
+  const video = state?.video || swingAnalyserVideo
 
   const containerRef = useRef(null)
 

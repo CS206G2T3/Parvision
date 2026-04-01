@@ -1,6 +1,6 @@
 import foursomeImg from '../assets/foursome.png'
 import balltraceVideo from '../assets/balltrace.mp4'
-import swingVideo from '../assets/output_mediapipe1.mp4'
+import swingVideo from '../assets/vid1swinganalyser.mp4'
 
 const STORAGE_KEY = 'parvision_posts'
 

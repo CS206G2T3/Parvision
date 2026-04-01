@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import bodyanalysedThumb from '../assets/Bodyanalysed1_thumbnail.png'
+import swingAnalyserVideo from '../assets/vid1swinganalyser.mp4'
 import bodyanalysed2Thumb from '../assets/Bodyanalysed2_thumbnail.png'
 import ballTracerSetupImg from '../assets/balltracer-setup.png'
 import balltraceMp4 from '../assets/balltrace.mp4'
 
 // First 3 items are the feature videos (leftmost = swing analyser, middle = ball tracer, rightmost = second swing)
 const GALLERY_ITEMS = [
-  { id: 1, type: 'video', duration: '0:14', thumb: bodyanalysedThumb, video: '/Bodyanalysed1.mp4' },
+  { id: 1, type: 'video', duration: '0:14', thumb: bodyanalysedThumb, video: swingAnalyserVideo },
   { id: 2, type: 'video', duration: '0:09', thumb: ballTracerSetupImg, video: balltraceMp4 },
-  { id: 3, type: 'video', duration: '0:14', thumb: bodyanalysed2Thumb, video: '/Bodyanalysed2.mp4' },
+  { id: 3, type: 'video', duration: '0:14', thumb: bodyanalysed2Thumb, video: `${import.meta.env.BASE_URL}Bodyanalysed2.mp4` },
   { id: 4, type: 'image', bg: 'linear-gradient(135deg, #a855f7, #ec4899, #f97316)' },
   { id: 5, type: 'image', bg: 'linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4)' },
   { id: 6, type: 'image', bg: 'linear-gradient(135deg, #10b981, #059669, #1d4ed8)' },

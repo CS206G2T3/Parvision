@@ -284,7 +284,7 @@ export default function SwingHistoryDetailPage() {
 
       {/* Delete confirmation sheet */}
       {showDelete && (
-        <div className="absolute inset-0 z-50 flex flex-col justify-end">
+        <div className="phone-overlay z-50 flex flex-col justify-end">
           <div className="absolute inset-0 bg-black/40" onClick={() => setShowDelete(false)} />
           <div className="relative bg-white rounded-t-3xl px-5 pt-5 pb-10">
             <div className="w-10 h-1 bg-[#c7c7cc] rounded-full mx-auto mb-5" />

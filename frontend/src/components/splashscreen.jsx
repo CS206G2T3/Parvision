@@ -40,6 +40,8 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
         style={{
           width: 340,
           height: 340,
+          top: 0, left: 0, right: 0, bottom: 0,
+          margin: 'auto',
           border: '2px solid rgba(36, 138, 61, 0.30)',
           animation: 'ringPulse 3s ease-in-out infinite',
         }}
@@ -49,6 +51,8 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
         style={{
           width: 460,
           height: 460,
+          top: 0, left: 0, right: 0, bottom: 0,
+          margin: 'auto',
           border: '2px solid rgba(36, 138, 61, 0.18)',
           animation: 'ringPulse 3s ease-in-out 0.5s infinite',
         }}
@@ -58,6 +62,8 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
         style={{
           width: 580,
           height: 580,
+          top: 0, left: 0, right: 0, bottom: 0,
+          margin: 'auto',
           border: '1.5px solid rgba(36, 138, 61, 0.09)',
           animation: 'ringPulse 3s ease-in-out 1s infinite',
         }}
@@ -69,6 +75,8 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
         style={{
           width: 280,
           height: 280,
+          top: 0, left: 0, right: 0, bottom: 0,
+          margin: 'auto',
           background: 'radial-gradient(circle, rgba(36,138,61,0.10) 0%, transparent 70%)',
           filter: 'blur(24px)',
           animation: 'glowPulse 2.5s ease-in-out infinite',
@@ -112,12 +120,13 @@ export default function SplashScreen({ onFinish, duration = 6000 }) {
         <p
           style={{
             fontFamily: 'system-ui, -apple-system, sans-serif',
-            fontSize: '0.8rem',
-            fontWeight: 500,
-            letterSpacing: '0.2em',
+            fontSize: '0.75rem',
+            fontWeight: 700,
+            letterSpacing: '0.25em',
             textTransform: 'uppercase',
             color: '#248a3d',
-            opacity: 0.75,
+            opacity: 1,
+            textShadow: '0 0 20px rgba(36,138,61,0.2)',
           }}
         >
           AI Golf Coaching
