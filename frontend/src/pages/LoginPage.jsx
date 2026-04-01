@@ -23,7 +23,8 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await fetch('/api/login', {
+      const loginUrl = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/login` : '/api/login'
+      const res = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ identifier, password }),
