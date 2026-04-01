@@ -442,7 +442,7 @@ function CommunityBubble({ name, abbr, color, active, onPress }) {
   return (
     <button onClick={onPress} className="flex flex-col items-center gap-1.5 flex-shrink-0">
       <div
-        className={`w-[56px] h-[56px] rounded-full flex items-center justify-center text-white text-[12px] font-bold shadow-sm ${active ? 'ring-2 ring-[#248a3d] ring-offset-2' : ''}`}
+        className={`w-[44px] h-[44px] rounded-full flex items-center justify-center text-white text-[11px] font-bold shadow-sm ${active ? 'ring-2 ring-[#248a3d] ring-offset-2' : ''}`}
         style={{ backgroundColor: color }}
       >
         {abbr}
@@ -832,6 +832,8 @@ export default function CommunitiesPage() {
   const [showCompose, setShowCompose] = useState(!!state?.draft)
   const [composeDraft, setComposeDraft] = useState(state?.draft || null)
   const [posts, setPosts] = useState(() => loadPosts())
+  const postRefs = useRef({})
+  const [highlightPostId, setHighlightPostId] = useState(null)
 
   const openCompose = (draft = { type: 'swing-analyser', caption: '', tag: 'Swing Analyzer' }) => {
     setComposeDraft(draft)
@@ -900,6 +902,21 @@ export default function CommunitiesPage() {
   const [sharePostId, setSharePostId] = useState(null)
   const [hiddenPostIds, setHiddenPostIds] = useState(new Set())
   const [reportConfirmPostId, setReportConfirmPostId] = useState(null)
+
+  useEffect(() => {
+    if (state?.postId) {
+      setTab('feed')
+      setActiveCommunity(null)
+      setTimeout(() => {
+        const el = postRefs.current[state.postId]
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          setHighlightPostId(state.postId)
+          setTimeout(() => setHighlightPostId(null), 1500)
+        }
+      }, 100)
+    }
+  }, [state?.postId])
 
   const fetchFriendsData = useCallback(() => {
     if (!user?.id) return
@@ -1147,21 +1164,21 @@ export default function CommunitiesPage() {
               >
                 My Groups
               </p>
-              <div className="flex gap-4 overflow-x-auto pb-1 no-scrollbar">
+              <div className="flex gap-4 overflow-x-auto p-1 no-scrollbar">
                 {/* "All" bubble */}
                 <button
                   onClick={() => setActiveCommunity(null)}
                   className="flex flex-col items-center gap-1.5 flex-shrink-0"
                 >
                   <div
-                    className={`w-[56px] h-[56px] rounded-full flex items-center justify-center shadow-sm transition-all ${
+                    className={`w-[44px] h-[44px] rounded-full flex items-center justify-center shadow-sm transition-all ${
                       activeCommunity === null
                         ? 'ring-2 ring-[#248a3d] ring-offset-2'
                         : ''
                     }`}
                     style={{ background: activeCommunity === null ? '#248a3d' : 'linear-gradient(135deg,#248a3d,#409cff)' }}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
                       stroke="white" strokeWidth="2" strokeLinecap="round">
                       <rect x="3" y="3" width="7" height="7" rx="1" />
                       <rect x="14" y="3" width="7" height="7" rx="1" />
@@ -1247,17 +1264,22 @@ export default function CommunitiesPage() {
             <div className="pt-2">
               {filteredPosts.length > 0 ? (
                 filteredPosts.map((post) => (
-                  <PostCard
+                  <div
                     key={post.id}
-                    post={post}
-                    commentCount={(allComments[post.id] || []).length}
-                    onCommentPress={() => setActiveCommentPostId(post.id)}
-                    isOwn={post.user === 'Jared Mango'}
-                    onMenuPress={() => setActionSheetPostId(post.id)}
-                    onSharePress={() => setSharePostId(post.id)}
-                    onLike={likePost}
-                    liked={likedPostIds.has(post.id)}
-                  />
+                    ref={(el) => { postRefs.current[post.id] = el }}
+                    className={`transition-colors duration-700 ${highlightPostId === post.id ? 'bg-[#e5f8e9] rounded-2xl' : ''}`}
+                  >
+                    <PostCard
+                      post={post}
+                      commentCount={(allComments[post.id] || []).length}
+                      onCommentPress={() => setActiveCommentPostId(post.id)}
+                      isOwn={post.user === 'Jared Mango'}
+                      onMenuPress={() => setActionSheetPostId(post.id)}
+                      onSharePress={() => setSharePostId(post.id)}
+                      onLike={likePost}
+                      liked={likedPostIds.has(post.id)}
+                    />
+                  </div>
                 ))
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 px-8 text-center">

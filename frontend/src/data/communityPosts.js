@@ -1,5 +1,4 @@
 import foursomeImg from '../assets/foursome.png'
-import swingImg from '../assets/swing.png'
 import balltraceVideo from '../assets/balltrace.mp4'
 import swingVideo from '../assets/output_mediapipe1.mp4'
 
@@ -33,7 +32,7 @@ export const SEED_POSTS = [
     body: 'Swing looking slightly rough this session \u{1F605} Hoping the Swing Analyzer feedback helps me fix my C-posture before the weekend round.',
     likes: 40,
     comments: 14,
-    img: swingImg,
+    img: null,
     video: swingVideo,
     tags: ['Swing Analyzer'],
   },

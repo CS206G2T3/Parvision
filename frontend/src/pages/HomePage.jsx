@@ -358,7 +358,9 @@ export default function HomePage() {
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1 px-5 scrollbar-hide">
             {communityPosts.slice(0, 5).map((post) => (
-              <CommunityCard key={post.id} {...post} excerpt={post.body} />
+              <div key={post.id} onClick={() => navigate('/community', { state: { postId: post.id } })} className="cursor-pointer">
+                <CommunityCard {...post} excerpt={post.body} />
+              </div>
             ))}
           </div>
         </section>
