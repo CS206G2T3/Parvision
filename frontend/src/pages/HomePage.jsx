@@ -246,9 +246,9 @@ export default function HomePage() {
         </div>
 
         {/* Profile avatar */}
-        <button onClick={() => navigate('/profile')} className="absolute top-10 right-12">
+        <button onClick={() => navigate('/profile')} className="absolute top-9 right-12">
           <img src={patrickAvatar} alt="Profile"
-            className="w-16 h-16 rounded-full object-cover border-2 border-[#e5f8e9]" />
+            className="w-14 h-14 rounded-full object-cover border-2 border-[#e5f8e9]" />
         </button>
       </div>
 

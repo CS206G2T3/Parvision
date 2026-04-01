@@ -128,7 +128,7 @@ export default function SwingHistoryDetailPage() {
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-8">
+      <div className="flex-1 overflow-y-auto pb-28">
 
         {/* Video player */}
         {entry.resultVideo ? (
@@ -243,48 +243,44 @@ export default function SwingHistoryDetailPage() {
           )}
         </div>
 
-        {/* Action buttons */}
-        <div className="mx-5 mt-4 flex gap-3">
-          <button
-            onClick={handleShare}
-            className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="18" cy="5" r="3" stroke="white" strokeWidth="2" />
-              <circle cx="6" cy="12" r="3" stroke="white" strokeWidth="2" />
-              <circle cx="18" cy="19" r="3" stroke="white" strokeWidth="2" />
-              <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="white" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span
-              className="text-white text-[14px] font-semibold"
-              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-            >
-              Share
-            </span>
-          </button>
-          <button
-            onClick={() => showToast('Saved to device')}
-            className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 3V15M8 11L12 15L16 11M4 17V20H20V17" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span
-              className="text-[#1c1c1e] text-[14px] font-semibold"
-              style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
-            >
-              Download
-            </span>
-          </button>
-        </div>
-
-        {toast && (
-          <div className="mx-5 mt-3 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full text-center pointer-events-none">
-            {toast}
-          </div>
-        )}
-
       </div>
+
+      {/* Sticky action buttons */}
+      <div className="flex-shrink-0 px-5 pt-3 pb-6 bg-white border-t border-[#f0f0f0] flex gap-3">
+        <button
+          onClick={handleShare}
+          className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#248a3d] rounded-2xl active:opacity-80"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <circle cx="18" cy="5" r="3" stroke="white" strokeWidth="2" />
+            <circle cx="6" cy="12" r="3" stroke="white" strokeWidth="2" />
+            <circle cx="18" cy="19" r="3" stroke="white" strokeWidth="2" />
+            <path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98" stroke="white" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          <span className="text-white text-[14px] font-semibold"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Share
+          </span>
+        </button>
+        <button
+          onClick={() => showToast('Saved to device')}
+          className="flex-1 flex items-center justify-center gap-2 h-[48px] bg-[#f4f4f4] rounded-2xl active:opacity-80"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3V15M8 11L12 15L16 11M4 17V20H20V17" stroke="#1c1c1e" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+          <span className="text-[#1c1c1e] text-[14px] font-semibold"
+            style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
+            Download
+          </span>
+        </button>
+      </div>
+
+      {toast && (
+        <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-[#1c1c1e] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
+          {toast}
+        </div>
+      )}
 
       {/* Delete confirmation sheet */}
       {showDelete && (
