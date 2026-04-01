@@ -102,8 +102,13 @@ export default function SignUpPage() {
 
       {/* Success banner */}
       {success && (
-        <div className="mx-6 mt-4 px-4 py-3 bg-[#f0fff4] border border-[#248a3d] rounded-[12px]">
-          <p className="text-[#248a3d] text-[14px] font-medium" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
+        <div className="mx-6 mt-4 flex items-center gap-2.5 bg-[#f0fff4] border border-[#248a3d] rounded-[14px] px-4 py-3">
+          <div className="w-5 h-5 rounded-full bg-[#248a3d] flex items-center justify-center flex-shrink-0">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <path d="M2 5L4.5 7.5L8.5 2.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <p className="text-[#248a3d] text-[14px] font-medium" style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}>
             Account created successfully!
           </p>
         </div>
