@@ -6,16 +6,20 @@ import parVisionLogo from '../assets/parvision_logo.png'
  * Shows for `duration` ms, then calls onFinish() so the parent
  * can switch to the main app. Fades out smoothly before unmounting.
  */
-export default function SplashScreen({ onFinish, duration = 2200 }) {
+export default function SplashScreen({ onFinish, duration = 6000 }) {
   const [fadeOut, setFadeOut] = useState(false)
+  const [entered, setEntered] = useState(false)
 
   useEffect(() => {
+    // Trigger entrance animation on next tick
+    const enterTimer = setTimeout(() => setEntered(true), 50)
     // Start fade-out slightly before the full duration ends
-    const fadeTimer = setTimeout(() => setFadeOut(true), duration - 500)
+    const fadeTimer = setTimeout(() => setFadeOut(true), duration - 600)
     // Tell parent we're done after full duration
     const doneTimer = setTimeout(() => onFinish(), duration)
 
     return () => {
+      clearTimeout(enterTimer)
       clearTimeout(fadeTimer)
       clearTimeout(doneTimer)
     }
@@ -23,45 +27,142 @@ export default function SplashScreen({ onFinish, duration = 2200 }) {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col items-center justify-center z-50 transition-opacity duration-500"
+      className="fixed inset-0 flex flex-col items-center justify-center z-50"
       style={{
-        background: 'linear-gradient(160deg, #ffffff 0%, #f0faf3 50%, #e6f5ea 100%)',
+        background: '#ffffff',
         opacity: fadeOut ? 0 : 1,
+        transition: 'opacity 0.6s ease-in-out',
       }}
     >
+      {/* Decorative background rings */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 340,
+          height: 340,
+          border: '2px solid rgba(36, 138, 61, 0.30)',
+          animation: 'ringPulse 3s ease-in-out infinite',
+        }}
+      />
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 460,
+          height: 460,
+          border: '2px solid rgba(36, 138, 61, 0.18)',
+          animation: 'ringPulse 3s ease-in-out 0.5s infinite',
+        }}
+      />
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 580,
+          height: 580,
+          border: '1.5px solid rgba(36, 138, 61, 0.09)',
+          animation: 'ringPulse 3s ease-in-out 1s infinite',
+        }}
+      />
+
+      {/* Glow behind logo */}
+      <div
+        className="absolute rounded-full"
+        style={{
+          width: 280,
+          height: 280,
+          background: 'radial-gradient(circle, rgba(36,138,61,0.10) 0%, transparent 70%)',
+          filter: 'blur(24px)',
+          animation: 'glowPulse 2.5s ease-in-out infinite',
+        }}
+      />
+
       {/* Logo */}
       <div
-        className="flex items-center justify-center transition-transform duration-700"
         style={{
-          transform: fadeOut ? 'scale(0.95)' : 'scale(1)',
+          transform: entered && !fadeOut ? 'scale(1) translateY(0)' : fadeOut ? 'scale(0.94) translateY(4px)' : 'scale(0.82) translateY(16px)',
+          opacity: entered && !fadeOut ? 1 : fadeOut ? 0 : 0,
+          transition: entered ? 'transform 0.75s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s ease' : 'none',
         }}
       >
-        <img
-          src={parVisionLogo}
-          alt="ParVision — AI Golf Coaching"
-          className="w-72 h-72 object-contain drop-shadow-lg"
-        />
+        <div
+          style={{
+            width: 288,
+            height: 288,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            filter: 'drop-shadow(0 4px 16px rgba(0,0,0,0.08))',
+          }}
+        >
+          <img
+            src={parVisionLogo}
+            alt="ParVision — AI Golf Coaching"
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
       </div>
 
-      {/* Loading dots */}
+      {/* Tagline */}
+      <div
+        style={{
+          opacity: entered && !fadeOut ? 1 : 0,
+          transform: entered && !fadeOut ? 'translateY(0)' : 'translateY(8px)',
+          transition: 'opacity 0.7s ease 0.45s, transform 0.7s ease 0.45s',
+          marginTop: '1.25rem',
+        }}
+      >
+        <p
+          style={{
+            fontFamily: 'system-ui, -apple-system, sans-serif',
+            fontSize: '0.8rem',
+            fontWeight: 500,
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            color: '#248a3d',
+            opacity: 0.75,
+          }}
+        >
+          AI Golf Coaching
+        </p>
+      </div>
+
+      {/* Progress bar */}
       {!fadeOut && (
-        <div className="flex gap-2 mt-8">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-[#248a3d]"
-              style={{
-                animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-              }}
-            />
-          ))}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '2.5rem',
+            width: '6rem',
+            height: '2px',
+            borderRadius: '999px',
+            background: 'rgba(36,138,61,0.15)',
+            overflow: 'hidden',
+            opacity: entered ? 1 : 0,
+            transition: 'opacity 0.5s ease 0.8s',
+          }}
+        >
+          <div
+            style={{
+              height: '100%',
+              borderRadius: '999px',
+              background: 'linear-gradient(90deg, #248a3d, #4caf72)',
+              animation: `progressFill ${duration - 800}ms cubic-bezier(0.4, 0, 0.6, 1) 0.3s forwards`,
+              width: '0%',
+            }}
+          />
         </div>
       )}
 
       <style>{`
-        @keyframes bounce {
-          0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
-          40%            { transform: scale(1);   opacity: 1;   }
+        @keyframes ringPulse {
+          0%, 100% { transform: scale(1);    opacity: 1; }
+          50%       { transform: scale(1.06); opacity: 0.35; }
+        }
+        @keyframes glowPulse {
+          0%, 100% { opacity: 0.7; transform: scale(1); }
+          50%       { opacity: 1;   transform: scale(1.1); }
+        }
+        @keyframes progressFill {
+          from { width: 0%; }
+          to   { width: 100%; }
         }
       `}</style>
     </div>

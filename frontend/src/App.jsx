@@ -90,7 +90,7 @@ export default function App() {
       <BrowserRouter>
         <div className="phone-wrapper">
           <div className="phone-frame">
-            {!splashDone && <SplashScreen onFinish={handleSplashFinish} duration={2200} />}
+            {!splashDone && <SplashScreen onFinish={handleSplashFinish} duration={6000} />}
             <AppRoutes />
           </div>
         </div>
