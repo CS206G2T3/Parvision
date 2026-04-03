@@ -67,7 +67,7 @@ export default function UploadProcessingPage() {
         style={{ fontFamily: '-apple-system, "SF Pro Text", system-ui, sans-serif' }}
       >
         {isBallTracer
-          ? 'Get Parvision Pro For Unlimited Swing Analysis'
+          ? 'Get Parvision Pro For More Video Uploads!'
           : 'AI is reviewing your swing form...'}
       </p>
     </div>
