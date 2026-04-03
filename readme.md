@@ -41,13 +41,13 @@ To run the full stack locally, you will need to open two separate terminal windo
 
 ### Start the Web Frontend (Terminal 1):
 Navigate to the frontend directory and start the Vite development server:  
-`cd ../Parvision/frontend`
-`npm install`
+`cd ../Parvision/frontend`  
+`npm install`  
 `npm run dev`
 
 ### Start the Mobile App (Terminal 2):
 Navigate to the mobile app directory and launch the Expo server for Android:  
-`cd ../Parvision/parvision-mobile`
+`cd ../Parvision/parvision-mobile`  
 `npx expo run:android`
 
 ## Key Features
