@@ -40,14 +40,15 @@ To run the full stack locally, you will need to open two separate terminal windo
 ### Start the Emulator: Open Android Studio, navigate to the Virtual Device Manager, and launch your Android emulator.
 
 ### Start the Web Frontend (Terminal 1):
-Navigate to the frontend directory and start the Vite development server:
-cd ../frontend
-npx vite --host
+Navigate to the frontend directory and start the Vite development server:  
+`cd ../Parvision/frontend`
+`npm install`
+`npm run dev`
 
 ### Start the Mobile App (Terminal 2):
-Navigate to the mobile app directory and launch the Expo server for Android:
-cd Parvision/parvision-mobile
-npx expo run:android
+Navigate to the mobile app directory and launch the Expo server for Android:  
+`cd ../Parvision/parvision-mobile`
+`npx expo run:android`
 
 ## Key Features
 Seamless Media Uploads: Users can select and safely upload high-resolution swing videos directly from their device's media library to Firebase Cloud Storage.
